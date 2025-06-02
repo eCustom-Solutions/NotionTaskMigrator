@@ -1,0 +1,730 @@
+migrate_tasks.js
+----------------
+// migrate_tasks.js
+// ------------
+// Orchestrates the streaming ETL from SM Tasks DB to CENT Tasks DB
+// Usage: node syncTasks.js
+// Ensure .env contains NOTION_SM_TASKS_DB_ID and NOTION_CENT_DB_ID
+
+require('dotenv').config();
+const { getTasksFromDBA }      = require('./services/fetch_tasks');
+const writeToDBB               = require('./services/write_task').writeToDBB;
+const linkStore                = require('./services/link_store');
+const transform                = require('./transformations/generic_transformer');
+const mapSpec                  = require('./transformations/sm_tasks_map');
+
+const SM_DB_ID   = process.env.NOTION_SM_TASKS_DB_ID;
+const CENT_DB_ID = process.env.NOTION_CENT_DB_ID;
+
+async function main() {
+    console.log(`▶️  Starting Task Migrator`);
+    console.log(`   Source (SM): ${SM_DB_ID}`);
+    console.log(`   Target (CENT): ${CENT_DB_ID}\n`);
+
+    let processed = 0;
+    for await (const page of getTasksFromDBA(SM_DB_ID)) {
+        const sourceId = page.id;
+
+        // Idempotency: skip if already migrated
+        const existing = await linkStore.load(sourceId).catch(() => null);
+        if (existing && existing.status === 'success') {
+            console.log(`↩️ Skipping ${sourceId} (already succeeded)`);
+            console.log(`ℹ️ Link already exists in store:`, existing);
+            continue;
+        }
+
+        // Transform to CENT schema
+        console.log(`🛠 Transforming page ${sourceId}`);
+        const payload = await transform(page, mapSpec);
+        console.log(`📝 Payload for ${sourceId}:`, JSON.stringify(payload, null, 2));
+
+        // Write to CENT DB
+        try {
+            console.log(`🚀 Writing page ${sourceId} to CENT DB`);
+            const result = await writeToDBB(payload, CENT_DB_ID);
+            console.log(`✅ Write result for ${sourceId}:`, result);
+            console.log(`✅ Migrated ${sourceId} → ${result.id}`);
+
+            // Record the link
+            await linkStore.save({
+                sourceId,
+                targetId: result.id,
+                status: 'success',
+                syncedAt: new Date().toISOString()
+            });
+            console.log(`💾 Link saved for ${sourceId}`);
+
+        } catch (err) {
+            // More context on failure:
+            console.error(`❌ Failed to migrate ${sourceId}`);
+            console.error('• Notion error:', err);
+
+            // still record failure to avoid infinite retry loops
+            await linkStore.save({
+                sourceId,
+                targetId: null,
+                status: 'fail',
+                syncedAt: new Date().toISOString()
+            });
+            console.log(`💾 Link saved for ${sourceId}`);
+        }
+
+        processed++;
+    }
+
+    console.log(`\n🏁 Migration complete! ${processed} pages processed.`);
+}
+
+main().catch(err => {
+    console.error('Fatal error in syncTasks:', err);
+    process.exit(1);
+});
+
+file_contents_report.txt
+------------------------
+
+
+transformations/sm_tasks_map.js
+-------------------------------
+// transformations/sm_tasks_map.js
+// -------------------------------
+
+const { resolveOrCreateRelationPages } = require('../services/relation_resolver');
+
+module.exports = {
+    mappings: {
+        'Name':       'Name',
+        'Brand':      'Brands',
+        'Status':     'Social Media Status',
+        // 'Teammates':  'People',   // source "Teammates" → target "People"
+        'Due Date':   'Due',
+        'Link':       'Link',
+        'Comments':   'Comments',
+    },
+
+    hooks: {
+        'Social Media Status': (sourceValue) => {
+            const name = sourceValue.status?.name;
+            return { status: { name: name || null } };
+        },
+
+        // // Updated People hook to use the relation_resolver
+        // 'People': async (sourceValue) => {
+        //     // Extract names from the source multi_select “Teammates”
+        //     const teammateNames = sourceValue.multi_select?.map(option => option.name) || [];
+        //
+        //     if (teammateNames.length === 0) {
+        //         return null;
+        //     }
+        //
+        //     // Call our helper:
+        //     //  • targetDbId: your CENT DB ID (pull from env or pass in context)
+        //     //  • relationPropName: “People”
+        //     //  • sourceNames: array of teammate names
+        //     //  • nameProp: the title property in the People-relation DB (usually "Name")
+        //     const CENT_DB_ID = process.env.NOTION_CENT_DB_ID;
+        //
+        //     const pageIds = await resolveOrCreateRelationPages({
+        //         targetDbId: CENT_DB_ID,
+        //         relationPropName: 'People',
+        //         sourceNames: teammateNames,
+        //         nameProp: 'Full Name'
+        //     });
+        //
+        //     // Return the array in Notion’s expected shape:
+        //     return { relation: pageIds.map(id => ({ id })) };
+        // }
+    },
+
+    postProcess: async (payload) => {
+        payload.properties['Department'] = {
+            relation: [
+                { id: '1de6824d5503804c91d4fdf1d5303433' }  // Social Media Management
+            ]
+        };
+        return payload;
+    }
+};
+
+transformations/generic_transformer.js
+--------------------------------------
+// transformations/generic_transformer.js
+// --------------------------------------
+// A generic transformer that, given a Notion page and a mapping spec,
+// builds the `properties` payload for creating/updating a page in the target DB.
+
+module.exports = async function transform(page, map) {
+    const result = {properties: {}};
+
+    for (const [sourceKey, targetKey] of Object.entries(map.mappings)) {
+        const sourceValue = page.properties[sourceKey];
+        if (sourceValue == null) {
+            // no such property on source page
+            continue;
+        }
+
+        if (map.hooks && typeof map.hooks[targetKey] === 'function') {
+            const hookResult = await map.hooks[targetKey](sourceValue);
+            result.properties[targetKey] = hookResult;
+        } else {
+            const type = sourceValue.type;
+
+            if (type === 'title') {
+                result.properties[targetKey] = {
+                    title: sourceValue.title
+                };
+            } else if (!type) {
+                console.error(`❗ sourceValue.type is undefined for property "${sourceKey}"`);
+                console.error(`→ sourceValue was:`, sourceValue);
+                throw new Error(`Cannot infer type for property "${sourceKey}"`);
+            } else {
+                result.properties[targetKey] = { [type]: sourceValue[type] };
+            }
+        }
+    }
+
+    // Optional post-processing hook
+    if (typeof map.postProcess === 'function') {
+        await map.postProcess(result, page);
+    }
+
+    return result;
+};
+
+models/Link.js
+--------------
+// models/Link.js
+// --------------
+// Basic Link class used by link_store.js
+// Represents a mapping from a source page to a target page.
+
+class Link {
+    /**
+     * @param {string} sourceId
+     * @param {string} targetId
+     * @param {string} [status='success']
+     * @param {string} [syncedAt=now]
+     */
+    constructor(sourceId, targetId, status = 'success', syncedAt = new Date().toISOString()) {
+        this.sourceId = sourceId;
+        this.targetId = targetId;
+        this.status = status;
+        this.syncedAt = syncedAt;
+    }
+}
+
+module.exports = Link;
+
+scripts/stream_db_contents.js
+-----------------------------
+// scripts/stream_db_contents.js
+// ---------------------
+
+const path = require('path');
+
+// Force dotenv to load from project root
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+
+const notion = require('../services/notion_client');  // still correct
+
+const SM_DB_ID   = process.env.NOTION_SM_TASKS_DB_ID;
+const CENT_DB_ID = process.env.NOTION_CENT_DB_ID;
+
+// Debug: confirm values loaded
+console.log('cwd:', process.cwd());
+console.log('dirname:', __dirname);
+console.log('SM_DB_ID:', SM_DB_ID);
+console.log('CENT_DB_ID:', CENT_DB_ID);
+
+async function* streamDB(dbId) {
+    let cursor = undefined;
+
+    do {
+        const response = await notion.databases.query({
+            database_id: dbId,
+            page_size: 100,
+            start_cursor: cursor,
+        });
+
+        for (const page of response.results) {
+            yield page;
+        }
+
+        cursor = response.has_more ? response.next_cursor : undefined;
+    } while (cursor);
+}
+
+async function main() {
+    console.log(`▶️  Streaming SM Tasks DB (${SM_DB_ID})`);
+    for await (const page of streamDB(SM_DB_ID)) {
+        console.log(`SM Page ID: ${page.id}`);
+        console.dir(page.properties, { depth: null });
+        console.log('---');
+    }
+
+    // console.log(`\n▶️  Streaming CENT Tasks DB (${CENT_DB_ID})`);
+    // for await (const page of streamDB(CENT_DB_ID)) {
+    //     console.log(`CENT Page ID: ${page.id}`);
+    //     console.dir(page.properties, { depth: null });
+    //     console.log('---');
+    // }
+
+    console.log(`\n🏁 Done streaming both databases.`);
+}
+
+main().catch(err => {
+    console.error('Fatal error:', err);
+    process.exit(1);
+});
+
+services/write_task.js
+----------------------
+// services/write_task.js
+// ---------------------
+// Writes a single transformed task into Notion DB B and returns the created page.
+
+const notion = require('./notion_client');
+
+/**
+ * @param {object} transformedTask  – shape: { properties: { ... }, children?: [...] }
+ * @param {string} dbId             – Notion Database B ID
+ * @returns {Promise<object>}       – Notion response (including `id` of new page)
+ */
+async function writeToDBB(transformedTask, dbId) {
+    const payload = {
+        parent: { database_id: dbId },
+        properties: transformedTask.properties,
+    };
+
+    // If your transformer produces children blocks, include them
+    if (transformedTask.children) {
+        payload.children = transformedTask.children;
+    }
+
+    const response = await notion.pages.create(payload);
+    return response;
+}
+
+module.exports = { writeToDBB };
+
+services/notion_client.js
+-------------------------
+// services/notion_client.js
+// ----------------------
+// Centralized Notion client with rate-limiting via Bottleneck.
+// Provides wrapped methods for all Notion API calls used in Task Migrator.
+// Exported functions are safe to call directly—each is throttled to respect API limits.
+
+const { Client } = require('@notionhq/client');
+const Bottleneck = require('bottleneck');
+require('dotenv').config(); // Ensure NOTION_API_KEY is loaded
+
+// ── 1) Configure Bottleneck limiter to 3 requests/sec
+const limiter = new Bottleneck({
+    reservoir: 3,                   // start with 3 tokens
+    reservoirRefreshAmount: 3,      // refill to 3 tokens...
+    reservoirRefreshInterval: 1000, // ...every 1000ms (1 sec)
+    maxConcurrent: 1,              // execute one at a time for safety
+});
+
+// ── 2) Initialize Notion client using API key
+const notion = new Client({ auth: process.env.NOTION_API_KEY });
+
+// ── 3) Helper to wrap any Notion SDK method with rate limiting
+const _wrap = (fn) => {
+    return (...args) => limiter.schedule(() => fn(...args));
+};
+
+// ── 4) Export limited versions of the Notion API methods used
+module.exports = {
+    // Databases
+    databases: {
+        retrieve: _wrap(notion.databases.retrieve.bind(notion)),
+        query:    _wrap(notion.databases.query.bind(notion)),
+    },
+
+    // Pages
+    pages: {
+        create:    _wrap(notion.pages.create.bind(notion)),
+        update:    _wrap(notion.pages.update.bind(notion)),
+        retrieve:  _wrap(notion.pages.retrieve.bind(notion)),
+
+        // Page properties
+        properties: {
+            retrieve: _wrap(notion.pages.properties.retrieve.bind(notion)),
+        },
+    },
+
+    // Blocks (if needed later)
+    blocks: {
+        children: {
+            list: _wrap(notion.blocks.children.list.bind(notion)),
+        },
+    },
+
+    // Expose limiter for testing or introspection
+    __limiter: limiter,
+};
+
+// ── 5) Testing this module
+// In your tests, you can:
+//  - Mock `@notionhq/client` methods to return fixed values.
+//  - Verify that calling exported methods returns promises.
+//  - Inspect `__limiter` metrics (e.g., limiter.counts()) to ensure scheduling.
+//  - Use Bottleneck's events (limiter.on('failed', ...) ) to test retry logic if added.
+
+
+services/link_store.js
+----------------------
+// services/link_store.js
+// ---------------------
+// Tracks which source pages have been migrated by sharding each Link into its own JSON file.
+
+const fs = require('fs').promises;
+const path = require('path');
+const Link = require('../models/Link');
+
+const LINKS_DIR = path.resolve(__dirname, '../links');
+
+class LinkStore {
+    constructor(dir) {
+        this.dir = dir;
+        // ensure links directory exists
+        fs.mkdir(this.dir, { recursive: true }).catch(() => {});
+    }
+
+    /**
+     * Check if a given sourceId has already been linked.
+     * @param {string} sourceId
+     * @returns {Promise<boolean>}
+     */
+    async hasSourceId(sourceId) {
+        const file = path.join(this.dir, `${sourceId}.json`);
+        try {
+            await fs.access(file);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+
+    /**
+     * Save a Link object to disk, sharded by sourceId.
+     * @param {Link} link
+     * @returns {Promise<void>}
+     */
+    async save(link) {
+        const file = path.join(this.dir, `${link.sourceId}.json`);
+        await fs.writeFile(file, JSON.stringify(link, null, 2), 'utf-8');
+    }
+
+    /**
+     * (Optional) Load an existing Link by sourceId.
+     * @param {string} sourceId
+     * @returns {Promise<Link>}
+     */
+    async load(sourceId) {
+        const file = path.join(this.dir, `${sourceId}.json`);
+        const content = await fs.readFile(file, 'utf-8');
+        const data = JSON.parse(content);
+        return new Link(data.sourceId, data.targetId, data.status, data.syncedAt);
+    }
+}
+
+module.exports = new LinkStore(LINKS_DIR);
+
+services/fetch_tasks.js
+-----------------------
+// services/fetch_tasks.js
+// ----------------------
+// Streams pages (tasks) from a Notion database (DB A) one by one.
+
+const notion = require('./notion_client');
+
+async function* getTasksFromDBA(dbId) {
+    let cursor = undefined;
+
+    do {
+        const response = await notion.databases.query({
+            database_id: dbId,
+            page_size: 100,
+            start_cursor: cursor,
+        });
+
+        for (const page of response.results) {
+            yield page;
+        }
+
+        cursor = response.has_more ? response.next_cursor : undefined;
+    } while (cursor);
+}
+
+module.exports = { getTasksFromDBA };
+
+services/relation_resolver.js
+-----------------------------
+// services/relation_resolver.js
+// -----------------------------
+// General-purpose helper for resolving or creating Notion relation pages.
+// For a given target relation field on a database, this will:
+//   1. Dynamically fetch the “relation” database ID (cache it).
+//   2. For each source name:
+//        • Query the relation-database for an existing page whose Name matches.
+//        • If found, reuse its page ID.
+//        • If not found, create a new page (setting only the Name property).
+//   3. Return an array of `{ id: <page-id> }` suitable for a Notion “relation” property.
+//
+// Usage (from a transformer hook):
+//   const { resolveOrCreateRelationPages } = require('../services/relation_resolver');
+//   …
+//   const relationRefs = await resolveOrCreateRelationPages({
+//     targetDbId: CENT_DB_ID,
+//     relationPropName: 'People',
+//     sourceNames: ['Alice', 'Bob'],
+//     nameProp: 'Name'
+//   });
+//   // relationRefs is now something like:
+//   // [ { id: 'xxxx-xxxx-xxxx' }, { id: 'yyyy-yyyy-yyyy' } ]
+//
+// Notes:
+//   • Caches relation DB IDs per (targetDbId, relationPropName) to avoid
+//     repeated notion.databases.retrieve calls.
+//   • Looks up by exact “Name” match; if multiple pages match, picks the first and logs a warning.
+//   • Creates a new page with only the `nameProp` (title) when no existing match is found.
+//   • Throws if `relationPropName` is not actually a relation field on `targetDbId`.
+
+const notion = require('./notion_client');
+const Bottleneck = require('bottleneck');
+
+// In-memory cache for relation database IDs, keyed by `${targetDbId}|${relationPropName}`
+const relationDbCache = {};
+
+/**
+ * Fetches (and caches) the database ID that the given relation property points to.
+ *
+ * @param {string} targetDbId         - The Notion database ID in which the relation property lives.
+ * @param {string} relationPropName   - The name of the relation property (e.g. "People", "Brands").
+ * @returns {Promise<string>}         - The related database's ID.
+ * @throws {Error}                    - If the property doesn’t exist or isn’t a relation.
+ */
+async function getRelationDbId(targetDbId, relationPropName) {
+    const cacheKey = `${targetDbId}|${relationPropName}`;
+    if (relationDbCache[cacheKey]) {
+        return relationDbCache[cacheKey];
+    }
+
+    const dbSchema = await notion.databases.retrieve({ database_id: targetDbId });
+    const prop = dbSchema.properties[relationPropName];
+    if (!prop) {
+        throw new Error(`Property "${relationPropName}" not found on database ${targetDbId}.`);
+    }
+    if (prop.type !== 'relation' || !prop.relation || !prop.relation.database_id) {
+        throw new Error(`Property "${relationPropName}" on database ${targetDbId} is not a relation field.`);
+    }
+
+    const relatedDbId = prop.relation.database_id;
+    relationDbCache[cacheKey] = relatedDbId;
+    return relatedDbId;
+}
+
+/**
+ * Searches a Notion database for a page whose `nameProp` equals `name`.
+ *
+ * @param {string} relationDbId    - The ID of the database to query.
+ * @param {string} nameProp        - The name of the title property to filter on (usually "Name").
+ * @param {string} name            - The exact string to match.
+ * @returns {Promise<string|null>} - The first matching page ID, or null if none found.
+ */
+async function findPageByName(relationDbId, nameProp, name) {
+    // Notion filters for a title property look like `{ property: nameProp, title: { equals: name } }`
+    const response = await notion.databases.query({
+        database_id: relationDbId,
+        page_size: 2, // we only need to know if ≥1 exist
+        filter: {
+            property: nameProp,
+            title: {
+                equals: name
+            }
+        }
+    });
+
+    if (response.results.length > 1) {
+        console.warn(
+            `Warning: Multiple pages found in DB ${relationDbId} where "${nameProp}" == "${name}". ` +
+            `Using the first result (ID: ${response.results[0].id}).`
+        );
+    }
+
+    return response.results.length > 0 ? response.results[0].id : null;
+}
+
+/**
+ * Creates a new page in the given database with only the title property set to `name`.
+ *
+ * @param {string} relationDbId    - The ID of the database in which to create the page.
+ * @param {string} nameProp        - The name of the title property (usually "Name").
+ * @param {string} name            - The string value to set on that title property.
+ * @returns {Promise<string>}      - The newly created page's ID.
+ */
+async function createPageWithName(relationDbId, nameProp, name) {
+    // Build the minimal “properties” payload for a new page with only a title.
+    const properties = {
+        [nameProp]: {
+            title: [
+                {
+                    text: {
+                        content: name
+                    }
+                }
+            ]
+        }
+    };
+
+    const response = await notion.pages.create({
+        parent: { database_id: relationDbId },
+        properties
+    });
+
+    return response.id;
+}
+
+/**
+ * For a list of source names, resolves or creates pages in the target relation database.
+ *
+ * @param {Object}   options
+ * @param {string}   options.targetDbId         - The ID of the database containing the relation property.
+ * @param {string}   options.relationPropName   - The name of the relation property on targetDbId.
+ * @param {string[]} options.sourceNames        - Array of strings (e.g., ["Alice", "Bob"]) to resolve.
+ * @param {string}   options.nameProp           - The title property key in the relation DB (usually "Name").
+ * @returns {Promise<string[]>}                 - Array of page IDs, in the same order as `sourceNames`.
+ *
+ * @throws {Error} If any underlying API calls fail, or if the relation property is misconfigured.
+ */
+async function resolveOrCreateRelationPages({ targetDbId, relationPropName, sourceNames, nameProp }) {
+    if (!Array.isArray(sourceNames)) {
+        throw new Error(`sourceNames must be an array of strings.`);
+    }
+
+    // 1) Resolve the actual DB ID that this relation property points to (with caching).
+    const relationDbId = await getRelationDbId(targetDbId, relationPropName);
+
+    const resolvedIds = [];
+
+    // 2) For each source name, find or create a page.
+    for (const name of sourceNames) {
+        if (typeof name !== 'string' || name.trim() === '') {
+            // Skip empty names; return null or handle as desired.
+            continue;
+        }
+
+        // 2a) Try to find an existing page by name.
+        let pageId = await findPageByName(relationDbId, nameProp, name);
+
+        // 2b) If none found, create a new page with that name.
+        if (!pageId) {
+            pageId = await createPageWithName(relationDbId, nameProp, name);
+            console.log(`Created new relation page in DB ${relationDbId} with ${nameProp}="${name}", ID=${pageId}`);
+        }
+
+        resolvedIds.push(pageId);
+    }
+
+    return resolvedIds;
+}
+
+module.exports = {
+    resolveOrCreateRelationPages
+};
+
+FULL DIRECTORY STRUCTURE
+========================
+
+.idea/
+    .gitignore
+    .name
+    jsLibraryMappings.xml
+    modules.xml
+    task_migrator.iml
+    workspace.xml
+_archive/
+    output.csv
+    scripts/
+    testServices.js
+    scripts/
+        query_db.js
+        query_db_pages_with_properties.js
+        retrieve_db.js
+links/
+    2006824d-5503-8086-9699-cb97dbe58644.json
+    2006824d-5503-809a-8ae6-db6eb5d9a948.json
+    2026824d-5503-803d-ac55-fcefaf23a572.json
+    2026824d-5503-80e9-9ab2-df132afcdc5d.json
+    2036824d-5503-8051-b9c2-de1e8304dba5.json
+    2036824d-5503-8079-ac54-e2c02cc6a1a5.json
+    2036824d-5503-80fa-8845-e7ae5ff31495.json
+    2066824d-5503-800a-ba2a-ee45058ccf6a.json
+models/
+    Link.js
+node_modules/
+    .package-lock.json
+    @notionhq/
+    bottleneck/
+    dotenv/
+    @notionhq/
+        client/
+        client/
+            LICENSE
+            README.md
+            build/
+            package.json
+            build/
+                package.json
+                src/
+                src/
+                    (directory contains 36 items)
+    bottleneck/
+        (directory contains 19 items)
+        lib/
+            (directory contains 20 items)
+        scripts/
+            assemble_lua.js
+            build.sh
+            test_all.sh
+            version.js
+        src/
+            (directory contains 19 items)
+            redis/
+                (directory contains 22 items)
+        test/
+            (directory contains 15 items)
+            spawn/
+                increaseKeepAlive.js
+                refreshKeepAlive.js
+    dotenv/
+        CHANGELOG.md
+        LICENSE
+        README-es.md
+        README.md
+        config.d.ts
+        config.js
+        lib/
+        package.json
+        lib/
+            cli-options.js
+            env-options.js
+            main.d.ts
+            main.js
+scripts/
+    stream_db_contents.js
+services/
+    fetch_tasks.js
+    link_store.js
+    notion_client.js
+    relation_resolver.js
+    write_task.js
+transformations/
+    generic_transformer.js
+    sm_tasks_map.js
+
+
