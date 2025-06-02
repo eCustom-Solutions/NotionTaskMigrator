@@ -32,8 +32,12 @@ async function main() {
             continue;
         }
 
-        // Transform to CENT schema
-        logger.info(`🛠 Transforming page ${sourceId}`);
+        // Transform to CENT schemasuccess') {
+        //             // logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
+        //             // logger.info(`ℹ️ Link already exists in store:`, existing);
+        //             continue;
+            //         }
+            logger.info(`🛠 Transforming page ${sourceId}`);
         const payload = await transform(page, mapSpec);
 
         // Write to CENT DB

@@ -12,14 +12,15 @@ const writeToDBB               = require('./services/write_task').writeToDBB;
 const linkStore                = require('./services/link_store');
 const transform                = require('./transformations/generic_transformer');
 const mapSpec                  = require('./transformations/sm_tasks_map');
+const logger = require('./services/logger');
 
 const SM_DB_ID   = process.env.NOTION_SM_TASKS_DB_ID;
 const CENT_DB_ID = process.env.NOTION_CENT_DB_ID;
 
 async function main() {
-    console.log(`▶️  Starting Task Migrator`);
-    console.log(`   Source (SM): ${SM_DB_ID}`);
-    console.log(`   Target (CENT): ${CENT_DB_ID}\n`);
+    logger.info(`▶️  Starting Task Migrator`);
+    logger.info(`   Source (SM): ${SM_DB_ID}`);
+    logger.info(`   Target (CENT): ${CENT_DB_ID}\n`);
 
     let processed = 0;
     for await (const page of getTasksFromDBA(SM_DB_ID)) {
@@ -28,22 +29,21 @@ async function main() {
         // Idempotency: skip if already migrated
         const existing = await linkStore.load(sourceId).catch(() => null);
         if (existing && existing.status === 'success') {
-            console.log(`↩️ Skipping ${sourceId} (already succeeded)`);
-            console.log(`ℹ️ Link already exists in store:`, existing);
+            logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
+            logger.info(`ℹ️ Link already exists in store:`, existing);
             continue;
         }
 
         // Transform to CENT schema
-        console.log(`🛠 Transforming page ${sourceId}`);
+        logger.info(`🛠 Transforming page ${sourceId}`);
         const payload = await transform(page, mapSpec);
-        console.log(`📝 Payload for ${sourceId}:`, JSON.stringify(payload, null, 2));
 
         // Write to CENT DB
         try {
-            console.log(`🚀 Writing page ${sourceId} to CENT DB`);
+            logger.info(`🚀 Writing page ${sourceId} to CENT DB`);
             const result = await writeToDBB(payload, CENT_DB_ID);
-            console.log(`✅ Write result for ${sourceId}:`, result);
-            console.log(`✅ Migrated ${sourceId} → ${result.id}`);
+            logger.info(`✅ Write result for ${sourceId}:`, result);
+            logger.info(`✅ Migrated ${sourceId} → ${result.id}`);
 
             // Record the link
             await linkStore.save({
@@ -52,7 +52,7 @@ async function main() {
                 status: 'success',
                 syncedAt: new Date().toISOString()
             });
-            console.log(`💾 Link saved for ${sourceId}`);
+            logger.info(`💾 Link saved for ${sourceId}`);
 
         } catch (err) {
             // More context on failure:
@@ -66,13 +66,13 @@ async function main() {
                 status: 'fail',
                 syncedAt: new Date().toISOString()
             });
-            console.log(`💾 Link saved for ${sourceId}`);
+            logger.info(`💾 Link saved for ${sourceId}`);
         }
 
         processed++;
     }
 
-    console.log(`\n🏁 Migration complete! ${processed} pages processed.`);
+    logger.info(`\n🏁 Migration complete! ${processed} pages processed.`);
 }
 
 main().catch(err => {
@@ -107,6 +107,33 @@ module.exports = {
             const name = sourceValue.status?.name;
             return { status: { name: name || null } };
         },
+        'Brands': async (sourceValue) => {
+            const brandNames = sourceValue.relation?.length > 0
+                ? await Promise.all(sourceValue.relation.map(async rel => {
+                    // Fetch source Brand page to read its Name
+                    const page = await notion.pages.retrieve({ page_id: rel.id });
+                    return page.properties['Name']?.title?.[0]?.plain_text || null;
+                }))
+                : [];
+
+            // Clean out nulls
+            const filteredBrandNames = brandNames.filter(Boolean);
+
+            if (filteredBrandNames.length === 0) {
+                return { relation: [] };
+            }
+
+            const CENT_DB_ID = process.env.NOTION_CENT_DB_ID;
+
+            const pageIds = await resolveOrCreateRelationPages({
+                targetDbId: CENT_DB_ID,
+                relationPropName: 'Brands',
+                sourceNames: filteredBrandNames,
+                nameProp: 'Name'
+            });
+
+            return { relation: pageIds.map(id => ({ id })) };
+        }
 
         // // Updated People hook to use the relation_resolver
         // 'People': async (sourceValue) => {
@@ -374,6 +401,42 @@ module.exports = {
 //  - Use Bottleneck's events (limiter.on('failed', ...) ) to test retry logic if added.
 
 
+services/logger.js
+------------------
+// logger.js
+const fs = require('fs');
+const path = require('path');
+
+const logFile = path.join(__dirname, 'migration.log');
+const logStream = fs.createWriteStream(logFile, { flags: 'a' });
+
+function logToFile(level, ...args) {
+    const timestamp = new Date().toISOString();
+    const message = args.map(arg => {
+        if (typeof arg === 'object') {
+            try {
+                return JSON.stringify(arg);
+            } catch {
+                return '[Unserializable object]';
+            }
+        }
+        return String(arg);
+    }).join(' ');
+
+    logStream.write(`[${timestamp}] [${level}] ${message}\n`);
+}
+
+module.exports = {
+    info: (...args) => {
+        console.log(...args);
+        logToFile('INFO', ...args);
+    },
+    error: (...args) => {
+        console.error(...args);
+        logToFile('ERROR', ...args);
+    }
+};
+
 services/link_store.js
 ----------------------
 // services/link_store.js
@@ -640,6 +703,646 @@ module.exports = {
 FULL DIRECTORY STRUCTURE
 ========================
 
+.git/
+    COMMIT_EDITMSG
+    HEAD
+    config
+    description
+    hooks/
+    index
+    info/
+    logs/
+    objects/
+    refs/
+    hooks/
+        (directory contains 13 items)
+    info/
+        exclude
+    logs/
+        HEAD
+        refs/
+        refs/
+            heads/
+            heads/
+                main
+    objects/
+        (directory contains 203 items)
+        01/
+            00556426215cf5bc33929c5bdda551b6b4974c
+            b84143508b7708bf60537f574f47df4367691a
+        02/
+            a3dfb56216d4c6d025850562cb7a5562abae2a
+        04/
+            c2536035a34162814754c8c4d547b2f48fdf36
+            c7ed1769b58285371252edbbe3857bc536f449
+            d0f37c6e95ddf4d7406a01f14454d494c66be1
+        06/
+            4249bd687b2c8a3af64b35deba1f23babed3ec
+        09/
+            1ed2da8b896b066b88be75596bed2a07dda615
+            35fd204fd3c4eb7843203768aebed24095b16c
+            60bc107b9af85b02abfdecd9283619f9661661
+            aca5bb763882758e60af4a00c8fb70b030f52f
+            ff6ca80870b5c85367352a494876766d623dcc
+        0a/
+            69c37830108de036285a6d6acd7358d484ed72
+        0b/
+            6b67135ab0e599bd3b13989f4b1fe8a6942f20
+            8ebaa60fb53eea1c5007dd8ef747950891cc2f
+        0e/
+            27da6dcf000be37fe0637ace6de10ee74a160c
+            986376697514bfeb6c5df512801de04e1fa7c5
+        0f/
+            4a2478f88c6513bcf20ceea3f0e9f70f89d663
+            a27a38a33b594d4e1d5d6b67b61c6dd11f5b64
+            d4f90275fd889b3a11a248a671f82f88a2d964
+        11/
+            6c72f293ffcc22852ed5e0e0a611cdd837bc84
+            9849edaf4490c2971c4940b9c51f021128fb6a
+        12/
+            761a733d2494e46b99b5164a82af52b34de44f
+            dd7d867a1bbe41850eb1ef8055a619f3cdbfb3
+        13/
+            566b81b018ad684f3a35fee301741b2734c8f4
+            63310cdc0ed30cd1f137ae5940480791c785bc
+        14/
+            aa63a51086ba6c445b99698ef0fd89005ac2c4
+        15/
+            091046e9b452dbfe2c08f8cad42928e27605db
+            379ef68a59282d60d3cc30fbd0d883fd283412
+            769d4dcff01f334f59ddbede8c7fe505012375
+            7b8ac6a1b2f15c5ccb84b45d58aa6501c7cbb1
+            7c1e36f483de1d5b87cffa9e7680fff31d8f87
+            b7a454b0ff4b0460d36f22735d9d26122e95e9
+        17/
+            183f02ebc6db4bfc1a290dd72fd90e8b4b8a4a
+        18/
+            7335f5e24a0a0550d670a4f11cd815466f1c95
+            bcbf3eeb052ad90cf66251c61fe687cdbf7495
+            f02179d6709edaa8c250046a9b9346a80c91fa
+            f19ad8ac6ef0a8d295fde3a2af063d6720683d
+        19/
+            0e5bc59a98c4b7c84af8b1d23eda74ebf3a6c0
+            a721acc40ddc9299f70a1e80f61b592c8f6763
+        1a/
+            20b413ac0ffb07d6f776d5695946a758cb06f0
+        1b/
+            47b5f6ded143dc17cda850b7ad683e608f9b16
+        1e/
+            4129ac0f63366726ddccd52b970ca57f04fa52
+            bb1a01003b1103709a6b5c5c2b61c9a5a6b7d6
+        1f/
+            34f0e5f2ee74988d8cdacdb21a1d2a6e1138b6
+            4947743e12bb568df82946fd461195b64481fc
+            bd74e0e18d82063549a83464fda30afc569f9e
+        20/
+            5c901030f228e0ee8d51daa540bdd695276899
+            bae4253278abdf4c2e1397a1ef607932d828be
+        21/
+            0b5024d4e4a4afa92fb63c90a8f86950431cf4
+            1b12456e4fe1dd155c4fe9863e9358995dc544
+            414bdf512bc33d918a60a181d409d0ea908692
+        22/
+            162de3a8d50e293e2b91cde3cb0ed3542c42a0
+            b66372f229dd074467c93aafe92c24ff56e24b
+        23/
+            00e4f472fa942b075739d678d707d0f749660f
+            8bfa47b759129465fa78169ae475ee27b8ed38
+        24/
+            643cc37449b4bde54411a80b8ed61258225e34
+        25/
+            676c9a2c7a0978c9cb10f7aecb8adf8933ef93
+        26/
+            ba3560c56de68fb54cbc6bafd77cf1e1c4d20b
+            da36ffdfede134581489002a367edfa7043d6b
+        27/
+            371464cbe2ec7baaf3386a12eea3d193abf0f5
+            39eb1f75fbfb19c96bbd78c10962cae62143a4
+            91ba3d16e550ac0d5d43693966551dbdad4cd6
+        28/
+            00d82ee95adc167f10e116c573e5d059eee483
+        29/
+            5fc2828ce472f1afe767e3ac770b80db945715
+            c670e7f0521b91284a6d8767610721ebc875e2
+        2a/
+            520daeac2767754aec1135f74851bdd5eb6bbb
+            59e95c557dea45c4a69591013c74631cd3183c
+            a2706062b1d4ef51a21abea4dd20efbc0ec72b
+        32/
+            cf1bccb30722edfae6a272ec9ccbed4313ccd8
+        33/
+            2e9a81a81f0feda630e6199922fe5811baf81d
+            df5588d0f4fa9f0e02234dc9fdcc2f88f3c7cd
+        35/
+            7c4bf6d354c3fdc6bfdbcbccda8f2fcb221e36
+            979cf023956566c0f67ea85a884de10ff0d1d7
+        36/
+            b23e943a38cbde2bccac9b17de4809311114d5
+        37/
+            b225414465f11b12208100a49f86484ad6ae18
+            db2befc438b5023002c201b9c63bd34a96b0bb
+            f751ecb77467bfe40ccb8d4a955a3c5e28507a
+        38/
+            373aa7fe66af30f7e968f07723c3449b9ddf3e
+            7f30e5077328ca90eee964e09efbc5070f66fe
+            aa599baffa9b782ede3ebe15cebcae120aa5b9
+        39/
+            676a583b20baf9d3b1d0c32723301e34b46f88
+        3a/
+            68d84fe92d96a181941e20798321713eda4a2b
+            71c2dda9c254a95560f663c2666044161edde4
+            d20c12876976d7c82c067507a4499f8197e5bb
+            e25f6e46c234c2cb5762108f19d5dcb369e3bf
+            fbbe496fded4f078e97796ba14ef60b0eb6769
+        3c/
+            400230e0512b49ed0f901da54dcb6766892217
+            d440e28a2cab2b02a965e75fcf31b8087cf591
+        3d/
+            447c13b2360c51ce26bd123ab5251584ed36b0
+            bfb4ab2a6c20daed04ad4c4c377005751f16ae
+        3e/
+            ce48d85fd17fe69d9db2b6bb6f1651707c347a
+        40/
+            8fe4457b80dab096cdd3d2fdcb92a5344c1a61
+            ccdade1c6254f8d3b86b6de521023701b782c2
+        41/
+            14f688394e150251b3846bd349dd1c21ed145c
+        42/
+            c58af3c242210a91055309670ac327494a8573
+        43/
+            724a29159ed6c46de581b09ee3e836e50a3a9d
+        44/
+            45ec33bdc04efafffec18241c2e466f5803ed3
+        45/
+            3a20eac8cc204d87697780d67beed6b5bab6ac
+            ae5245ae631b5b93724b2e84cef75b589f1ab3
+        46/
+            9edbb1adb8a4b424ecf0ed9cef5c2474c50d29
+            a9b21f8fe2dceda2c5315fb14af1bdf5dc1160
+            c77a56a27440495f88dad6bf18e214cb5772d0
+        47/
+            695dd7883344419a3e33c3d654ddc81a07c726
+            e9034455d55e43eb31fbbf2c61f4c8b4d1dfc9
+        49/
+            5ddc746a90bb21cdffb598ec2a0b5df902a4ef
+        4a/
+            1821cb28e5138b852eb28f2619af28aa5dab7b
+            2154f21fa33018511e7bd0fdc2ba1ca5f9e741
+            3e1b79ac354a80e85b96cb3c12c791babd4074
+            adfc659f9e8eb502638de98f2cc0247b5d9e88
+        4b/
+            8baad7390a0a037f538b44a6c6a3c7f28fba6c
+            ea612cd6ca04ee897c8cdfb683c95fcb176818
+        4c/
+            2767f1b95fdec4ac6be366f7a7cda6273ff097
+        4d/
+            4794ab5711be54f4793f23793a6f46a73cad8b
+            67bedefad7c48f71669e4c7ec82cf3ea53a5ce
+            8df73276709cfccd163f275c40bd0b7f949fff
+        4f/
+            025e9ee5dd2b9bacc6bc20db96b1d22d9608bd
+        50/
+            5bdcd9f68483d88eac00adf41020a7020556dd
+        51/
+            21761ca481415d6bb72b34d52cbd12ef5dea8f
+        52/
+            878e14c9f33c018786ae8fc9da0b5513f67853
+            a44f78d1d729d7b089ae0c1318fa1eefaf1814
+            b28da43b8c6f4b533b1712b4db1b6f5623aba9
+        53/
+            22b102bb647cbd710d63fc4cb9ebe128b9e9a8
+            298568289d1787827e8d1cb6d597733481dcf0
+        55/
+            6e36548688477c9c42ab4d5ec8d686e4c54c6c
+            9c5e463a3b7d58cc9e9f444404c6c932e3fcf2
+        56/
+            615f08843288d434d8d9e0eb6311ad20a5b5f8
+        57/
+            1b528e28bbb53c8c971358c5ae025495450e0d
+            8a219cfc53e794fc3236e7ea84555ffec85ad7
+            b67b0720e157a08f18cedfb6f77fa8da2d294e
+            d56e32882a48050cecd8af0adf40b9f9331538
+        58/
+            18fca5b67c1b502e790c76477b55a2365d6939
+            26d906569a07a36fa48f11783a38a48fb25182
+            cb8fb5f5ad09c125f9ba1d6163450c3bd81394
+            fc68d8bd7f2c466cb1b8cde9ab4bd95ed70cc2
+        5b/
+            28404f73261c490b20270844a0b6b155773bb9
+            8601c7383149d3e85b89d8f36e77b385522bc6
+            ba97e0f9b4a670e61c103b310d7c309f6624a9
+        5c/
+            20034394b2537da7db1724a8c752ec0ffaf340
+            21ab6ff700b61d0885a88a8ee014ac6cd62962
+        5d/
+            dd66dcdf3f40d536d3c67eb3697fb725633355
+            ea6281d0ae4de5654b85026b6917e5f16a08fb
+            fb38704a63aafe4f61e3ac22e87d21239c93aa
+        5f/
+            6752d76a3a7badc353ca40592f9e6a9d22d22d
+            8694f10f5c3ac919962435f51efad9404fbcf6
+        60/
+            011972e39a5fad6b610fd83842598aa3c3ebd1
+        61/
+            486191136bafa1c7c67f4aac2391ec72bd919a
+            6cef0feca4fb785c474ed6e20e79adf5900af7
+            b9c39afaacb65c30ad39277e2dfb16e23754d5
+        62/
+            d9c1d6135543939ecffa405040d6c9e56e4e00
+        64/
+            92337eaf8a102b280f8c81df1a289ab1ff6be3
+        65/
+            1719f1a4e1734e93f4115dfb624cf32c5865b5
+        69/
+            0aa34fc8a0b28d9dec764f896b3875b9aa8ed3
+        6a/
+            72c709ed55a7f3093e7c26831175511970264e
+        6b/
+            ef45bf52593c77ebd85b2368f120726cb6196b
+        6d/
+            1f64b0e59a4ba387984ec11c3d056a7deec047
+        6e/
+            4100bdb122d470723ea7f7b410c378bd347c8f
+            41b82e31d7f7ef23c702055b258d660398ab34
+            a78ac8023579180fbabadf2ac4085a7370afc7
+            c1a5b112772c681d041f254b53c8c6b432ebdf
+            e35ea56ba162cc04b60efbb75399301f03a6a4
+        6f/
+            3e6f41dc1b428cdcaf1746f3d33d892ffa03ce
+            98a6dc6739dc7f1ddf5edeef456fb744594d34
+        70/
+            c3d3f2d482a6c24e32c522e8d6ae1551b57292
+        71/
+            1fbc9ce5caf4f63a5050f4e18bafd92752f8fa
+            ffdd0a1847cc4e0dc94574004a1ad7fa846a8b
+        72/
+            b2896326d08c7c6b8d4cc1a07187ca4710abd8
+        73/
+            1155a15e38fd6902aa461709c4ea7c1cd40cb2
+        74/
+            c6f4686e9e7b8599305c853c774a0f614b1bae
+        75/
+            30ceb728e3eee2e654d894e168dc9504de4341
+            5760642e07923db6a1f01fd87fac955865119d
+            671dab08682dbc8e0555de1100e6637e95bcff
+            70516fd35b74b1e5e294547a3824cfee6a1ba9
+        76/
+            759c2d7912e9a929b7c3f230cebef7e06d6577
+            8c53927f1e531adad241538a318479792567c0
+        77/
+            a063a7cb7dcfdffb9e5da518a8261ca7d3bbfb
+        78/
+            02bc8d12459961fd51c9dc9e94d28380d0a41c
+        79/
+            90277cba260520910452bbd607cd5e5d11e679
+            b88945cab3b8602413f0dadc995602579f954c
+        7a/
+            7fcb207e253d72dc9ec33a930dc975ffbce1fb
+            fc96eece8d742982c000b5c821b23868b0f6ad
+        7d/
+            8a4a1e70dbe138ad0e437490e9cef245a3f87c
+        7e/
+            244fd66510fd3213e7443a924ac7c1857f9898
+            bae3d70483c3878d583ee7ce50d6a8f04e9546
+        7f/
+            a18869aa69a54f47576345e332b398422e61fa
+        80/
+            316de80ee6e339601d7b4174bb281d1cbf3fd9
+            840ac3e11b651a2f0808931a09aeca0e8af2dd
+        81/
+            a2f02b79f09354e19b3efb1e5d4b39fb21a3b1
+        82/
+            04ece5c01a2b6b84b6f13a1434f70aa8d393f5
+            2a26d8c8bc831399c1c743a9f962b6b7ea0ccf
+            405dcdf6d04c62b64d28efcd0b2aa69d620b9c
+        83/
+            3d0e57036648c2a4809b74142b470ae00bc70b
+            5fc314528e99ad0fa3d1ca7ee8b3570b35840c
+        84/
+            4085e2f5598717838950f10bf7243cb77a1c91
+            ab35e82fc757502aee872b967491ecd314e1d7
+        86/
+            4ab28591c2194163f4db5d64df9699673a8732
+            82ade9d93705bcd420ba77d8fa1ea41a0b6180
+            86191f0823358f3fca58ca95b14855624a5bf5
+            dc7bb98374435936798370aaec80656c03e40a
+        87/
+            75799e25f1ea03cd113b8d41f115729613c967
+            88c8e511e92cb169dc20f2cf7dfdb5698acaa2
+        88/
+            863250fc9aa81e146caa853574efc9ce74687a
+        89/
+            2e4973dc72e9bb9da309284b697e086a83b746
+        8a/
+            90c8c25cfb7a3f1e48476cc926fade55114864
+        8b/
+            0483e271b08a116a8ce1a4fdd9c2f7aba2954e
+        8d/
+            498f3a206d1c3ec097c1dd74e5a89bbbb28263
+        8f/
+            bd1954886428cda7e0050f94cd94b4b64ad957
+            d1f861465d7599ab272016907061ab282774d4
+        91/
+            c559833ab7b0812aedd9221cb89c87fcd321bb
+        92/
+            86b1bdb0ce95db7a9f93b16dd65e75ad5b99e3
+        93/
+            053546fd99825c9a46ee81b255edb309b6f94c
+            14ffef8e3f64bc3db122d92c15b202abd2acfc
+            381d9d8f0f8000ee0a8dc963420a25685ac76e
+            4ee94ca8e80a71342b4d5ec34e73a202231f7a
+            64c7e5134226b71f9635f5c73c9af5b5a39d85
+        94/
+            649022113ce77657ff33553a9932b019d43d8c
+            b794c9bf4641b0a5e344851d1bb22bfd782a57
+            e854da1c4c07a31823aa47c5c9c4c8ff2c23f7
+        95/
+            3ae54bab0a06b696c4b46e552ddb185de13da6
+            beff1e708a057d908d287af148e191ec5b9fb4
+        96/
+            2b120cfbb5d1d24751f012625b47def11eb4f4
+            467eb1e64cb1bb2ed4873a0058a3643795f155
+            52413410a929b92ee9a6403bd36cdd6a1881db
+        97/
+            dad5c765908ac9a660d7b1b8aefeb9a5263b60
+        99/
+            b47cbb56d18c89c85c7598fb84c050b7bb92d9
+            b725023bf1cabe4f455b1e3261dfe4eb5a3577
+        9a/
+            2494c8805b35941b7b68a513d10de1f8f50d10
+            f129306e502c0444d3d8492029e217b1632363
+        9b/
+            8ac1422374b24d0938caf63d599e156f92577e
+            ad6a8f2aefb9a60f95e01977dade61d7702c5b
+        9c/
+            b9e80217e515d7a304e87fd314ffce607c275f
+        9d/
+            326ffdaae22c41c92394ff45e326bfcbfbad2a
+            ded30cc6aca3741ede5840ceb9b9669f0c0f24
+            f45135fe1ed0932b289a8faeb03f215ee9fccf
+        9e/
+            686dde1c210bdae44b4829357204af7c5f7510
+            a1484ed95cd39ec6df980f5a5c7786cb7669d7
+            feebe7c0b50052b0e60248343626d1aa0117c2
+        9f/
+            3afc37bc3dcea789f0d51225c4a77f97aa3d5d
+            c31470e7b06fac7750c37d64a65127a9592c31
+            f3c010fa705a7ff8c47d8f8d36d90d56142ca2
+        a1/
+            77b6540ba97daa9d6e98211614e926cf28b85b
+        a3/
+            bc0c88ea772c6e309ce3d930f7672d29235fe5
+        a4/
+            8c3c156ea14ba6d94bf766c7cb03bd9bbb8836
+        a6/
+            59293bb0d37fb833d7bd0322716cda4a746685
+            dbdd709d7b96bb83d14856c2db16a417222847
+        a7/
+            14391ae3eac29f15bf31bc1f91722659890e9b
+            619c3d69b50f50a3bf9e4ddba864bde584b916
+        aa/
+            26e0dd14375c171612bb2a62c5b1ec62b195e3
+            5f44fb66ed7ab9466badfba8b0befd06c0308d
+            b14af794655c720e4205f54f3f37a809a29e07
+        ab/
+            7f01437bfcae9554569c4f9bafa20d2924ba25
+            cfcffb9e2cad096b7f67133887f8a6043702f2
+        ac/
+            0e34465b9711dedd568cdb4a3a4251ddafac52
+        ad/
+            30e39a21efa77a2cc5923286365b5475228708
+        ae/
+            370b67f4613dbe85176afd91f84bab3ba3c00c
+        af/
+            c68929278328fef985a8a38578fc5d2489201c
+        b0/
+            1f648ca422ad65c8a350bfb9dc8fac289dc0c0
+            26a9d961539868d6539f091fbb5526c7172c1c
+            844e5f62cf4373410c7668fc7c57998ca6c1fe
+            8b604f40a1c345d96188fc4bddbae4736e8aae
+            b5576bea40f28fa5c75ff0cca545d9bea4cde6
+            d8adb81ff8ba3fe24aa41c03f46ed6f4e7d43a
+        b1/
+            10704ea1b0b91759dd0812fd8d0451186eae1c
+            12f69349435189d1745fc92553debc8065ba31
+            621a428ab1657ed2e88942d69964c624691525
+            6999761f0b66b34122408a3622b47a76bbd45d
+            a5f1813ccd69b319ec1f26d6a9cbc36ee3af2d
+            bac2d7a01ad4bf70b348b0a95f680d6eee2ffc
+        b2/
+            0022f0e59ce0cb0222635a359ac388f79d1734
+            b3d8a98d00e5e6f74c97531b9fa59179cf14c4
+        b3/
+            9162ef1c31136db379b26c826fdb7b7b123c53
+            bb65a959d17b4bd349323bb7bfb58704361a3d
+        b4/
+            69a654914bc93b4c680e749cce6e0262f9bba7
+        b5/
+            63ae3616d30a1e3557965641451c4941412bee
+            91f6f263f7aa7c24ad98cea05ef2a8f8f92296
+            de76aae311b9ecff1e2be919d8b2d36575ae82
+        b6/
+            30077281dceb0e96c3a9291b55a7e84d1e6cb1
+            62fb1e246ed86ce7016b6c59ca5f36936da2ab
+            dd7e7939231518bfcdf4fe4ea6ea1955adffde
+        b7/
+            190abe3bfa65c0a316831053dccd532fb33ed1
+            2e87ee38b2f5ce7b1cee22eed4e178ddd6e5e3
+            35480b77c481afa5afb3e6020bf4fb264a5654
+            fd75d2182d1458312dd73c2e83a9581d920627
+        b9/
+            11b26eea3d228f3685129abd03c41f1b257ee9
+            361ad63a4b557ff8b7d6aab34b1ee2e85da10e
+            53bcaf6b2b3489efba3883d1f3bf146f76c56c
+            8563d2ea724ae7245b1b0596e9c19182b863cf
+        ba/
+            52aba1c392436f2b6c8e998ce37da3b1ae3f68
+            7b6da6ecd4da012378782ec8bf52acc0a21771
+            c891bdde7273729b003c9e2228a5062112f6c1
+            ee3bc7343ed90aa05b17fc88b581054c54bca3
+        bb/
+            8d52f8481ce7fd3ab1b433d883a9cbac32c12a
+        bd/
+            cae7eb6c63e09f97f56e4280a50f383db56267
+        be/
+            98311a6c6004a98a445f5ae48c47ea25301caa
+        bf/
+            064a71442e13ddcb8769ae2f5e383a24dd0972
+            4416d6c22d0d101aa37462af25670b7bf1b027
+            d28960a25cf64e10fc7b204eae124350a99e56
+            f574748e55fb37c3adc34859ffa58c8f558dbe
+        c0/
+            076e677a6bca9678d9b31b884df07b4a33a5cb
+        c1/
+            7cc49904114c60b94d6b3cd8eefce571decdcf
+            95367f4b1e19c7d95b08b573780e4bae436dce
+        c2/
+            4adbb89c65fa5cadf0c2e0630027d6f19eded3
+            82f93b2ed41cf1f20e1bc2f985c35826dbf888
+        c3/
+            2dd8680f59abea07a76d5a26d342c44146909a
+            82c3dd81bffde082bcc8c05dba7de3b9adfaad
+            90a09fdc4c747aa6db574007e6dc9e8d27588a
+            a190b0d8f14fc7917797ecac6cd9084ef25f05
+        c4/
+            30ad8bd06f2c6495641c83b78c910f2f53c837
+            604850304f7406db36f9c7fca87802b8bdd0a3
+            64da1451be42a833ca27c9b15ee886839eb74b
+            6fff56ec3a2e1eb2e7e337d02b02b534ee7516
+            aa2653715bd41d3b0a2270e91a26c1f4f2a8db
+        c5/
+            064dd38ba2961d2b78ebc96a1ba29b527864e3
+        c6/
+            237514ec27445f0b65b267be8e0acba2779ee9
+            5ed77ff7781689b587977392de062e66da6591
+        c7/
+            7a815842152ef63e6b2bac765c13ab0b50b650
+            7b7d7f0089bce653ace613bfd553655656d19e
+        c8/
+            34d093e9e468c542f504c07af8b2c25349d0e5
+            546706cc1730435921d5ae42c3c923550ace4d
+            b4e2f3054d74ab59a201e20ab6e5662106ee09
+            f4136ecdd16fb3d1da465bab2a3b722d167835
+        c9/
+            6b31a43cd350f22f5c5c350efb470af43e27cb
+        ca/
+            571a1001e3dc25de03295619454e7d4a5febb0
+        cb/
+            0ff5c3b541f646105198ee23ac0fc3d805023e
+            32e7be28d1bbc8adfd3732697585e530ea65f9
+            d74bf9326406d08e982675a2464ebfd8d99a00
+        cc/
+            25d0e6a6757d8f473e790857561c01df227b3d
+            a20627056fbf9c23a60fc136dce8ae8be50e94
+            d4772888dd5a4a53936949f67dc9da113c2b6a
+        cd/
+            204d3e7e2fb6d37b046419a7fe723bb11d4170
+            fca4452741d7e394fc35812df5504ec3234b9a
+        ce/
+            194a62330e5ad431f1cb4852be09384a1bfdee
+        cf/
+            f8c753cec4c77372928f0e46e0402919a363ca
+        d2/
+            3208fbb7168875464dd7aaff4169c37be615ea
+        d5/
+            34a9edfd8a98d75195ca43d4ff90f62c14da31
+            4558efc95cbd048f84c056b3b3ca5aa92f678f
+        d6/
+            09ecd73f4f64414429033c898ba4f6b1d7e27e
+            14abf0506f7483ce07b9d1830f5d2d3d5a9958
+        d7/
+            69eb6a90e521b31057b5ced956b543a64c2dbb
+        d8/
+            0724eea8dace0a27d80054bf28cd6b7856fa58
+        da/
+            3a8bc23743cece5bb44d5b6513fb1a1f515090
+            9dd123e88dcc48f0bae52af2cfb23cdef169e9
+            f89fe4cc019452843df9a050b6c81abe838d07
+        db/
+            4c2cc97b64ab05d7df88b2a2e8d50ce29339fd
+        dc/
+            25b3326afca9566d4969af595b40c23788c9bc
+            5943e8ab104d5d1b8886a680fcb0bc3a82b15d
+        dd/
+            21a878fae87c391174e07e84cfe67ab8bf3f90
+        de/
+            9dbbad9795b5d00f440c918f0007f8f008b484
+            b09926d9fdd00c2a017f7a4858dfbba1dad672
+        e0/
+            3fc95fa0d2cb9967c994841a84a7dc3073ee04
+        e2/
+            34f37d59a0227f9a5fa8d63d1a939bf92afab0
+            dad3b3ad319d38d1e61d4d476f5361e34639c5
+            ed2fd7b1f855ba1487b7fb0eae30a37723eb87
+        e3/
+            38faa32b78e8bd6a19d9e34b98c3d9e60d49fe
+            753a1affd22500c9688bcdabe05a10b97df131
+            faa2ac5ccf3cd9979d49fe9f9881e079f4c293
+            fac84179a107939a8e19ea933d47d29a0fafc1
+        e4/
+            c58d6b6c475340253c5f9d6bd43bc2efb550b5
+        e5/
+            5f6e197344f6fc8559e0cc2a3c5ae977b21021
+        e7/
+            120e3d0220f502a5912dd59d295346557e4542
+            d07a3cb33d854fa80425f911baf88f174db6b3
+        e8/
+            092b21d0997d569efea2d059a4d5b50027df97
+            13c1891905dce9819a38ff704416e53cdd3b6a
+            43257e940c1514779a3d56e68a6c0d2b11ee6c
+            e80ca5ef64fa0580f2d6af56237ae0074e118f
+        e9/
+            fa5a27d9afb876e431621fe19f0272d5b7a360
+        ea/
+            1c775bde7846b5ac5fbaba16511c855c6dc080
+            f1303158e65e5eb92e27e9cf9a303e2eca8f33
+        eb/
+            7a93b79e3f15d42c711dfa12661d415460aa2d
+        ed/
+            413eae4a2aaf992ef4c8c29e90fe0b54ef50f7
+        ee/
+            dc342655e6c79c8a9cac81383a4001c63c1067
+        ef/
+            105d892eae4ae41d53be230aea8bd77c622701
+            ed6ee289188680953c38eb87aa4fbf2c15a8fe
+        f0/
+            e8fcd510befaa9ec4a5742353332faf3d79d09
+        f1/
+            4a74b3ac9def9cdaeb160338209a4c6b913219
+            9122b13a65af000b0d14e9d14ced9bcfeb8d31
+        f2/
+            676a04de85eaa4d82c8f7447d436ed4034e5a9
+            f51b09d2e614e98b2b7a834598824bded09788
+        f3/
+            b90a0638c8431088f52ebac61b11ffa74b1be3
+            cfad3a406c500ad9e739aeb64d644ea384c14f
+        f4/
+            601d78293e645e49ecce2b8b6026b1152a2e33
+        f5/
+            1eee4a06132a33a832c55b1d018c6f69072649
+            2892afc0b045655942cf34e54ba3b9a892d253
+            3401715cb634592d1aebbe2714cfc9c34676b4
+        f6/
+            31eed683221f2cc639cfbc81f58f23e747ce41
+        f7/
+            7bafdabbf767268985baffd8fa9a6a4be59627
+            b3e245fccec7de98d0b6c1f463fe0d0827afd8
+        f8/
+            55cc4d3c772de4e71faa6a38d60e91c8d44301
+            9b85f41b5ee8f1b49dd02c0d3679b01c09cb41
+            d3dc6533d41c156734e184b88e5385e50a3346
+            eeaff6e90907efcc1c376f3e8385916002f7c9
+        f9/
+            7604bc3e3d865b41ec195a9be817048136c106
+            bfec1977ead1bf2ef9388a224f13bbfc65493d
+            ced26241c3d9024841df9df981e9b495179b24
+            e77c346edbe4497d5776a1bb878926066f0c5a
+        fa/
+            81c3f4932f1c3594635eb2a06adad0b795a4a8
+            f68712f36828661058c94c510cbc9c40bb241b
+        fb/
+            72201db6a110eed57c6d28ae844e5855c02886
+            883168f8134e86cbd5601df2db9bc92c43ec31
+            d2bec9e39c4e42d428591310aff89c97520a2a
+        fc/
+            04a068a943a95281b3034cb4cb948f0bbe43d2
+            ae738f8505d41f188b8df041126f9026f41e22
+        fd/
+            be90d86cf382f316e0f4ecf360ba03f2c3abbf
+        fe/
+            11df5552cfdd861b8e84adc89b98dbb1405ac3
+            269ba70a51a9a9326da8c61ebcaaf5b8ba4fd8
+            91cceda9f26bd260a64ae915e2faea8d6c64c5
+        ff/
+            640a15add3c2b6721cfdda80a2c9d638a6b7fe
+        info/
+        pack/
+    refs/
+        heads/
+        tags/
+        heads/
+            main
+        tags/
 .idea/
     .gitignore
     .name
@@ -656,14 +1359,7 @@ _archive/
         query_db_pages_with_properties.js
         retrieve_db.js
 links/
-    2006824d-5503-8086-9699-cb97dbe58644.json
-    2006824d-5503-809a-8ae6-db6eb5d9a948.json
-    2026824d-5503-803d-ac55-fcefaf23a572.json
-    2026824d-5503-80e9-9ab2-df132afcdc5d.json
-    2036824d-5503-8051-b9c2-de1e8304dba5.json
-    2036824d-5503-8079-ac54-e2c02cc6a1a5.json
-    2036824d-5503-80fa-8845-e7ae5ff31495.json
-    2066824d-5503-800a-ba2a-ee45058ccf6a.json
+    (directory contains 209 items)
 models/
     Link.js
 node_modules/
@@ -720,6 +1416,8 @@ scripts/
 services/
     fetch_tasks.js
     link_store.js
+    logger.js
+    migration.log
     notion_client.js
     relation_resolver.js
     write_task.js

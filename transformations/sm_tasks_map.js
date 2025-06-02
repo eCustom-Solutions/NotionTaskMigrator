@@ -45,6 +45,14 @@ module.exports = {
             });
 
             return { relation: pageIds.map(id => ({ id })) };
+        },
+        'Link': (sourceValue) => {
+            const firstFile = sourceValue.files?.[0];
+            const firstUrl = firstFile?.external?.url || firstFile?.file?.url || null;
+
+            return {
+                url: firstUrl
+            };
         }
 
         // // Updated People hook to use the relation_resolver
