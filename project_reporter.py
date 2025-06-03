@@ -8,9 +8,9 @@ from pathlib import Path
 # - Output file name or relative path within the parent directory
 CONFIG = {
     "exclude_paths": ["node_modules", "__pycache__", ".git", "ignore_this_file.txt",
-    ".DS_Store", ".idea", "data", "_archive", "links"],
+    ".DS_Store", ".idea", "data", "_archive", "links", "links/tags", "objects", '.git'],
     "exclude_extensions": [".pyc", ".log", ".DS_Store", ".env", ".example", ".json"],
-    "exclude_files": ["secrets.txt", "draft.md", "index.js", ".env", ".gitignore"],
+    "exclude_files": ["secrets.txt", "draft.md", "index.js", ".env", ".gitignore", ".git"],
     "output_file": "file_contents_report.txt"
 }
 
@@ -45,10 +45,25 @@ def write_directory_structure(parent_dir: Path, out_file, item_limit=10):
     Write a full directory structure (no exclusions) to the output file.
     If a directory has more than `item_limit` entries, summarize instead of listing.
     """
+    script_path = Path(__file__).resolve()
     out_file.write("FULL DIRECTORY STRUCTURE\n")
     out_file.write("========================\n\n")
 
+    # List files in the root directory (excluding excluded items)
+    try:
+        raw_root_children = sorted(parent_dir.iterdir())
+        root_files = [
+            child for child in raw_root_children
+            if child.is_file() and not should_exclude(child, script_path, parent_dir)
+        ]
+        for root_file in root_files:
+            out_file.write(f"{root_file.name}\n")
+    except Exception:
+        pass
+
     for path in sorted(parent_dir.rglob("*")):
+        if should_exclude(path, script_path, parent_dir):
+            continue
         rel_path = path.relative_to(parent_dir)
         indent_level = len(rel_path.parents) - 1
         indent = "    " * indent_level
@@ -58,7 +73,8 @@ def write_directory_structure(parent_dir: Path, out_file, item_limit=10):
 
             # Check contents of this dir
             try:
-                children = sorted(path.iterdir())
+                raw_children = sorted(path.iterdir())
+                children = [child for child in raw_children if not should_exclude(child, script_path, parent_dir)]
             except Exception:
                 continue  # Skip unreadable dirs
 

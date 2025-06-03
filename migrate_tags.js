@@ -14,7 +14,7 @@ const transformTagPage = require('./transformations/tag_transformer');
 const { writeToDBB }  = require('./services/write_task');
 
 // ── CONFIG ─────────────────────────────────────────────────────────────────────
-const DEFAULT_LIMIT = 3;
+const DEFAULT_LIMIT = 99;
 
 // ── Environment / Target DB IDs ───────────────────────────────────────────────
 const GLOBAL_TAGS_DB_ID = process.env.GLOBAL_TAGS_DB_ID;
@@ -50,6 +50,10 @@ async function main() {
         process.exit(1);
     }
 
+    // Fetch source DB name for richer links
+    const sourceDbMeta = await notion.databases.retrieve({ database_id: GLOBAL_TAGS_DB_ID });
+    const sourceDbName = sourceDbMeta.title[0]?.plain_text || '';
+
     logger.info('▶️  Starting Tag Migrator');
     logger.info(`   Source (Global Tags DB): ${GLOBAL_TAGS_DB_ID}`);
     logger.info(`   Dry-run limit: ${limit}\n`);
@@ -69,6 +73,14 @@ async function main() {
 
         logger.info(`🔎 Processing Global Tag page (type="${tagType}"): ${tagPage.id}`);
 
+        const targetDbId = TARGET_DB_IDS[tagType];
+        const targetDbMeta = await notion.databases.retrieve({ database_id: targetDbId });
+        const targetDbName = targetDbMeta.title[0]?.plain_text || '';
+
+        const sourceType = tagType; // migration type
+        const tagPageName = tagPage.properties['Tag']?.title?.[0]?.plain_text || '';
+        const tagPageIcon = tagPage.icon?.type === 'emoji' ? tagPage.icon.emoji : null;
+
         // 3) Read its “Related Global Tags DB” relations array
         //    Each item is { id: <relatedPageId>, ... }
         const relations = tagPage.properties['Related Global Tags DB']?.relation || [];
@@ -78,7 +90,6 @@ async function main() {
         }
 
         // 4) For each related page, migrate it into the target DB
-        const targetDbId = TARGET_DB_IDS[tagType];
         for (const rel of relations) {
             if (migratedCount >= limit) {
                 logger.info(`🏁 Reached migration limit (${limit}). Exiting.`);
@@ -104,10 +115,12 @@ async function main() {
 
                 const page = await notion.pages.retrieve({ page_id: sourceId });
 
-        // 4c) Build a create-page payload via transformer
-        logger.info(`   🛠  Transforming page for target DB "${tagType}"`);
-        logger.info(`      Passing tagType to transformer: "${tagType}"`);
-        const payload = await transformTagPage(page, tagType);
+                const sourcePageName = page.properties['Tag']?.title?.[0]?.plain_text || '';
+                const sourcePageIcon = page.icon?.type === 'emoji' ? page.icon.emoji : null;
+
+                // 4c) Build a create-page payload via transformer
+                logger.info(`   🛠  Transforming page for target DB "${tagType}"`);
+                const payload = await transformTagPage(page, tagType);
                 payload.parent = { database_id: targetDbId };
 
                 // 4d) Write into the target DB (Brands/Verticals/Departments)
@@ -116,9 +129,13 @@ async function main() {
                 logger.info(`   ✅ Created new page ${created.id} in target.`);
 
                 // After creation, retrieve the new page to log its icon
+                let targetPageName = '';
+                let targetPageIcon = null;
                 try {
                     const destPage = await notion.pages.retrieve({ page_id: created.id });
                     logger.info(`   🖼️  Destination icon: ${JSON.stringify(destPage.icon)}`);
+                    targetPageName = destPage.properties[tagType === 'Brand' ? 'Brand Name' : tagType === 'Vertical' ? 'Vertical Name' : 'Name']?.title?.[0]?.plain_text || '';
+                    targetPageIcon = destPage.icon?.type === 'emoji' ? destPage.icon.emoji : null;
                 } catch (iconErr) {
                     logger.warn(`   ⚠️  Could not fetch destination page icon: ${iconErr.message || iconErr}`);
                 }
@@ -132,7 +149,17 @@ async function main() {
                     sourceId,
                     targetId: created.id,
                     status: 'success',
-                    syncedAt: new Date().toISOString()
+                    syncedAt: new Date().toISOString(),
+                    sourceDbId: GLOBAL_TAGS_DB_ID,
+                    sourceDbName,
+                    targetDbId,
+                    targetDbName,
+                    type: sourceType,
+                    sourcePageName,
+                    sourcePageIcon,
+                    targetPageName,
+                    targetPageIcon,
+                    notes: ''
                 }, 'tags');
                 logger.info(`   💾 Recorded link (${sourceId} → ${created.id}) under "tags"`);
 
@@ -144,7 +171,17 @@ async function main() {
                     sourceId,
                     targetId: null,
                     status: 'fail',
-                    syncedAt: new Date().toISOString()
+                    syncedAt: new Date().toISOString(),
+                    sourceDbId: GLOBAL_TAGS_DB_ID,
+                    sourceDbName,
+                    targetDbId,
+                    targetDbName,
+                    type: sourceType,
+                    sourcePageName: '',
+                    sourcePageIcon: null,
+                    targetPageName: '',
+                    targetPageIcon: null,
+                    notes: 'failure during migration'
                 }, 'tags');
             }
         }
