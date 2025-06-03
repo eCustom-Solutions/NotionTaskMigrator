@@ -10,12 +10,14 @@ const notion = require('../services/notion_client');  // still correct
 
 const SM_DB_ID   = process.env.NOTION_SM_TASKS_DB_ID;
 const CENT_DB_ID = process.env.NOTION_CENT_DB_ID;
+const GLOBAL_TAGS_DB_ID = process.env.GLOBAL_TAGS_DB_ID
 
 // Debug: confirm values loaded
 console.log('cwd:', process.cwd());
 console.log('dirname:', __dirname);
 console.log('SM_DB_ID:', SM_DB_ID);
 console.log('CENT_DB_ID:', CENT_DB_ID);
+console.log('GLOBAL_TAGS_DB_ID', GLOBAL_TAGS_DB_ID);
 
 async function* streamDB(dbId) {
     let cursor = undefined;
@@ -36,8 +38,8 @@ async function* streamDB(dbId) {
 }
 
 async function main() {
-    console.log(`▶️  Streaming SM Tasks DB (${SM_DB_ID})`);
-    for await (const page of streamDB(SM_DB_ID)) {
+    console.log(`▶️  Streaming SM Tasks DB (${GLOBAL_TAGS_DB_ID})`);
+    for await (const page of streamDB(GLOBAL_TAGS_DB_ID)) {
         console.log(`SM Page ID: ${page.id}`);
         console.dir(page.properties, { depth: null });
         console.log('---');

@@ -4026,3 +4026,60 @@
 [2025-06-02T21:38:55.622Z] [INFO] ℹ️ Link already exists in store: {"sourceId":"15a6824d-5503-80f7-977e-cd97f3b39046","targetId":"2066824d-5503-81c7-9df8-ccde8a4aeda0","status":"success","syncedAt":"2025-06-02T21:29:23.040Z"}
 [2025-06-02T21:38:55.622Z] [INFO] 
 🏁 Migration complete! 25 pages processed.
+[2025-06-02T21:42:01.305Z] [INFO] ▶️  Starting Task Migrator
+[2025-06-02T21:42:01.310Z] [INFO]    Source (SM): 1136824d550380f9a578cec5e8a871d0
+[2025-06-02T21:42:01.310Z] [INFO]    Target (CENT): 1906824d5503817f868afa7f961a6f8f
+
+[2025-06-02T21:42:05.478Z] [INFO] 🛠 Transforming page 2066824d-5503-8090-b0e8-e1502d6efb46
+[2025-06-02T21:42:05.967Z] [INFO] 🚀 Writing page 2066824d-5503-8090-b0e8-e1502d6efb46 to CENT DB
+[2025-06-02T21:42:06.089Z] [INFO] 💾 Link saved for 2066824d-5503-8090-b0e8-e1502d6efb46
+[2025-06-02T21:42:07.989Z] [INFO] 🛠 Transforming page 1846824d-5503-808d-a4f5-c549c2cc49d2
+[2025-06-02T21:42:08.324Z] [INFO] 🚀 Writing page 1846824d-5503-808d-a4f5-c549c2cc49d2 to CENT DB
+[2025-06-02T21:42:08.493Z] [INFO] 💾 Link saved for 1846824d-5503-808d-a4f5-c549c2cc49d2
+[2025-06-02T21:42:08.842Z] [INFO] 
+🏁 Migration complete! 2 pages processed.
+[2025-06-02T21:42:37.226Z] [INFO] ▶️  Starting Task Migrator
+[2025-06-02T21:42:37.231Z] [INFO]    Source (SM): 1136824d550380f9a578cec5e8a871d0
+[2025-06-02T21:42:37.231Z] [INFO]    Target (CENT): 1906824d5503817f868afa7f961a6f8f
+
+[2025-06-02T21:42:41.839Z] [INFO] 🛠 Transforming page 1846824d-5503-808d-a4f5-c549c2cc49d2
+[2025-06-02T21:42:42.080Z] [INFO] 🚀 Writing page 1846824d-5503-808d-a4f5-c549c2cc49d2 to CENT DB
+[2025-06-02T21:42:42.942Z] [INFO] 💾 Link saved for 1846824d-5503-808d-a4f5-c549c2cc49d2
+[2025-06-02T21:42:43.225Z] [INFO] 
+🏁 Migration complete! 1 pages processed.
+[2025-06-02T21:42:53.975Z] [INFO] ▶️  Starting Task Migrator
+[2025-06-02T21:42:53.976Z] [INFO]    Source (SM): 1136824d550380f9a578cec5e8a871d0
+[2025-06-02T21:42:53.976Z] [INFO]    Target (CENT): 1906824d5503817f868afa7f961a6f8f
+
+[2025-06-02T21:42:54.937Z] [INFO] 🛠 Transforming page 2066824d-5503-8090-b0e8-e1502d6efb46
+[2025-06-02T21:42:55.113Z] [INFO] 🚀 Writing page 2066824d-5503-8090-b0e8-e1502d6efb46 to CENT DB
+[2025-06-02T21:42:55.250Z] [INFO] 💾 Link saved for 2066824d-5503-8090-b0e8-e1502d6efb46
+[2025-06-02T21:43:00.843Z] [INFO] 🛠 Transforming page 1846824d-5503-808d-a4f5-c549c2cc49d2
+[2025-06-02T21:43:01.055Z] [INFO] 🚀 Writing page 1846824d-5503-808d-a4f5-c549c2cc49d2 to CENT DB
+[2025-06-02T21:43:01.472Z] [INFO] 💾 Link saved for 1846824d-5503-808d-a4f5-c549c2cc49d2
+[2025-06-02T21:43:01.930Z] [INFO] 
+🏁 Migration complete! 2 pages processed.
+[2025-06-02T21:44:55.635Z] [INFO] ▶️  Starting Task Migrator
+[2025-06-02T21:44:55.640Z] [INFO]    Source (SM): 1136824d550380f9a578cec5e8a871d0
+[2025-06-02T21:44:55.640Z] [INFO]    Target (CENT): 1906824d5503817f868afa7f961a6f8f
+
+[2025-06-02T21:44:56.694Z] [INFO] 🛠 Transforming page 2066824d-5503-8090-b0e8-e1502d6efb46
+[2025-06-02T21:44:57.057Z] [INFO] 🚀 Writing page 2066824d-5503-8090-b0e8-e1502d6efb46 to CENT DB
+[2025-06-02T21:44:57.219Z] [INFO] 💾 Link saved for 2066824d-5503-8090-b0e8-e1502d6efb46
+[2025-06-02T21:45:00.284Z] [INFO] 🛠 Transforming page 1846824d-5503-808d-a4f5-c549c2cc49d2
+[2025-06-02T21:45:00.893Z] [INFO] 🚀 Writing page 1846824d-5503-808d-a4f5-c549c2cc49d2 to CENT DB
+[2025-06-02T21:45:01.065Z] [INFO] 💾 Link saved for 1846824d-5503-808d-a4f5-c549c2cc49d2
+[2025-06-02T21:45:01.798Z] [INFO] 
+🏁 Migration complete! 2 pages processed.
+[2025-06-02T21:51:50.087Z] [INFO] ▶️  Starting Task Migrator
+[2025-06-02T21:51:50.091Z] [INFO]    Source (SM): 1136824d550380f9a578cec5e8a871d0
+[2025-06-02T21:51:50.091Z] [INFO]    Target (CENT): 1906824d5503817f868afa7f961a6f8f
+
+[2025-06-02T21:51:51.421Z] [INFO] 🛠 Transforming page 2066824d-5503-8090-b0e8-e1502d6efb46
+[2025-06-02T21:51:51.625Z] [INFO] 🚀 Writing page 2066824d-5503-8090-b0e8-e1502d6efb46 to CENT DB
+[2025-06-02T21:51:52.689Z] [INFO] 💾 Link saved for 2066824d-5503-8090-b0e8-e1502d6efb46
+[2025-06-02T21:51:53.705Z] [INFO] 🛠 Transforming page 1846824d-5503-808d-a4f5-c549c2cc49d2
+[2025-06-02T21:51:54.326Z] [INFO] 🚀 Writing page 1846824d-5503-808d-a4f5-c549c2cc49d2 to CENT DB
+[2025-06-02T21:51:54.989Z] [INFO] 💾 Link saved for 1846824d-5503-808d-a4f5-c549c2cc49d2
+[2025-06-02T21:51:58.525Z] [INFO] 
+🏁 Migration complete! 2 pages processed.

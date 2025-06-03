@@ -27,17 +27,12 @@ async function main() {
         // Idempotency: skip if already migrated
         const existing = await linkStore.load(sourceId).catch(() => null);
         if (existing && existing.status === 'success') {
-            logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
-            logger.info(`ℹ️ Link already exists in store:`, existing);
+            // logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
+            // logger.info(`ℹ️ Link already exists in store:`, existing);
             continue;
         }
 
-        // Transform to CENT schemasuccess') {
-        //             // logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
-        //             // logger.info(`ℹ️ Link already exists in store:`, existing);
-        //             continue;
-            //         }
-            logger.info(`🛠 Transforming page ${sourceId}`);
+        logger.info(`🛠 Transforming page ${sourceId}`);
         const payload = await transform(page, mapSpec);
 
         // Write to CENT DB
@@ -59,6 +54,7 @@ async function main() {
         } catch (err) {
             // More context on failure:
             console.error(`❌ Failed to migrate ${sourceId}`);
+            const notionUrl = `https://www.notion.so/${sourceId.replace(/-/g, '')}`; console.error(`🔗 Review in Notion: ${notionUrl}`);
             console.error('• Notion error:', err);
 
             // still record failure to avoid infinite retry loops

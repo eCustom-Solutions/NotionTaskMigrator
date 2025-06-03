@@ -29,12 +29,11 @@ async function main() {
         // Idempotency: skip if already migrated
         const existing = await linkStore.load(sourceId).catch(() => null);
         if (existing && existing.status === 'success') {
-            logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
-            logger.info(`ℹ️ Link already exists in store:`, existing);
+            // logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
+            // logger.info(`ℹ️ Link already exists in store:`, existing);
             continue;
         }
 
-        // Transform to CENT schema
         logger.info(`🛠 Transforming page ${sourceId}`);
         const payload = await transform(page, mapSpec);
 
@@ -57,6 +56,7 @@ async function main() {
         } catch (err) {
             // More context on failure:
             console.error(`❌ Failed to migrate ${sourceId}`);
+            const notionUrl = `https://www.notion.so/${sourceId.replace(/-/g, '')}`; console.error(`🔗 Review in Notion: ${notionUrl}`);
             console.error('• Notion error:', err);
 
             // still record failure to avoid infinite retry loops
@@ -133,6 +133,14 @@ module.exports = {
             });
 
             return { relation: pageIds.map(id => ({ id })) };
+        },
+        'Link': (sourceValue) => {
+            const firstFile = sourceValue.files?.[0];
+            const firstUrl = firstFile?.external?.url || firstFile?.file?.url || null;
+
+            return {
+                url: firstUrl
+            };
         }
 
         // // Updated People hook to use the relation_resolver
@@ -180,6 +188,8 @@ transformations/generic_transformer.js
 // A generic transformer that, given a Notion page and a mapping spec,
 // builds the `properties` payload for creating/updating a page in the target DB.
 
+const notion = require('../services/notion_client');
+
 module.exports = async function transform(page, map) {
     const result = {properties: {}};
 
@@ -213,6 +223,30 @@ module.exports = async function transform(page, map) {
     // Optional post-processing hook
     if (typeof map.postProcess === 'function') {
         await map.postProcess(result, page);
+    }
+
+    // Optional: skip copying blocks if map opts in
+    const skipBlocks = map?.options?.skipBlocks === true;
+
+    if (!skipBlocks) {
+        // Fetch and attach blocks (page contents)
+        const blocks = [];
+        let cursor = undefined;
+
+        do {
+            const response = await notion.blocks.children.list({
+                block_id: page.id,
+                page_size: 100,
+                start_cursor: cursor
+            });
+
+            blocks.push(...response.results);
+            cursor = response.has_more ? response.next_cursor : undefined;
+        } while (cursor);
+
+        if (blocks.length > 0) {
+            result.children = blocks;
+        }
     }
 
     return result;
@@ -256,12 +290,14 @@ const notion = require('../services/notion_client');  // still correct
 
 const SM_DB_ID   = process.env.NOTION_SM_TASKS_DB_ID;
 const CENT_DB_ID = process.env.NOTION_CENT_DB_ID;
+const GLOBAL_TAGS_DB_ID = process.env.GLOBAL_TAGS_DB_ID
 
 // Debug: confirm values loaded
 console.log('cwd:', process.cwd());
 console.log('dirname:', __dirname);
 console.log('SM_DB_ID:', SM_DB_ID);
 console.log('CENT_DB_ID:', CENT_DB_ID);
+console.log('GLOBAL_TAGS_DB_ID', GLOBAL_TAGS_DB_ID);
 
 async function* streamDB(dbId) {
     let cursor = undefined;
@@ -282,8 +318,8 @@ async function* streamDB(dbId) {
 }
 
 async function main() {
-    console.log(`▶️  Streaming SM Tasks DB (${SM_DB_ID})`);
-    for await (const page of streamDB(SM_DB_ID)) {
+    console.log(`▶️  Streaming SM Tasks DB (${GLOBAL_TAGS_DB_ID})`);
+    for await (const page of streamDB(GLOBAL_TAGS_DB_ID)) {
         console.log(`SM Page ID: ${page.id}`);
         console.dir(page.properties, { depth: null });
         console.log('---');
@@ -777,6 +813,7 @@ FULL DIRECTORY STRUCTURE
         17/
             183f02ebc6db4bfc1a290dd72fd90e8b4b8a4a
         18/
+            47452420fb98cf5891bc2c9ee04ce265d41382
             7335f5e24a0a0550d670a4f11cd815466f1c95
             bcbf3eeb052ad90cf66251c61fe687cdbf7495
             f02179d6709edaa8c250046a9b9346a80c91fa
@@ -823,6 +860,7 @@ FULL DIRECTORY STRUCTURE
             00d82ee95adc167f10e116c573e5d059eee483
         29/
             5fc2828ce472f1afe767e3ac770b80db945715
+            66779f92c144934deed58b697c7e9f39b67f71
             c670e7f0521b91284a6d8767610721ebc875e2
         2a/
             520daeac2767754aec1135f74851bdd5eb6bbb
@@ -902,6 +940,7 @@ FULL DIRECTORY STRUCTURE
         4f/
             025e9ee5dd2b9bacc6bc20db96b1d22d9608bd
         50/
+            02725d2708c89c7890d3fe02cbef3e674736ab
             5bdcd9f68483d88eac00adf41020a7020556dd
         51/
             21761ca481415d6bb72b34d52cbd12ef5dea8f
@@ -922,6 +961,7 @@ FULL DIRECTORY STRUCTURE
             8a219cfc53e794fc3236e7ea84555ffec85ad7
             b67b0720e157a08f18cedfb6f77fa8da2d294e
             d56e32882a48050cecd8af0adf40b9f9331538
+            ead70464d98b52d4b8ae06e37be25bb8757ee3
         58/
             18fca5b67c1b502e790c76477b55a2365d6939
             26d906569a07a36fa48f11783a38a48fb25182
@@ -1039,6 +1079,7 @@ FULL DIRECTORY STRUCTURE
             0483e271b08a116a8ce1a4fdd9c2f7aba2954e
         8d/
             498f3a206d1c3ec097c1dd74e5a89bbbb28263
+            80858c7a482742a551da7dbb1f3a62c0e7235a
         8f/
             bd1954886428cda7e0050f94cd94b4b64ad957
             d1f861465d7599ab272016907061ab282774d4
@@ -1063,6 +1104,7 @@ FULL DIRECTORY STRUCTURE
             2b120cfbb5d1d24751f012625b47def11eb4f4
             467eb1e64cb1bb2ed4873a0058a3643795f155
             52413410a929b92ee9a6403bd36cdd6a1881db
+            6fb8858f18d0082680797883eb39f568e76443
         97/
             dad5c765908ac9a660d7b1b8aefeb9a5263b60
         99/
@@ -1105,6 +1147,7 @@ FULL DIRECTORY STRUCTURE
             5f44fb66ed7ab9466badfba8b0befd06c0308d
             b14af794655c720e4205f54f3f37a809a29e07
         ab/
+            131af97b67f149da2338773df857b8e3ea59da
             7f01437bfcae9554569c4f9bafa20d2924ba25
             cfcffb9e2cad096b7f67133887f8a6043702f2
         ac/
@@ -1234,6 +1277,7 @@ FULL DIRECTORY STRUCTURE
             69eb6a90e521b31057b5ced956b543a64c2dbb
         d8/
             0724eea8dace0a27d80054bf28cd6b7856fa58
+            52d5963d787b8e0c924671908277edbed0cef9
         da/
             3a8bc23743cece5bb44d5b6513fb1a1f515090
             9dd123e88dcc48f0bae52af2cfb23cdef169e9
@@ -1278,6 +1322,7 @@ FULL DIRECTORY STRUCTURE
             f1303158e65e5eb92e27e9cf9a303e2eca8f33
         eb/
             7a93b79e3f15d42c711dfa12661d415460aa2d
+            95b4d6c666eb19274cba1394d7487ff24dff5d
         ed/
             413eae4a2aaf992ef4c8c29e90fe0b54ef50f7
         ee/
@@ -1359,7 +1404,7 @@ _archive/
         query_db_pages_with_properties.js
         retrieve_db.js
 links/
-    (directory contains 209 items)
+    (directory contains 210 items)
 models/
     Link.js
 node_modules/
