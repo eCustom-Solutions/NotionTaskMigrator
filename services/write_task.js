@@ -5,7 +5,7 @@
 const notion = require('./notion_client');
 
 /**
- * @param {object} transformedTask  – shape: { properties: { ... }, children?: [...] }
+ * @param {object} transformedTask  – shape: { properties: { ... }, children?: [...], icon?: {...} }
  * @param {string} dbId             – Notion Database B ID
  * @returns {Promise<object>}       – Notion response (including `id` of new page)
  */
@@ -14,6 +14,10 @@ async function writeToDBB(transformedTask, dbId) {
         parent: { database_id: dbId },
         properties: transformedTask.properties,
     };
+
+    if (transformedTask.icon) {
+        payload.icon = transformedTask.icon;
+    }
 
     // If your transformer produces children blocks, include them
     if (transformedTask.children) {

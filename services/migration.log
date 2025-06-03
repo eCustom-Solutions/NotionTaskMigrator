@@ -4083,3 +4083,407 @@
 [2025-06-02T21:51:54.989Z] [INFO] 💾 Link saved for 1846824d-5503-808d-a4f5-c549c2cc49d2
 [2025-06-02T21:51:58.525Z] [INFO] 
 🏁 Migration complete! 2 pages processed.
+[2025-06-03T16:54:04.523Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T16:54:04.526Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T16:54:04.526Z] [INFO]    Dry-run limit: 1
+
+[2025-06-03T16:54:05.987Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T16:54:05.987Z] [INFO]    📥 Fetching related page: 1146824d-5503-8034-9476-da66fcb14fce
+[2025-06-03T16:54:06.706Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T16:54:07.735Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T16:54:09.722Z] [INFO]    ✅ Created new page 2076824d-5503-819b-9019-c8e73b5ba0fa in target.
+[2025-06-03T16:54:09.726Z] [INFO]    💾 Recorded link (1146824d-5503-8034-9476-da66fcb14fce → 2076824d-5503-819b-9019-c8e73b5ba0fa) under "tags"
+[2025-06-03T17:01:16.936Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T17:01:16.938Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T17:01:16.938Z] [INFO]    Dry-run limit: 1
+
+[2025-06-03T17:01:19.196Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T17:01:19.197Z] [INFO]    📥 Fetching related page: 1146824d-5503-8034-9476-da66fcb14fce
+[2025-06-03T17:01:19.197Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380349476da66fcb14fce
+[2025-06-03T17:01:20.955Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:01:21.616Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:01:22.849Z] [INFO]    ✅ Created new page 2076824d-5503-817a-a526-e562965cbdf0 in target.
+[2025-06-03T17:01:22.850Z] [INFO]    🔗 After URL: https://notion.so/2076824d5503817aa526e562965cbdf0
+[2025-06-03T17:01:22.852Z] [INFO]    💾 Recorded link (1146824d-5503-8034-9476-da66fcb14fce → 2076824d-5503-817a-a526-e562965cbdf0) under "tags"
+[2025-06-03T17:10:08.324Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T17:10:08.327Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T17:10:08.327Z] [INFO]    Dry-run limit: 1
+
+[2025-06-03T17:10:09.920Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T17:10:09.921Z] [INFO]    📥 Fetching related page: 1146824d-5503-8034-9476-da66fcb14fce
+[2025-06-03T17:10:09.921Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380349476da66fcb14fce
+[2025-06-03T17:10:10.275Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:10:11.345Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:10:18.506Z] [INFO]    ✅ Created new page 2076824d-5503-81b2-b725-e5a0da2b84f3 in target.
+[2025-06-03T17:10:18.506Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381b2b725e5a0da2b84f3
+[2025-06-03T17:10:18.510Z] [INFO]    💾 Recorded link (1146824d-5503-8034-9476-da66fcb14fce → 2076824d-5503-81b2-b725-e5a0da2b84f3) under "tags"
+[2025-06-03T17:33:30.589Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T17:33:30.592Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T17:33:30.592Z] [INFO]    Dry-run limit: 1
+
+[2025-06-03T17:33:31.772Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T17:33:31.772Z] [INFO]    📥 Fetching related page: 1146824d-5503-8034-9476-da66fcb14fce
+[2025-06-03T17:33:31.773Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380349476da66fcb14fce
+[2025-06-03T17:33:32.680Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:33:33.192Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:33:35.285Z] [INFO]    ✅ Created new page 2076824d-5503-811f-84ec-f18d801528c7 in target.
+[2025-06-03T17:33:35.285Z] [INFO]    🔗 After URL: https://notion.so/2076824d5503811f84ecf18d801528c7
+[2025-06-03T17:33:35.288Z] [INFO]    💾 Recorded link (1146824d-5503-8034-9476-da66fcb14fce → 2076824d-5503-811f-84ec-f18d801528c7) under "tags"
+[2025-06-03T17:38:49.614Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T17:38:49.617Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T17:38:49.617Z] [INFO]    Dry-run limit: 1
+
+[2025-06-03T17:38:50.960Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T17:38:50.961Z] [INFO]    📥 Fetching related page: 1146824d-5503-8034-9476-da66fcb14fce
+[2025-06-03T17:38:50.961Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380349476da66fcb14fce
+[2025-06-03T17:38:51.309Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:38:51.652Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:38:54.493Z] [INFO]    ✅ Created new page 2076824d-5503-8133-b563-c185e3e60efd in target.
+[2025-06-03T17:38:54.671Z] [INFO]    🖼️  Destination icon: null
+[2025-06-03T17:38:54.671Z] [INFO]    🔗 After URL: https://notion.so/2076824d55038133b563c185e3e60efd
+[2025-06-03T17:38:54.675Z] [INFO]    💾 Recorded link (1146824d-5503-8034-9476-da66fcb14fce → 2076824d-5503-8133-b563-c185e3e60efd) under "tags"
+[2025-06-03T17:42:10.129Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T17:42:10.129Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T17:42:10.129Z] [INFO]    Dry-run limit: 1
+
+[2025-06-03T17:42:11.231Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T17:42:11.233Z] [INFO]    📥 Fetching related page: 1146824d-5503-8034-9476-da66fcb14fce
+[2025-06-03T17:42:11.233Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380349476da66fcb14fce
+[2025-06-03T17:42:11.367Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:42:11.486Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:42:11.777Z] [INFO]    ✅ Created new page 2076824d-5503-8155-b29f-f3ca9a2d9288 in target.
+[2025-06-03T17:42:14.100Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"📣"}
+[2025-06-03T17:42:14.101Z] [INFO]    🔗 After URL: https://notion.so/2076824d55038155b29ff3ca9a2d9288
+[2025-06-03T17:42:14.106Z] [INFO]    💾 Recorded link (1146824d-5503-8034-9476-da66fcb14fce → 2076824d-5503-8155-b29f-f3ca9a2d9288) under "tags"
+[2025-06-03T17:43:41.888Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T17:43:41.889Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T17:43:41.889Z] [INFO]    Dry-run limit: 1
+
+[2025-06-03T17:43:43.443Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T17:43:43.445Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8034-9476-da66fcb14fce (already migrated).
+[2025-06-03T17:43:43.445Z] [INFO]    📥 Fetching related page: 1146824d-5503-807a-ab42-f1ae26d43903
+[2025-06-03T17:43:43.445Z] [INFO]    🔗 Before URL: https://notion.so/1146824d5503807aab42f1ae26d43903
+[2025-06-03T17:43:43.698Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:43:44.349Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:43:46.828Z] [INFO]    ✅ Created new page 2076824d-5503-8123-8d64-c5d0854eb689 in target.
+[2025-06-03T17:43:47.132Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🎦"}
+[2025-06-03T17:43:47.132Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381238d64c5d0854eb689
+[2025-06-03T17:43:47.136Z] [INFO]    💾 Recorded link (1146824d-5503-807a-ab42-f1ae26d43903 → 2076824d-5503-8123-8d64-c5d0854eb689) under "tags"
+[2025-06-03T17:44:03.854Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T17:44:03.855Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T17:44:03.855Z] [INFO]    Dry-run limit: 3
+
+[2025-06-03T17:44:05.531Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T17:44:05.532Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8034-9476-da66fcb14fce (already migrated).
+[2025-06-03T17:44:05.532Z] [INFO]    ↩️  Skipping related page 1146824d-5503-807a-ab42-f1ae26d43903 (already migrated).
+[2025-06-03T17:44:05.532Z] [INFO]    📥 Fetching related page: 1146824d-5503-8094-a4e4-df86c55881dd
+[2025-06-03T17:44:05.533Z] [INFO]    🔗 Before URL: https://notion.so/1146824d55038094a4e4df86c55881dd
+[2025-06-03T17:44:06.499Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:44:06.700Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:44:07.318Z] [INFO]    ✅ Created new page 2076824d-5503-8132-a669-f9b53f1c1468 in target.
+[2025-06-03T17:44:07.495Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🎨"}
+[2025-06-03T17:44:07.496Z] [INFO]    🔗 After URL: https://notion.so/2076824d55038132a669f9b53f1c1468
+[2025-06-03T17:44:07.498Z] [INFO]    💾 Recorded link (1146824d-5503-8094-a4e4-df86c55881dd → 2076824d-5503-8132-a669-f9b53f1c1468) under "tags"
+[2025-06-03T17:44:07.499Z] [INFO]    📥 Fetching related page: 1146824d-5503-80af-90ac-c12104f52e50
+[2025-06-03T17:44:07.499Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380af90acc12104f52e50
+[2025-06-03T17:44:07.865Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:44:08.682Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:44:09.094Z] [INFO]    ✅ Created new page 2076824d-5503-81a0-adde-c1b9ccf04a95 in target.
+[2025-06-03T17:44:09.592Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🤳"}
+[2025-06-03T17:44:09.592Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381a0addec1b9ccf04a95
+[2025-06-03T17:44:09.594Z] [INFO]    💾 Recorded link (1146824d-5503-80af-90ac-c12104f52e50 → 2076824d-5503-81a0-adde-c1b9ccf04a95) under "tags"
+[2025-06-03T17:44:09.594Z] [INFO]    📥 Fetching related page: 1146824d-5503-8060-93b1-f59ff71122e5
+[2025-06-03T17:44:09.594Z] [INFO]    🔗 Before URL: https://notion.so/1146824d5503806093b1f59ff71122e5
+[2025-06-03T17:44:09.887Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:44:10.065Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:44:11.018Z] [INFO]    ✅ Created new page 2076824d-5503-81e0-af8b-e5566967ac95 in target.
+[2025-06-03T17:44:11.181Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🌐"}
+[2025-06-03T17:44:11.181Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381e0af8be5566967ac95
+[2025-06-03T17:44:11.183Z] [INFO]    💾 Recorded link (1146824d-5503-8060-93b1-f59ff71122e5 → 2076824d-5503-81e0-af8b-e5566967ac95) under "tags"
+[2025-06-03T17:44:18.412Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T17:44:18.413Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T17:44:18.413Z] [INFO]    Dry-run limit: 3
+
+[2025-06-03T17:44:19.363Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T17:44:19.364Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8034-9476-da66fcb14fce (already migrated).
+[2025-06-03T17:44:19.365Z] [INFO]    ↩️  Skipping related page 1146824d-5503-807a-ab42-f1ae26d43903 (already migrated).
+[2025-06-03T17:44:19.365Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8094-a4e4-df86c55881dd (already migrated).
+[2025-06-03T17:44:19.365Z] [INFO]    ↩️  Skipping related page 1146824d-5503-80af-90ac-c12104f52e50 (already migrated).
+[2025-06-03T17:44:19.366Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8060-93b1-f59ff71122e5 (already migrated).
+[2025-06-03T17:44:19.366Z] [INFO]    📥 Fetching related page: 1146824d-5503-8036-9ea6-d19271b8891f
+[2025-06-03T17:44:19.366Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380369ea6d19271b8891f
+[2025-06-03T17:44:20.049Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:44:20.174Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:44:21.238Z] [INFO]    ✅ Created new page 2076824d-5503-8133-87e8-e2d0054676fd in target.
+[2025-06-03T17:44:21.389Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"💻"}
+[2025-06-03T17:44:21.389Z] [INFO]    🔗 After URL: https://notion.so/2076824d5503813387e8e2d0054676fd
+[2025-06-03T17:44:21.391Z] [INFO]    💾 Recorded link (1146824d-5503-8036-9ea6-d19271b8891f → 2076824d-5503-8133-87e8-e2d0054676fd) under "tags"
+[2025-06-03T17:44:21.392Z] [INFO]    📥 Fetching related page: 1146824d-5503-8003-8fb0-c302396f4c9c
+[2025-06-03T17:44:21.392Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380038fb0c302396f4c9c
+[2025-06-03T17:44:21.894Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:44:23.530Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:44:25.123Z] [INFO]    ✅ Created new page 2076824d-5503-814d-8668-dbb41a0d6e66 in target.
+[2025-06-03T17:44:25.314Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🔍"}
+[2025-06-03T17:44:25.314Z] [INFO]    🔗 After URL: https://notion.so/2076824d5503814d8668dbb41a0d6e66
+[2025-06-03T17:44:25.315Z] [INFO]    💾 Recorded link (1146824d-5503-8003-8fb0-c302396f4c9c → 2076824d-5503-814d-8668-dbb41a0d6e66) under "tags"
+[2025-06-03T17:44:25.315Z] [INFO]    📥 Fetching related page: 1c36824d-5503-8096-afc2-f8deef8d7d73
+[2025-06-03T17:44:25.315Z] [INFO]    🔗 Before URL: https://notion.so/1c36824d55038096afc2f8deef8d7d73
+[2025-06-03T17:44:25.476Z] [INFO]    🛠  Transforming page for target DB "Team"
+[2025-06-03T17:44:25.612Z] [INFO]    🚀 Writing to target DB (1de6824d550380749f3cc165609345b3)
+[2025-06-03T17:44:27.393Z] [INFO]    ✅ Created new page 2076824d-5503-81cb-a248-ef0117c74474 in target.
+[2025-06-03T17:44:28.406Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🎬"}
+[2025-06-03T17:44:28.406Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381cba248ef0117c74474
+[2025-06-03T17:44:28.408Z] [INFO]    💾 Recorded link (1c36824d-5503-8096-afc2-f8deef8d7d73 → 2076824d-5503-81cb-a248-ef0117c74474) under "tags"
+[2025-06-03T17:44:30.146Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T17:44:30.146Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T17:44:30.146Z] [INFO]    Dry-run limit: 3
+
+[2025-06-03T17:44:30.885Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T17:44:30.885Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8034-9476-da66fcb14fce (already migrated).
+[2025-06-03T17:44:30.885Z] [INFO]    ↩️  Skipping related page 1146824d-5503-807a-ab42-f1ae26d43903 (already migrated).
+[2025-06-03T17:44:30.886Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8094-a4e4-df86c55881dd (already migrated).
+[2025-06-03T17:44:30.886Z] [INFO]    ↩️  Skipping related page 1146824d-5503-80af-90ac-c12104f52e50 (already migrated).
+[2025-06-03T17:44:30.886Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8060-93b1-f59ff71122e5 (already migrated).
+[2025-06-03T17:44:30.886Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8036-9ea6-d19271b8891f (already migrated).
+[2025-06-03T17:44:30.886Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8003-8fb0-c302396f4c9c (already migrated).
+[2025-06-03T17:44:30.887Z] [INFO]    ↩️  Skipping related page 1c36824d-5503-8096-afc2-f8deef8d7d73 (already migrated).
+[2025-06-03T17:44:30.887Z] [INFO] 🔎 Processing Global Tag page (type="Brand"): 1136824d-5503-80db-942e-cbae22327164
+[2025-06-03T17:44:30.887Z] [INFO]    📥 Fetching related page: 1146824d-5503-801d-a417-c81f54811570
+[2025-06-03T17:44:30.887Z] [INFO]    🔗 Before URL: https://notion.so/1146824d5503801da417c81f54811570
+[2025-06-03T17:44:31.212Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T17:44:31.517Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T17:44:31.929Z] [ERROR]    ❌ Failed to migrate related page 1146824d-5503-801d-a417-c81f54811570 {"name":"APIResponseError","code":"validation_error","status":400,"headers":{},"body":"{\"object\":\"error\",\"status\":400,\"code\":\"validation_error\",\"message\":\"Name is not a property that exists.\",\"request_id\":\"d28a339c-40b5-4739-9226-c9d449443be5\"}"}
+[2025-06-03T17:44:31.930Z] [INFO]    📥 Fetching related page: 1146824d-5503-8002-b4d1-e5c1835f620c
+[2025-06-03T17:44:31.930Z] [INFO]    🔗 Before URL: https://notion.so/1146824d55038002b4d1e5c1835f620c
+[2025-06-03T17:44:33.006Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T17:44:34.998Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T17:44:37.948Z] [ERROR]    ❌ Failed to migrate related page 1146824d-5503-8002-b4d1-e5c1835f620c {"name":"APIResponseError","code":"validation_error","status":400,"headers":{},"body":"{\"object\":\"error\",\"status\":400,\"code\":\"validation_error\",\"message\":\"Name is not a property that exists.\",\"request_id\":\"6c298500-7ea8-415a-98d5-20914d9b42c9\"}"}
+[2025-06-03T17:44:37.954Z] [INFO]    📥 Fetching related page: 1146824d-5503-809b-a88f-ecf0885dc532
+[2025-06-03T17:44:37.955Z] [INFO]    🔗 Before URL: https://notion.so/1146824d5503809ba88fecf0885dc532
+[2025-06-03T17:44:38.122Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T17:44:38.263Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T17:44:38.479Z] [ERROR]    ❌ Failed to migrate related page 1146824d-5503-809b-a88f-ecf0885dc532 {"name":"APIResponseError","code":"validation_error","status":400,"headers":{},"body":"{\"object\":\"error\",\"status\":400,\"code\":\"validation_error\",\"message\":\"Name is not a property that exists.\",\"request_id\":\"89eb508a-e6d5-4561-b2c4-18743bc4de4b\"}"}
+[2025-06-03T17:44:38.487Z] [INFO]    📥 Fetching related page: 1146824d-5503-8046-92ac-c78b47678eff
+[2025-06-03T17:44:38.487Z] [INFO]    🔗 Before URL: https://notion.so/1146824d5503804692acc78b47678eff
+[2025-06-03T17:44:38.664Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T17:44:39.211Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T17:44:39.345Z] [ERROR]    ❌ Failed to migrate related page 1146824d-5503-8046-92ac-c78b47678eff {"name":"APIResponseError","code":"validation_error","status":400,"headers":{},"body":"{\"object\":\"error\",\"status\":400,\"code\":\"validation_error\",\"message\":\"Name is not a property that exists.\",\"request_id\":\"8258a280-b378-487d-9223-454a1ccbf6ad\"}"}
+[2025-06-03T17:44:39.345Z] [INFO]    📥 Fetching related page: 1146824d-5503-80a6-b1fe-d6bd2eaabc5f
+[2025-06-03T17:44:39.345Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380a6b1fed6bd2eaabc5f
+[2025-06-03T17:44:39.513Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T17:44:39.837Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T17:44:40.294Z] [ERROR]    ❌ Failed to migrate related page 1146824d-5503-80a6-b1fe-d6bd2eaabc5f {"name":"APIResponseError","code":"validation_error","status":400,"headers":{},"body":"{\"object\":\"error\",\"status\":400,\"code\":\"validation_error\",\"message\":\"Name is not a property that exists.\",\"request_id\":\"40c02269-e66e-43d8-9dc7-1f3b1e79eb62\"}"}
+[2025-06-03T17:44:40.297Z] [INFO]    📥 Fetching related page: 1146824d-5503-80c0-be2e-e663e9baf12b
+[2025-06-03T17:44:40.297Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380c0be2ee663e9baf12b
+[2025-06-03T17:44:40.455Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T17:44:40.583Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T17:44:41.757Z] [ERROR]    ❌ Failed to migrate related page 1146824d-5503-80c0-be2e-e663e9baf12b {"name":"APIResponseError","code":"validation_error","status":400,"headers":{},"body":"{\"object\":\"error\",\"status\":400,\"code\":\"validation_error\",\"message\":\"Name is not a property that exists.\",\"request_id\":\"96ee8244-4805-43e2-a5c0-f3a91817c9cb\"}"}
+[2025-06-03T17:44:41.759Z] [INFO]    📥 Fetching related page: 1146824d-5503-8078-a2ba-f18ca28e05df
+[2025-06-03T17:44:41.759Z] [INFO]    🔗 Before URL: https://notion.so/1146824d55038078a2baf18ca28e05df
+[2025-06-03T17:44:41.901Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T17:44:42.271Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T17:44:42.782Z] [ERROR]    ❌ Failed to migrate related page 1146824d-5503-8078-a2ba-f18ca28e05df {"name":"APIResponseError","code":"validation_error","status":400,"headers":{},"body":"{\"object\":\"error\",\"status\":400,\"code\":\"validation_error\",\"message\":\"Name is not a property that exists.\",\"request_id\":\"80bcaad9-5576-4276-a365-32c1b38feeb7\"}"}
+[2025-06-03T17:44:42.784Z] [INFO]    📥 Fetching related page: 1146824d-5503-80b2-ac20-d1d3199c89a3
+[2025-06-03T17:44:42.784Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380b2ac20d1d3199c89a3
+[2025-06-03T17:44:42.951Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T17:44:43.112Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T17:44:43.293Z] [ERROR]    ❌ Failed to migrate related page 1146824d-5503-80b2-ac20-d1d3199c89a3 {"name":"APIResponseError","code":"validation_error","status":400,"headers":{},"body":"{\"object\":\"error\",\"status\":400,\"code\":\"validation_error\",\"message\":\"Name is not a property that exists.\",\"request_id\":\"7139eac9-2bd0-437a-9c69-e0399296bf49\"}"}
+[2025-06-03T17:44:43.299Z] [INFO]    📥 Fetching related page: 1146824d-5503-8098-9bdd-d6912123a55e
+[2025-06-03T17:44:43.301Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380989bddd6912123a55e
+[2025-06-03T17:44:43.481Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T17:44:43.625Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:34:46.952Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T18:34:46.953Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T18:34:46.953Z] [INFO]    Dry-run limit: 1
+
+[2025-06-03T18:34:47.986Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T18:34:47.988Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8034-9476-da66fcb14fce (already migrated).
+[2025-06-03T18:34:47.989Z] [INFO]    ↩️  Skipping related page 1146824d-5503-807a-ab42-f1ae26d43903 (already migrated).
+[2025-06-03T18:34:47.989Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8094-a4e4-df86c55881dd (already migrated).
+[2025-06-03T18:34:47.990Z] [INFO]    ↩️  Skipping related page 1146824d-5503-80af-90ac-c12104f52e50 (already migrated).
+[2025-06-03T18:34:47.990Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8060-93b1-f59ff71122e5 (already migrated).
+[2025-06-03T18:34:47.991Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8036-9ea6-d19271b8891f (already migrated).
+[2025-06-03T18:34:47.991Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8003-8fb0-c302396f4c9c (already migrated).
+[2025-06-03T18:34:47.992Z] [INFO]    ↩️  Skipping related page 1c36824d-5503-8096-afc2-f8deef8d7d73 (already migrated).
+[2025-06-03T18:34:47.992Z] [INFO] 🔎 Processing Global Tag page (type="Brand"): 1136824d-5503-80db-942e-cbae22327164
+[2025-06-03T18:34:47.993Z] [INFO]    📥 Fetching related page: 1146824d-5503-801d-a417-c81f54811570
+[2025-06-03T18:34:47.993Z] [INFO]    🔗 Before URL: https://notion.so/1146824d5503801da417c81f54811570
+[2025-06-03T18:34:48.131Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:34:48.131Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:34:48.252Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:34:48.384Z] [ERROR]    ❌ Failed to migrate related page 1146824d-5503-801d-a417-c81f54811570 {"name":"APIResponseError","code":"validation_error","status":400,"headers":{},"body":"{\"object\":\"error\",\"status\":400,\"code\":\"validation_error\",\"message\":\"Name is not a property that exists.\",\"request_id\":\"c07482c0-57f4-41c1-be57-e84d603c18e3\"}"}
+[2025-06-03T18:34:48.395Z] [INFO]    📥 Fetching related page: 1146824d-5503-8002-b4d1-e5c1835f620c
+[2025-06-03T18:34:48.395Z] [INFO]    🔗 Before URL: https://notion.so/1146824d55038002b4d1e5c1835f620c
+[2025-06-03T18:34:49.122Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:34:49.122Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:34:49.234Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:34:49.570Z] [ERROR]    ❌ Failed to migrate related page 1146824d-5503-8002-b4d1-e5c1835f620c {"name":"APIResponseError","code":"validation_error","status":400,"headers":{},"body":"{\"object\":\"error\",\"status\":400,\"code\":\"validation_error\",\"message\":\"Name is not a property that exists.\",\"request_id\":\"e75e7bbf-9e07-4eff-ab8f-1d8a658505db\"}"}
+[2025-06-03T18:34:49.580Z] [INFO]    📥 Fetching related page: 1146824d-5503-809b-a88f-ecf0885dc532
+[2025-06-03T18:34:49.581Z] [INFO]    🔗 Before URL: https://notion.so/1146824d5503809ba88fecf0885dc532
+[2025-06-03T18:34:50.234Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:34:50.234Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:34:50.368Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:34:50.523Z] [ERROR]    ❌ Failed to migrate related page 1146824d-5503-809b-a88f-ecf0885dc532 {"name":"APIResponseError","code":"validation_error","status":400,"headers":{},"body":"{\"object\":\"error\",\"status\":400,\"code\":\"validation_error\",\"message\":\"Name is not a property that exists.\",\"request_id\":\"2af51155-236e-4615-bfad-c2bf8dd871df\"}"}
+[2025-06-03T18:34:50.527Z] [INFO]    📥 Fetching related page: 1146824d-5503-8046-92ac-c78b47678eff
+[2025-06-03T18:34:50.527Z] [INFO]    🔗 Before URL: https://notion.so/1146824d5503804692acc78b47678eff
+[2025-06-03T18:34:51.137Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:34:51.137Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:34:51.466Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:36:58.351Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T18:36:58.353Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T18:36:58.353Z] [INFO]    Dry-run limit: 1
+
+[2025-06-03T18:36:59.252Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T18:36:59.254Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8034-9476-da66fcb14fce (already migrated).
+[2025-06-03T18:36:59.255Z] [INFO]    ↩️  Skipping related page 1146824d-5503-807a-ab42-f1ae26d43903 (already migrated).
+[2025-06-03T18:36:59.255Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8094-a4e4-df86c55881dd (already migrated).
+[2025-06-03T18:36:59.256Z] [INFO]    ↩️  Skipping related page 1146824d-5503-80af-90ac-c12104f52e50 (already migrated).
+[2025-06-03T18:36:59.256Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8060-93b1-f59ff71122e5 (already migrated).
+[2025-06-03T18:36:59.256Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8036-9ea6-d19271b8891f (already migrated).
+[2025-06-03T18:36:59.257Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8003-8fb0-c302396f4c9c (already migrated).
+[2025-06-03T18:36:59.258Z] [INFO]    ↩️  Skipping related page 1c36824d-5503-8096-afc2-f8deef8d7d73 (already migrated).
+[2025-06-03T18:36:59.258Z] [INFO] 🔎 Processing Global Tag page (type="Brand"): 1136824d-5503-80db-942e-cbae22327164
+[2025-06-03T18:36:59.258Z] [INFO]    📥 Fetching related page: 1146824d-5503-801d-a417-c81f54811570
+[2025-06-03T18:36:59.258Z] [INFO]    🔗 Before URL: https://notion.so/1146824d5503801da417c81f54811570
+[2025-06-03T18:37:00.351Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:37:00.351Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:37:00.744Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:37:01.193Z] [INFO]    ✅ Created new page 2076824d-5503-813b-8ba4-f3493f1fe517 in target.
+[2025-06-03T18:37:01.334Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🪶"}
+[2025-06-03T18:37:01.335Z] [INFO]    🔗 After URL: https://notion.so/2076824d5503813b8ba4f3493f1fe517
+[2025-06-03T18:37:01.338Z] [INFO]    💾 Recorded link (1146824d-5503-801d-a417-c81f54811570 → 2076824d-5503-813b-8ba4-f3493f1fe517) under "tags"
+[2025-06-03T18:38:26.971Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T18:38:26.973Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T18:38:26.973Z] [INFO]    Dry-run limit: 3
+
+[2025-06-03T18:38:27.893Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T18:38:27.895Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8034-9476-da66fcb14fce (already migrated).
+[2025-06-03T18:38:27.896Z] [INFO]    ↩️  Skipping related page 1146824d-5503-807a-ab42-f1ae26d43903 (already migrated).
+[2025-06-03T18:38:27.896Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8094-a4e4-df86c55881dd (already migrated).
+[2025-06-03T18:38:27.897Z] [INFO]    ↩️  Skipping related page 1146824d-5503-80af-90ac-c12104f52e50 (already migrated).
+[2025-06-03T18:38:27.897Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8060-93b1-f59ff71122e5 (already migrated).
+[2025-06-03T18:38:27.898Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8036-9ea6-d19271b8891f (already migrated).
+[2025-06-03T18:38:27.898Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8003-8fb0-c302396f4c9c (already migrated).
+[2025-06-03T18:38:27.899Z] [INFO]    ↩️  Skipping related page 1c36824d-5503-8096-afc2-f8deef8d7d73 (already migrated).
+[2025-06-03T18:38:27.899Z] [INFO] 🔎 Processing Global Tag page (type="Brand"): 1136824d-5503-80db-942e-cbae22327164
+[2025-06-03T18:38:27.899Z] [INFO]    ↩️  Skipping related page 1146824d-5503-801d-a417-c81f54811570 (already migrated).
+[2025-06-03T18:38:27.900Z] [INFO]    📥 Fetching related page: 1146824d-5503-8002-b4d1-e5c1835f620c
+[2025-06-03T18:38:27.900Z] [INFO]    🔗 Before URL: https://notion.so/1146824d55038002b4d1e5c1835f620c
+[2025-06-03T18:38:28.045Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:38:28.045Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:38:28.171Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:38:28.504Z] [INFO]    ✅ Created new page 2076824d-5503-81ff-845f-dac0cd610669 in target.
+[2025-06-03T18:38:28.759Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🧃"}
+[2025-06-03T18:38:28.759Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381ff845fdac0cd610669
+[2025-06-03T18:38:28.762Z] [INFO]    💾 Recorded link (1146824d-5503-8002-b4d1-e5c1835f620c → 2076824d-5503-81ff-845f-dac0cd610669) under "tags"
+[2025-06-03T18:38:28.763Z] [INFO]    📥 Fetching related page: 1146824d-5503-809b-a88f-ecf0885dc532
+[2025-06-03T18:38:28.764Z] [INFO]    🔗 Before URL: https://notion.so/1146824d5503809ba88fecf0885dc532
+[2025-06-03T18:38:29.506Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:38:29.506Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:38:29.616Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:38:29.990Z] [INFO]    ✅ Created new page 2076824d-5503-81b3-8724-ddfd4c1bec07 in target.
+[2025-06-03T18:38:30.128Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🚗"}
+[2025-06-03T18:38:30.128Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381b38724ddfd4c1bec07
+[2025-06-03T18:38:30.129Z] [INFO]    💾 Recorded link (1146824d-5503-809b-a88f-ecf0885dc532 → 2076824d-5503-81b3-8724-ddfd4c1bec07) under "tags"
+[2025-06-03T18:38:30.130Z] [INFO]    📥 Fetching related page: 1146824d-5503-8046-92ac-c78b47678eff
+[2025-06-03T18:38:30.130Z] [INFO]    🔗 Before URL: https://notion.so/1146824d5503804692acc78b47678eff
+[2025-06-03T18:38:31.179Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:38:31.179Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:38:31.817Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:38:32.122Z] [INFO]    ✅ Created new page 2076824d-5503-81d6-958e-fdb78cb72340 in target.
+[2025-06-03T18:38:34.945Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🏬"}
+[2025-06-03T18:38:34.946Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381d6958efdb78cb72340
+[2025-06-03T18:38:34.947Z] [INFO]    💾 Recorded link (1146824d-5503-8046-92ac-c78b47678eff → 2076824d-5503-81d6-958e-fdb78cb72340) under "tags"
+[2025-06-03T18:39:40.416Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T18:39:40.419Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T18:39:40.419Z] [INFO]    Dry-run limit: 3
+
+[2025-06-03T18:39:41.672Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T18:39:41.674Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8034-9476-da66fcb14fce (already migrated).
+[2025-06-03T18:39:41.675Z] [INFO]    ↩️  Skipping related page 1146824d-5503-807a-ab42-f1ae26d43903 (already migrated).
+[2025-06-03T18:39:41.675Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8094-a4e4-df86c55881dd (already migrated).
+[2025-06-03T18:39:41.675Z] [INFO]    ↩️  Skipping related page 1146824d-5503-80af-90ac-c12104f52e50 (already migrated).
+[2025-06-03T18:39:41.676Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8060-93b1-f59ff71122e5 (already migrated).
+[2025-06-03T18:39:41.676Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8036-9ea6-d19271b8891f (already migrated).
+[2025-06-03T18:39:41.677Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8003-8fb0-c302396f4c9c (already migrated).
+[2025-06-03T18:39:41.677Z] [INFO]    ↩️  Skipping related page 1c36824d-5503-8096-afc2-f8deef8d7d73 (already migrated).
+[2025-06-03T18:39:41.677Z] [INFO] 🔎 Processing Global Tag page (type="Brand"): 1136824d-5503-80db-942e-cbae22327164
+[2025-06-03T18:39:41.678Z] [INFO]    ↩️  Skipping related page 1146824d-5503-801d-a417-c81f54811570 (already migrated).
+[2025-06-03T18:39:41.678Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8002-b4d1-e5c1835f620c (already migrated).
+[2025-06-03T18:39:41.679Z] [INFO]    ↩️  Skipping related page 1146824d-5503-809b-a88f-ecf0885dc532 (already migrated).
+[2025-06-03T18:39:41.679Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8046-92ac-c78b47678eff (already migrated).
+[2025-06-03T18:39:41.679Z] [INFO]    📥 Fetching related page: 1146824d-5503-80a6-b1fe-d6bd2eaabc5f
+[2025-06-03T18:39:41.679Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380a6b1fed6bd2eaabc5f
+[2025-06-03T18:39:41.827Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:39:41.827Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:39:42.067Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:39:46.098Z] [INFO]    ✅ Created new page 2076824d-5503-81b2-b90d-c79c386390a4 in target.
+[2025-06-03T18:39:46.231Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🚑"}
+[2025-06-03T18:39:46.231Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381b2b90dc79c386390a4
+[2025-06-03T18:39:46.234Z] [INFO]    💾 Recorded link (1146824d-5503-80a6-b1fe-d6bd2eaabc5f → 2076824d-5503-81b2-b90d-c79c386390a4) under "tags"
+[2025-06-03T18:39:46.235Z] [INFO]    📥 Fetching related page: 1146824d-5503-80c0-be2e-e663e9baf12b
+[2025-06-03T18:39:46.235Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380c0be2ee663e9baf12b
+[2025-06-03T18:39:49.861Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:39:49.861Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:39:50.787Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:39:55.946Z] [INFO]    ✅ Created new page 2076824d-5503-81e3-ab59-d4449e1f7c95 in target.
+[2025-06-03T18:39:56.365Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🛖"}
+[2025-06-03T18:39:56.366Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381e3ab59d4449e1f7c95
+[2025-06-03T18:39:56.368Z] [INFO]    💾 Recorded link (1146824d-5503-80c0-be2e-e663e9baf12b → 2076824d-5503-81e3-ab59-d4449e1f7c95) under "tags"
+[2025-06-03T18:39:56.369Z] [INFO]    📥 Fetching related page: 1146824d-5503-8078-a2ba-f18ca28e05df
+[2025-06-03T18:39:56.370Z] [INFO]    🔗 Before URL: https://notion.so/1146824d55038078a2baf18ca28e05df
+[2025-06-03T18:39:56.530Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:39:56.530Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:39:57.536Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:39:57.937Z] [INFO]    ✅ Created new page 2076824d-5503-81d7-ba43-d219909bba31 in target.
+[2025-06-03T18:40:00.296Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"💸"}
+[2025-06-03T18:40:00.296Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381d7ba43d219909bba31
+[2025-06-03T18:40:00.297Z] [INFO]    💾 Recorded link (1146824d-5503-8078-a2ba-f18ca28e05df → 2076824d-5503-81d7-ba43-d219909bba31) under "tags"
+[2025-06-03T18:40:04.239Z] [INFO] ▶️  Starting Tag Migrator
+[2025-06-03T18:40:04.240Z] [INFO]    Source (Global Tags DB): 1136824d5503809c901afcc3ba0a4b71
+[2025-06-03T18:40:04.240Z] [INFO]    Dry-run limit: 3
+
+[2025-06-03T18:40:11.202Z] [INFO] 🔎 Processing Global Tag page (type="Team"): 1136824d-5503-806d-bb84-f4dc0aa3b61b
+[2025-06-03T18:40:11.203Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8034-9476-da66fcb14fce (already migrated).
+[2025-06-03T18:40:11.204Z] [INFO]    ↩️  Skipping related page 1146824d-5503-807a-ab42-f1ae26d43903 (already migrated).
+[2025-06-03T18:40:11.204Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8094-a4e4-df86c55881dd (already migrated).
+[2025-06-03T18:40:11.204Z] [INFO]    ↩️  Skipping related page 1146824d-5503-80af-90ac-c12104f52e50 (already migrated).
+[2025-06-03T18:40:11.205Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8060-93b1-f59ff71122e5 (already migrated).
+[2025-06-03T18:40:11.205Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8036-9ea6-d19271b8891f (already migrated).
+[2025-06-03T18:40:11.206Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8003-8fb0-c302396f4c9c (already migrated).
+[2025-06-03T18:40:11.206Z] [INFO]    ↩️  Skipping related page 1c36824d-5503-8096-afc2-f8deef8d7d73 (already migrated).
+[2025-06-03T18:40:11.206Z] [INFO] 🔎 Processing Global Tag page (type="Brand"): 1136824d-5503-80db-942e-cbae22327164
+[2025-06-03T18:40:11.206Z] [INFO]    ↩️  Skipping related page 1146824d-5503-801d-a417-c81f54811570 (already migrated).
+[2025-06-03T18:40:11.207Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8002-b4d1-e5c1835f620c (already migrated).
+[2025-06-03T18:40:11.207Z] [INFO]    ↩️  Skipping related page 1146824d-5503-809b-a88f-ecf0885dc532 (already migrated).
+[2025-06-03T18:40:11.207Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8046-92ac-c78b47678eff (already migrated).
+[2025-06-03T18:40:11.207Z] [INFO]    ↩️  Skipping related page 1146824d-5503-80a6-b1fe-d6bd2eaabc5f (already migrated).
+[2025-06-03T18:40:11.207Z] [INFO]    ↩️  Skipping related page 1146824d-5503-80c0-be2e-e663e9baf12b (already migrated).
+[2025-06-03T18:40:11.208Z] [INFO]    ↩️  Skipping related page 1146824d-5503-8078-a2ba-f18ca28e05df (already migrated).
+[2025-06-03T18:40:11.208Z] [INFO]    📥 Fetching related page: 1146824d-5503-80b2-ac20-d1d3199c89a3
+[2025-06-03T18:40:11.208Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380b2ac20d1d3199c89a3
+[2025-06-03T18:40:11.362Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:40:11.362Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:40:11.486Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:40:11.789Z] [INFO]    ✅ Created new page 2076824d-5503-8124-b37f-db8063adc50f in target.
+[2025-06-03T18:40:11.911Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🛣️"}
+[2025-06-03T18:40:11.911Z] [INFO]    🔗 After URL: https://notion.so/2076824d55038124b37fdb8063adc50f
+[2025-06-03T18:40:11.912Z] [INFO]    💾 Recorded link (1146824d-5503-80b2-ac20-d1d3199c89a3 → 2076824d-5503-8124-b37f-db8063adc50f) under "tags"
+[2025-06-03T18:40:11.912Z] [INFO]    📥 Fetching related page: 1146824d-5503-8098-9bdd-d6912123a55e
+[2025-06-03T18:40:11.912Z] [INFO]    🔗 Before URL: https://notion.so/1146824d550380989bddd6912123a55e
+[2025-06-03T18:40:12.708Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:40:12.708Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:40:12.834Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:40:13.985Z] [INFO]    ✅ Created new page 2076824d-5503-81ec-a7f0-de7192f64da0 in target.
+[2025-06-03T18:40:15.146Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🖥️"}
+[2025-06-03T18:40:15.146Z] [INFO]    🔗 After URL: https://notion.so/2076824d550381eca7f0de7192f64da0
+[2025-06-03T18:40:15.147Z] [INFO]    💾 Recorded link (1146824d-5503-8098-9bdd-d6912123a55e → 2076824d-5503-81ec-a7f0-de7192f64da0) under "tags"
+[2025-06-03T18:40:15.148Z] [INFO]    📥 Fetching related page: 1146824d-5503-8049-a865-e9dd61b1a115
+[2025-06-03T18:40:15.148Z] [INFO]    🔗 Before URL: https://notion.so/1146824d55038049a865e9dd61b1a115
+[2025-06-03T18:40:15.317Z] [INFO]    🛠  Transforming page for target DB "Brand"
+[2025-06-03T18:40:15.317Z] [INFO]       Passing tagType to transformer: "Brand"
+[2025-06-03T18:40:15.536Z] [INFO]    🚀 Writing to target DB (1c96824d5503804eb71ff00158d886a8)
+[2025-06-03T18:40:15.885Z] [INFO]    ✅ Created new page 2076824d-5503-8142-a47b-c9585ce82102 in target.
+[2025-06-03T18:40:16.300Z] [INFO]    🖼️  Destination icon: {"type":"emoji","emoji":"🚀"}
+[2025-06-03T18:40:16.300Z] [INFO]    🔗 After URL: https://notion.so/2076824d55038142a47bc9585ce82102
+[2025-06-03T18:40:16.300Z] [INFO]    💾 Recorded link (1146824d-5503-8049-a865-e9dd61b1a115 → 2076824d-5503-8142-a47b-c9585ce82102) under "tags"
