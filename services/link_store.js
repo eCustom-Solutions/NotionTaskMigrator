@@ -39,7 +39,6 @@ class LinkStore {
         }
     }
 
-
     /**
      * Save a Link object to disk, sharded by sourceId.
      * @param {Link} link
@@ -49,11 +48,12 @@ class LinkStore {
     async save(link, migrationType = DEFAULT_MIGRATION_TYPE) {
         const dir = this._dirForType(migrationType);
         const file = path.join(dir, `${link.sourceId}.json`);
+        // Write full Link object as JSON
         await fs.writeFile(file, JSON.stringify(link, null, 2), 'utf-8');
     }
 
     /**
-     * (Optional) Load an existing Link by sourceId.
+     * Load an existing Link by sourceId, instantiate a Link object.
      * @param {string} sourceId
      * @param {string} migrationType
      * @returns {Promise<Link>}
@@ -63,7 +63,93 @@ class LinkStore {
         const file = path.join(dir, `${sourceId}.json`);
         const content = await fs.readFile(file, 'utf-8');
         const data = JSON.parse(content);
-        return new Link(data.sourceId, data.targetId, data.status, data.syncedAt);
+        // Instantiate Link with full metadata
+        return new Link({
+            sourceId: data.sourceId,
+            targetId: data.targetId,
+            status: data.status,
+            syncedAt: data.syncedAt,
+            sourceDbId: data.sourceDbId,
+            sourceDbName: data.sourceDbName,
+            targetDbId: data.targetDbId,
+            targetDbName: data.targetDbName,
+            type: data.type,
+            sourcePageName: data.sourcePageName,
+            sourcePageIcon: data.sourcePageIcon || null,
+            targetPageName: data.targetPageName,
+            targetPageIcon: data.targetPageIcon || null,
+            notes: data.notes || ''
+        });
+    }
+
+    /**
+     * Load raw JSON for debugging (without instantiating Link).
+     * @param {string} sourceId
+     * @param {string} migrationType
+     * @returns {Promise<object>}
+     */
+    async loadRaw(sourceId, migrationType = DEFAULT_MIGRATION_TYPE) {
+        const dir = this._dirForType(migrationType);
+        const file = path.join(dir, `${sourceId}.json`);
+        const content = await fs.readFile(file, 'utf-8');
+        return JSON.parse(content);
+    }
+
+    /**
+     * Find a Link by its sourcePageName under a given migration type.
+     * Returns the first match, or null if none found.
+     *
+     * @param {string} sourcePageName
+     * @param {string} migrationType
+     * @returns {Promise<Link|null>}
+     */
+    async findBySourcePageName(sourcePageName, migrationType = DEFAULT_MIGRATION_TYPE) {
+        const dir = this._dirForType(migrationType);
+        let files;
+        try {
+            files = await fs.readdir(dir);
+        } catch {
+            return null;
+        }
+
+        for (const fileName of files) {
+            // skip non-JSON files just in case
+            if (!fileName.endsWith('.json')) continue;
+            const fullPath = path.join(dir, fileName);
+            let raw;
+            try {
+                raw = await fs.readFile(fullPath, 'utf-8');
+            } catch {
+                continue;
+            }
+            let data;
+            try {
+                data = JSON.parse(raw);
+            } catch {
+                continue;
+            }
+            // If sourcePageName field matches exactly, instantiate and return
+            if (data.sourcePageName === sourcePageName && data.status === 'success') {
+                return new Link({
+                    sourceId: data.sourceId,
+                    targetId: data.targetId,
+                    status: data.status,
+                    syncedAt: data.syncedAt,
+                    sourceDbId: data.sourceDbId,
+                    sourceDbName: data.sourceDbName,
+                    targetDbId: data.targetDbId,
+                    targetDbName: data.targetDbName,
+                    type: data.type,
+                    sourcePageName: data.sourcePageName,
+                    sourcePageIcon: data.sourcePageIcon || null,
+                    targetPageName: data.targetPageName,
+                    targetPageIcon: data.targetPageIcon || null,
+                    notes: data.notes || ''
+                });
+            }
+        }
+
+        return null;
     }
 }
 

@@ -1,94 +1,113 @@
 // transformations/sm_tasks_map.js
 // -------------------------------
-
 const { resolveOrCreateRelationPages } = require('../services/relation_resolver');
+const linkStore = require('../services/link_store');
+const notion = require('../services/notion_client');
+const logger = require('../logging/logger');
 
 module.exports = {
     mappings: {
         'Name':       'Name',
         'Brand':      'Brands',
         'Status':     'Social Media Status',
-        // 'Teammates':  'People',   // source "Teammates" → target "People"
+        // 'Teammates':  'People',   // we’ll keep this as multi-select below
         'Due Date':   'Due',
         'Link':       'Link',
         'Comments':   'Comments',
+        'Teammates': 'Teammates',
+        // other mappings…
     },
+
+    virtualMappings: [
+        'Department',
+        'Assignee'
+    ],
+
 
     hooks: {
         'Social Media Status': (sourceValue) => {
             const name = sourceValue.status?.name;
             return { status: { name: name || null } };
         },
+
         'Brands': async (sourceValue) => {
-            const brandNames = sourceValue.relation?.length > 0
-                ? await Promise.all(sourceValue.relation.map(async rel => {
-                    // Fetch source Brand page to read its Name
-                    const page = await notion.pages.retrieve({ page_id: rel.id });
-                    return page.properties['Name']?.title?.[0]?.plain_text || null;
-                }))
-                : [];
-
-            // Clean out nulls
-            const filteredBrandNames = brandNames.filter(Boolean);
-
-            if (filteredBrandNames.length === 0) {
+            if (!sourceValue.relation || sourceValue.relation.length === 0) {
+                logger.info(`ℹ️ No Brands found on source task — skipping.`);
                 return { relation: [] };
             }
 
-            const CENT_DB_ID = process.env.NOTION_CENT_DB_ID;
+            const relatedIds = [];
 
-            const pageIds = await resolveOrCreateRelationPages({
-                targetDbId: CENT_DB_ID,
-                relationPropName: 'Brands',
-                sourceNames: filteredBrandNames,
-                nameProp: 'Name'
-            });
+            for (const rel of sourceValue.relation) {
+                const sourceId = rel.id;
 
-            return { relation: pageIds.map(id => ({ id })) };
+                try {
+                    const link = await linkStore.load(sourceId, 'tags');
+
+                    if (link && link.targetId && link.status === 'success') {
+                        relatedIds.push({ id: link.targetId });
+                    } else {
+                        logger.warn(`⚠️ No successful migration link found for Brand sourceId=${sourceId}. Skipping.`);
+                    }
+                } catch (err) {
+                    logger.error(`❌ Error loading link for Brand sourceId=${sourceId}:`, err.message || err);
+                }
+            }
+
+            return { relation: relatedIds };
         },
+
+        // Keep Teammates as multi-select: just copy names
+        'Teammates': (sourceValue) => {
+            // sourceValue.multi_select is an array of { name, color, id }
+            const teammateNames = sourceValue.multi_select?.map(opt => opt.name) || [];
+            // Return multi_select shape for CENT DB – they’ll get new option IDs automatically.
+            return {
+                multi_select: teammateNames.map(name => ({ name }))
+            };
+        },
+
         'Link': (sourceValue) => {
             const firstFile = sourceValue.files?.[0];
             const firstUrl = firstFile?.external?.url || firstFile?.file?.url || null;
+            return { url: firstUrl || null };
+        },
 
-            return {
-                url: firstUrl
-            };
+        // NEW: Department hook—look up “Social Media” via link store (migrationType = 'tags')
+        'Department': async (sourceValue) => {
+            // We ignore sourceValue because we always want to assign the “Social Media” department.
+            // Attempt to find that department’s link from the tags migration.
+            const link = await linkStore.findBySourcePageName('Social Media', 'tags');
+            if (link && link.targetId) {
+                return { relation: [{ id: link.targetId }] };
+            } else {
+                console.warn(
+                    '⚠️  Could not find a "Social Media" link under tags. ' +
+                    'Please ensure that the “Social Media” department was migrated in migrate_tags.js.'
+                );
+                return { relation: [] };
+            }
+        },
+
+        // NEW: Assignee hook (hardcoded to Derious Vaughn for now)
+        'Assignee': async () => {
+            const DERIOUS_VAUGHN_ID = process.env.DERIOUS_VAUGHN_ID;
+            if (DERIOUS_VAUGHN_ID) {
+                return {
+                    people: [
+                        { object: 'user', id: DERIOUS_VAUGHN_ID }
+                    ]
+                };
+            } else {
+                console.warn('⚠️  Missing DERIOUS_VAUGHN_ID in .env; skipping Assignee.');
+                return { people: [] };
+            }
         }
-
-        // // Updated People hook to use the relation_resolver
-        // 'People': async (sourceValue) => {
-        //     // Extract names from the source multi_select “Teammates”
-        //     const teammateNames = sourceValue.multi_select?.map(option => option.name) || [];
-        //
-        //     if (teammateNames.length === 0) {
-        //         return null;
-        //     }
-        //
-        //     // Call our helper:
-        //     //  • targetDbId: your CENT DB ID (pull from env or pass in context)
-        //     //  • relationPropName: “People”
-        //     //  • sourceNames: array of teammate names
-        //     //  • nameProp: the title property in the People-relation DB (usually "Name")
-        //     const CENT_DB_ID = process.env.NOTION_CENT_DB_ID;
-        //
-        //     const pageIds = await resolveOrCreateRelationPages({
-        //         targetDbId: CENT_DB_ID,
-        //         relationPropName: 'People',
-        //         sourceNames: teammateNames,
-        //         nameProp: 'Full Name'
-        //     });
-        //
-        //     // Return the array in Notion’s expected shape:
-        //     return { relation: pageIds.map(id => ({ id })) };
-        // }
     },
 
     postProcess: async (payload) => {
-        payload.properties['Department'] = {
-            relation: [
-                { id: '1de6824d5503804c91d4fdf1d5303433' }  // Social Media Management
-            ]
-        };
+        // If you still need a fallback or override, you can adjust here.
+        // But since we do it in the hook, you may not need anything in postProcess.
         return payload;
     }
 };

@@ -8,7 +8,7 @@
 
 require('dotenv').config();
 const notion          = require('./services/notion_client');
-const logger          = require('./services/logger');
+const logger          = require('./logging/logger');
 const linkStore       = require('./services/link_store');
 const transformTagPage = require('./transformations/tag_transformer');
 const { writeToDBB }  = require('./services/write_task');
@@ -37,6 +37,30 @@ async function* streamDB(dbId) {
             yield page;
         }
         cursor = response.has_more ? response.next_cursor : undefined;
+    } while (cursor);
+}
+
+// ── Helper: stream relation property values (paginated) ──────────────────────
+async function* streamRelationProperty(pageId, propertyId) {
+    let cursor = undefined;
+    do {
+        const resp = await notion.pages.properties.retrieve({
+            page_id: pageId,
+            property_id: propertyId,
+            page_size: 100,
+            start_cursor: cursor
+        });
+        if (resp && Array.isArray(resp.results)) {
+            for (const rel of resp.results) {
+                if (rel.type === 'relation' && rel.relation && rel.relation.id) {
+                    yield rel.relation.id;
+                } else if (rel.id) {
+                    // fallback for legacy or incomplete structure
+                    yield rel.id;
+                }
+            }
+        }
+        cursor = resp.has_more ? resp.next_cursor : undefined;
     } while (cursor);
 }
 
@@ -71,7 +95,7 @@ async function main() {
             continue;
         }
 
-        logger.info(`🔎 Processing Global Tag page (type="${tagType}"): ${tagPage.id}`);
+
 
         const targetDbId = TARGET_DB_IDS[tagType];
         const targetDbMeta = await notion.databases.retrieve({ database_id: targetDbId });
@@ -81,11 +105,17 @@ async function main() {
         const tagPageName = tagPage.properties['Tag']?.title?.[0]?.plain_text || '';
         const tagPageIcon = tagPage.icon?.type === 'emoji' ? tagPage.icon.emoji : null;
 
-        // 3) Read its “Related Global Tags DB” relations array
+        // 3) Read its “Sub-item” relations array
         //    Each item is { id: <relatedPageId>, ... }
-        const relations = tagPage.properties['Related Global Tags DB']?.relation || [];
+        const relationPropertyId = tagPage.properties['Sub-item'].id;
+
+        const relations = [];
+        for await (const relId of streamRelationProperty(tagPage.id, relationPropertyId)) {
+            relations.push({ id: relId });
+        }
+        console.log("tagPage.properties['Sub-item']", tagPage.properties['Sub-item']);
         if (relations.length === 0) {
-            logger.info(`   ↳ No related pages found for this ${tagType} tag → skipping.`);
+            logger.info(`   ↳ Brand Tag page ${tagPage.id} has no related pages`);
             continue;
         }
 

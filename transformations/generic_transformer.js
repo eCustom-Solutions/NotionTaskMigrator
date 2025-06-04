@@ -35,6 +35,18 @@ module.exports = async function transform(page, map) {
         }
     }
 
+// --- virtual fields ---
+    if (Array.isArray(map.virtualMappings)) {
+        for (const targetKey of map.virtualMappings) {
+            if (map.hooks && typeof map.hooks[targetKey] === 'function') {
+                const hookResult = await map.hooks[targetKey](/* undefined or null */);
+                result.properties[targetKey] = hookResult;
+            } else {
+                console.warn(`⚠️ No hook defined for virtualMapping "${targetKey}" — skipping`);
+            }
+        }
+    }
+
     // Optional post-processing hook
     if (typeof map.postProcess === 'function') {
         await map.postProcess(result, page);

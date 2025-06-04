@@ -31,12 +31,29 @@ module.exports = async function transformTagPage(page, targetType) {
         }
     };
 
-    // ── Copy over the emoji/icon if one is present
-    if (page.icon && page.icon.type === 'emoji') {
-        result.icon = {
-            type: 'emoji',
-            emoji: page.icon.emoji
-        };
+    // ── Copy over the icon (emoji, external, or file) if present
+    if (page.icon) {
+        if (page.icon.type === 'emoji') {
+            result.icon = {
+                type: 'emoji',
+                emoji: page.icon.emoji
+            };
+        } else if (page.icon.type === 'external') {
+            result.icon = {
+                type: 'external',
+                external: {
+                    url: page.icon.external.url
+                }
+            };
+        } else if (page.icon.type === 'file') {
+            // Fallback: use the Notion-hosted file URL as an external icon
+            result.icon = {
+                type: 'external',
+                external: {
+                    url: page.icon.file.url
+                }
+            };
+        }
     }
 
     // ── Fetch all of this page’s child blocks (if any)

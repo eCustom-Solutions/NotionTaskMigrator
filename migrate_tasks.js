@@ -10,7 +10,21 @@ const writeToDBB               = require('./services/write_task').writeToDBB;
 const linkStore                = require('./services/link_store');
 const transform                = require('./transformations/generic_transformer');
 const mapSpec                  = require('./transformations/sm_tasks_map');
-const logger = require('./services/logger');
+const logger = require('./logging/logger');
+
+// ── Helper: Sanitize blocks to remove invalid data URLs for images ─────────────
+function sanitizeBlocks(blocks) {
+    return blocks.filter(block => {
+        if (block.type === 'image' && block.image && block.image.type === 'external') {
+            const url = block.image.external.url;
+            if (url.startsWith('data:')) {
+                logger.info(`⚠️ Skipping image block with invalid data URL: ${url.substring(0, 50)}...`);
+                return false;
+            }
+        }
+        return true;
+    });
+}
 
 const SM_DB_ID   = process.env.NOTION_SM_TASKS_DB_ID;
 const CENT_DB_ID = process.env.NOTION_CENT_DB_ID;
@@ -24,6 +38,7 @@ async function main() {
     for await (const page of getTasksFromDBA(SM_DB_ID)) {
         const sourceId = page.id;
 
+
         // Idempotency: skip if already migrated
         const existing = await linkStore.load(sourceId).catch(() => null);
         if (existing && existing.status === 'success') {
@@ -32,8 +47,21 @@ async function main() {
             continue;
         }
 
+        logger.info(`🔎 Full source page object for ${sourceId}:`);
+        logger.info(JSON.stringify(page, null, 2));
+
+
         logger.info(`🛠 Transforming page ${sourceId}`);
-        const payload = await transform(page, mapSpec);
+        let payload = await transform(page, mapSpec);
+
+        // Sanitize children blocks to remove invalid data URLs
+        if (payload.children) {
+            payload.children = sanitizeBlocks(payload.children);
+            logger.info(`🔧 Sanitized children blocks for ${sourceId}`);
+        }
+
+        logger.info(`🔍 Final payload for ${sourceId}:`);
+        logger.info(JSON.stringify(payload, null, 2));
 
         // Write to CENT DB
         try {
