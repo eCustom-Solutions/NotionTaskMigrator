@@ -1,8 +1,6 @@
 // transformations/sm_tasks_map.js
 // -------------------------------
-const { resolveOrCreateRelationPages } = require('../services/relation_resolver');
 const linkStore = require('../services/link_store');
-const notion = require('../services/notion_client');
 const logger = require('../logging/logger');
 
 module.exports = {
