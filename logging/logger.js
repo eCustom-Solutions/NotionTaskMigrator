@@ -68,5 +68,13 @@ module.exports = {
     error: (...args) => {
         console.error(...args);
         logToFile('ERROR', ...args);
+    },
+    warn: (...args) => {
+        console.warn(...args);
+        logToFile('WARN', ...args);
+    },
+    warning: (...args) => {
+        console.warn(...args);
+        logToFile('WARN', ...args);
     }
 };
