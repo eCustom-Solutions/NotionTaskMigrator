@@ -3,9 +3,8 @@
 // A generic transformer that, given a Notion page and a mapping spec,
 // builds the `properties` payload for creating/updating a page in the target DB.
 
-//todo: integrate logging into here
-
 const notion = require('../services/notion_client');
+const logger = require('../logging/logger');
 
 module.exports = async function transform(page, map) {
     const result = {properties: {}};
@@ -28,8 +27,8 @@ module.exports = async function transform(page, map) {
                     title: sourceValue.title
                 };
             } else if (!type) {
-                console.error(`❗ sourceValue.type is undefined for property "${sourceKey}"`);
-                console.error(`→ sourceValue was:`, sourceValue);
+                logger.error(`❗ sourceValue.type is undefined for property "${sourceKey}"`);
+                logger.error(`→ sourceValue was:`, sourceValue);
                 throw new Error(`Cannot infer type for property "${sourceKey}"`);
             } else {
                 result.properties[targetKey] = { [type]: sourceValue[type] };
@@ -44,7 +43,7 @@ module.exports = async function transform(page, map) {
                 const hookResult = await map.hooks[targetKey](/* undefined or null */);
                 result.properties[targetKey] = hookResult;
             } else {
-                console.warn(`⚠️ No hook defined for virtualMapping "${targetKey}" — skipping`);
+                logger.warn(`⚠️ No hook defined for virtualMapping "${targetKey}" — skipping`);
             }
         }
     }
