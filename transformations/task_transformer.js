@@ -1,7 +1,9 @@
-// transformations/generic_transformer.js
+// transformations/task_transformer.js
 // --------------------------------------
 // A generic transformer that, given a Notion page and a mapping spec,
 // builds the `properties` payload for creating/updating a page in the target DB.
+
+//todo: integrate logging into here
 
 const notion = require('../services/notion_client');
 

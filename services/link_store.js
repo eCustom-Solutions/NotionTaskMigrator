@@ -16,6 +16,7 @@ class LinkStore {
         fs.mkdir(this.dir, { recursive: true }).catch(() => {});
     }
 
+    // todo: figure out why this function isn't async
     _dirForType(migrationType = DEFAULT_MIGRATION_TYPE) {
         const dir = path.join(this.dir, migrationType);
         fs.mkdir(dir, { recursive: true }).catch(() => {});

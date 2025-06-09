@@ -8,8 +8,16 @@ require('dotenv').config();
 const { getTasksFromDBA }      = require('./services/fetch_tasks');
 const writeToDBB               = require('./services/write_task').writeToDBB;
 const linkStore                = require('./services/link_store');
-const transform                = require('./transformations/generic_transformer');
+const transform                = require('./transformations/task_transformer');
 const logger = require('./logging/logger');
+
+
+// ── CONFIG ────────────────────────────────────────
+const SOURCE_DB_ID = process.env.NOTION_SM_TASKS_DB_ID;
+const TARGET_DB_ID = process.env.NOTION_CENT_DB_ID;
+const TASK_MAP = require('./transformations/sm_tasks_map');
+const LINKSTORE_TYPE = 'tasks_SM_dummy';
+
 
 // ── Helper: Sanitize blocks to remove invalid data URLs for images ─────────────
 function sanitizeBlocks(blocks) {
@@ -25,13 +33,6 @@ function sanitizeBlocks(blocks) {
     });
 }
 
-// ── CONFIG ────────────────────────────────────────
-const SOURCE_DB_ID = process.env.NOTION_SM_TASKS_DB_ID;
-const TARGET_DB_ID = process.env.NOTION_CENT_DB_ID;
-const TASK_MAP = require('./transformations/sm_tasks_map');
-const LINKSTORE_TYPE = 'tasks_SM';
-
-const mapSpec                  = TASK_MAP;
 
 async function main() {
     logger.info(`▶️  Starting Task Migrator`);
@@ -51,8 +52,8 @@ async function main() {
             continue;
         }
 
-        logger.info(`🔎 Full source page object for ${sourceId}:`);
-        logger.info(JSON.stringify(page, null, 2));
+        // logger.info(`🔎 Full source page object for ${sourceId}:`);
+        // logger.info(JSON.stringify(page, null, 2));
 
 
         logger.info(`🛠 Transforming page ${sourceId}`);
@@ -64,15 +65,17 @@ async function main() {
             logger.info(`🔧 Sanitized children blocks for ${sourceId}`);
         }
 
-        logger.info(`🔍 Final payload for ${sourceId}:`);
-        logger.info(JSON.stringify(payload, null, 2));
+        // logger.info(`🔍 Final payload for ${sourceId}:`);
+        // logger.info(JSON.stringify(payload, null, 2));
 
         // Write to CENT DB
         try {
             logger.info(`🚀 Writing page ${sourceId} to CENT DB`);
             const result = await writeToDBB(payload, TARGET_DB_ID);
-            logger.info(`✅ Write result for ${sourceId}:`, result);
+            // logger.info(`✅ Write result for ${sourceId}:`, result);
             logger.info(`✅ Migrated ${sourceId} → ${result.id}`);
+            logger.info(`\n-----------------------------------------------------------------------------------------\n\n`);
+
 
             // Record the link
             await linkStore.save({
@@ -95,9 +98,10 @@ async function main() {
 
         } catch (err) {
             // More context on failure:
-            console.error(`❌ Failed to migrate ${sourceId}`);
-            const notionUrl = `https://www.notion.so/${sourceId.replace(/-/g, '')}`; console.error(`🔗 Review in Notion: ${notionUrl}`);
-            console.error('• Notion error:', err);
+            logger.info(`❌ Failed to migrate ${sourceId}`);
+            const notionUrl = `https://www.notion.so/${sourceId.replace(/-/g, '')}`;
+            logger.error(`🔗 Review in Notion: ${notionUrl}`);
+            logger.info('• Notion error:', err);
 
             // still record failure to avoid infinite retry loops
             await linkStore.save({
@@ -117,15 +121,15 @@ async function main() {
                 notes: ''
             }, LINKSTORE_TYPE);
             logger.info(`💾 Link saved for ${sourceId}`);
+            logger.info(`\n-----------------------------------------------------------------------------------------\n\n`);
         }
 
         processed++;
     }
 
-    logger.info(`\n🏁 Migration complete! ${processed} pages processed.`);
-}
+    logger.info(`\n🏁 Migration complete! ${processed} pages processed.`);}
 
 main().catch(err => {
-    console.error('Fatal error in syncTasks:', err);
+    logger.error('Fatal error in syncTasks:', err);
     process.exit(1);
 });

@@ -7,8 +7,7 @@ module.exports = {
     mappings: {
         'Name':       'Name',
         'Brand':      'Brands',
-        'Status':     'Social Media Status',
-        // 'Teammates':  'People',   // we’ll keep this as multi-select below
+        'Status':     'Status (SM)',
         'Due Date':   'Due',
         'Link':       'Link',
         'Comments':   'Comments',
@@ -23,7 +22,7 @@ module.exports = {
 
 
     hooks: {
-        'Social Media Status': (sourceValue) => {
+        'Status (SM)': (sourceValue) => {
             const name = sourceValue.status?.name;
             return { status: { name: name || null } };
         },
@@ -72,8 +71,7 @@ module.exports = {
         },
 
         // NEW: Department hook—look up “Social Media” via link store (migrationType = 'tags')
-        'Department': async (sourceValue) => {
-            // We ignore sourceValue because we always want to assign the “Social Media” department.
+        'Department': async () => {
             // Attempt to find that department’s link from the tags migration.
             const link = await linkStore.findBySourcePageName('Social Media', 'tags');
             if (link && link.targetId) {
