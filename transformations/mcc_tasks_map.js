@@ -4,10 +4,40 @@ const logger = require('../logging/logger');
 const notion = require('../services/notion_client');
 const { UserStore } = require('../services/user_store');
 const linkStore = require('../services/link_store');
+const path = require('path');
+const { MediaMigrator } = require('../services/media_migrator');
+// Instantiate media migrator and initialize
+const mediaMigrator = new MediaMigrator({
+  notion,
+  tmpDir: path.join(__dirname, '../tmp/files'),
+  logger,
+  maxParallel: 20,
+  chunkSizeMB: 19
+});
+(async () => { await mediaMigrator.init(); })();
 
 // Initialize and cache workspace users
 const userStore = new UserStore(notion);
 (async () => { await userStore.init(); })();
+
+// Cache source DB select option map for Priority
+const PRIORITY_SOURCE_DB_ID = process.env.DUMMY_NOTION_MCC_TASKS_DB_ID;
+const priorityIdToNameMap = {};
+
+(async () => {
+    try {
+        const db = await notion.databases.retrieve({ database_id: PRIORITY_SOURCE_DB_ID });
+        const options = db.properties?.Priority?.select?.options || [];
+        for (const opt of options) {
+            if (opt.id && opt.name) {
+                priorityIdToNameMap[opt.id] = opt.name;
+            } else {
+            }
+        }
+
+    } catch (err) {
+    }
+})();
 
 module.exports = {
     mappings: {
@@ -16,12 +46,12 @@ module.exports = {
         'Assignee': 'Assignee',
         'Brand': 'Brands',
         'Content Type': 'Content Type',
-        'Priority': 'Priority',
+        'Priority': 'Priority (MCC)',
         'Task Owner': 'Task Owner',
         'Platform': 'Platform',
         'Series': 'Series',
         'Posting Date': 'Posting Date',
-        'Design Due Date': 'Design Due Date (MCC)',
+        'Design Due Date': 'Design Due Date',
         'Caption': 'Caption',
         'Instructions': 'Instructions',
         'Date Assigned': 'Date Assigned',
@@ -40,12 +70,26 @@ module.exports = {
     ],
 
     hooks: {
+        // Rename Design Due Date to Design Due Date (MCC) in the final payload
+        'Design Due Date': async (sourceValue) => {
+            // Pass through the value as-is; mapping already renames the field
+            // This hook is here for logging/traceability
+            logger.info('Renaming "Design Due Date" to "Design Due Date (MCC)"');
+            return sourceValue;
+        },
+        // Normalize Status: drop source ID, keep only name
+        'Status (MCC)': async (sourceValue) => {
+          if (!sourceValue || !sourceValue.status || !sourceValue.status.name) {
+            return { status: null };
+          }
+          return { status: { name: sourceValue.status.name } };
+        },
         // Map Assignee → Derious Vaughn by name lookup
         Assignee: async (sourceValue) => {
             // sourceValue may be a people or text field; override with fixed user
             const userId = userStore.getUserIdByName('Derious Vaughn');
             if (!userId) {
-                logger.warn('Assignee "Derious Vaughn" not found in user store');
+                logger.warning('Assignee "Derious Vaughn" not found in user store');
                 return { people: [] };
             }
             return { people: [ { object: 'user', id: userId } ] };
@@ -78,6 +122,44 @@ module.exports = {
             return { relation: relations };
         },
 
+        'Priority (MCC)': async (sourceValue) => {
+            const id = sourceValue?.select?.id;
+            logger.info('Source id ', id)
+
+            if (!id) {
+                logger.info('🟡 No Priority selected on source page; field is null or undefined');
+                return { select: null };
+            }
+
+            const name = priorityIdToNameMap[id];
+            if (!name) {
+                logger.warn(`❓ Priority ID "${id}" not found in source schema. Full sourceValue: ${JSON.stringify(sourceValue)}`);
+                return { select: null };
+            }
+
+            logger.info(`✅ Priority ID "${id}" resolved to name "${name}"`);
+            return { select: { name } };
+        },
+
+        'Content Type': async (sourceValue) => {
+            const types = Array.isArray(sourceValue.multi_select) ? sourceValue.multi_select : [];
+            return {
+                multi_select: types.map(opt => ({ name: opt.name }))
+            };
+        },
+
+        Series: async (sourceValue) => {
+            if (!sourceValue || !sourceValue.select || !sourceValue.select.name) return { multi_select: [] };
+            return { multi_select: [ { name: sourceValue.select.name } ] };
+        },
+
+        Platform: async (sourceValue) => {
+            const values = Array.isArray(sourceValue.multi_select) ? sourceValue.multi_select : [];
+            return {
+                multi_select: values.map(opt => ({ name: opt.name }))
+            };
+        },
+
         // Always tag migrated tasks with "Master Content Calendar"
         Labels: async () => {
             return {
@@ -85,6 +167,122 @@ module.exports = {
                     { name: 'Master Content Calendar' }
                 ]
             };
+        },
+
+        // Migrate and re-upload video content files to Notion file_upload objects
+        'Final Video Content': async (sourceValue) => {
+            const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
+
+            // Optional debugging skip for pages wich have no files in Final Video Content property
+            // if (files.length === 0) {
+            //     logger.warn('⛔ Skipping page: no Final Video Content files provided.');
+            //     throw new Error('SkipPage: Final Video Content is empty.');
+            // }
+
+            const notionFiles = files.filter(f => f.type === 'file');
+            const externalFiles = files
+                .filter(f => f.type === 'external')
+                .map(f => {
+                    const { id, ...rest } = f;
+                    return rest;
+                });
+
+            logger.info(`➡️ Processing Final Video Content: ${files.length} file(s)`);
+            logger.info(`📤 Notion-hosted files: ${notionFiles.length}`);
+            logger.info(`🔗 External-only links: ${externalFiles.length}`);
+
+            const uploaded = await mediaMigrator.processFiles(null, notionFiles);
+            logger.info(`✅ Final Video Content migrated: ${uploaded.length} file_upload(s)`);
+
+            return { files: [...uploaded, ...externalFiles] };
+        },
+
+        'Review Link': async (sourceValue) => {
+            const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
+
+            const notionFiles = files.filter(f => f.type === 'file');
+            const externalFiles = files
+                .filter(f => f.type === 'external')
+                .map(f => {
+                    const { id, ...rest } = f;
+                    return rest;
+                });
+
+            logger.info(`➡️ Processing Review Link: ${files.length} file(s)`);
+            logger.info(`📤 Notion-hosted files: ${notionFiles.length}`);
+            logger.info(`🔗 External-only links: ${externalFiles.length}`);
+
+            const uploaded = await mediaMigrator.processFiles(null, notionFiles);
+            logger.info(`✅ Review Link migrated: ${uploaded.length} file_upload(s)`);
+
+            return { files: [...uploaded, ...externalFiles] };
+        },
+
+        'Blog Link': async (sourceValue) => {
+            const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
+
+            const notionFiles = files.filter(f => f.type === 'file');
+            const externalFiles = files
+                .filter(f => f.type === 'external')
+                .map(f => {
+                    const { id, ...rest } = f;
+                    return rest;
+                });
+
+            logger.info(`➡️ Processing Blog Link: ${files.length} file(s)`);
+            logger.info(`📤 Notion-hosted files: ${notionFiles.length}`);
+            logger.info(`🔗 External-only links: ${externalFiles.length}`);
+
+            const uploaded = await mediaMigrator.processFiles(null, notionFiles);
+            logger.info(`✅ Blog Link migrated: ${uploaded.length} file_upload(s)`);
+
+            return { files: [...uploaded, ...externalFiles] };
+        },
+
+        'Final Design': async (sourceValue) => {
+            const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
+
+            const notionFiles = files.filter(f => f.type === 'file');
+            const externalFiles = files
+                .filter(f => f.type === 'external')
+                .map(f => {
+                    const { id, ...rest } = f;
+                    return rest;
+                });
+
+            logger.info(`➡️ Processing Final Design: ${files.length} file(s)`);
+            logger.info(`📤 Notion-hosted files: ${notionFiles.length}`);
+            logger.info(`🔗 External-only links: ${externalFiles.length}`);
+
+            const uploaded = await mediaMigrator.processFiles(null, notionFiles);
+            logger.info(`✅ Final Design migrated: ${uploaded.length} file_upload(s)`);
+
+            return { files: [...uploaded, ...externalFiles] };
+        },
+
+        'Canva Link': async (sourceValue) => {
+            const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
+
+            const notionFiles = files.filter(f => f.type === 'file');
+            const externalFiles = files
+              .filter(f => f.type === 'external')
+              .map(f => {
+                const cleanedUrl = f.external?.url?.split('?')[0] || '';
+                return {
+                  type: 'external',
+                  name: cleanedUrl,
+                  external: { url: cleanedUrl }
+                };
+              });
+
+            logger.info(`➡️ Processing Canva Link: ${files.length} file(s)`);
+            logger.info(`📤 Notion-hosted files: ${notionFiles.length}`);
+            logger.info(`🔗 External-only links: ${externalFiles.length}`);
+
+            const uploaded = await mediaMigrator.processFiles(null, notionFiles);
+            logger.info(`✅ Canva Link migrated: ${uploaded.length} file_upload(s)`);
+
+            return { files: [...uploaded, ...externalFiles] };
         }
     },
 

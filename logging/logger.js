@@ -36,7 +36,7 @@ const formattedStart = [
     String(startTime.getSeconds()).padStart(2, '0')
 ].join('-');
 const logFile = path.join(logDir, `${formattedStart}.log`);
-const latestLogFile = path.join(logDir, '_latest.log');
+const latestLogFile = path.join(logDir, '0_latest.log');
 fs.writeFileSync(latestLogFile, '');
 const logStream = fs.createWriteStream(logFile, { flags: 'a' });
 // Ensure _latest.log is also appended
