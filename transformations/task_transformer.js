@@ -3,9 +3,19 @@
 // A generic transformer that, given a Notion page and a mapping spec,
 // builds the `properties` payload for creating/updating a page in the target DB.
 
+const path = require('path');
+const os = require('os');
 const notion = require('../services/notion_client');
 const logger = require('../logging/logger');
 const sanitizeBlocks = require('../services/block_sanitizer');
+const { MediaMigrator } = require('../services/media_migrator');
+const mediaMigrator = new MediaMigrator({
+    notion,
+    tmpDir: path.join(__dirname, '../tmp/page_media'),
+    logger,
+    maxParallel: 10,
+    chunkSizeMB: 19
+});
 
 module.exports = async function transform(page, map) {
     const result = {properties: {}};
@@ -74,7 +84,9 @@ module.exports = async function transform(page, map) {
         } while (cursor);
     }
     if (!skipBlocks && blocks?.length > 0) {
-        result.children = sanitizeBlocks(blocks);
+        const mediaResolvedBlocks = await mediaMigrator.transformMediaBlocks(null, blocks);
+        const sanitizedBlocks = sanitizeBlocks(mediaResolvedBlocks);
+        result.children = sanitizedBlocks;
     }
 
     return result;

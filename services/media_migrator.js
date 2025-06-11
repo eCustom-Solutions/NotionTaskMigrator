@@ -297,6 +297,60 @@ class MediaMigrator {
         // 6. Return upload info (sha256 is set to uploadId for timeline)
         return { id: uploadId, size, sha256: uploadId };
     }
+    /**
+     * Transform blocks containing embedded media into Notion write-compatible format.
+     * This processes image/file blocks and replaces media URLs with file_upload references.
+     * Returns a new array of blocks with resolved media.
+     *
+     * @param {string} pageId – the target Notion page ID
+     * @param {Array<Object>} blocks – an array of Notion blocks
+     * @returns {Promise<Array<Object>>} – resolved block array
+     */
+    async transformMediaBlocks(pageId, blocks) {
+        const transformed = [];
+        for (const block of blocks) {
+            if (block.type === 'image' && block.image?.type === 'external') {
+                const url = block.image.external.url;
+                if (!url || url.startsWith('data:')) {
+                    continue; // Skip invalid or embedded data URIs
+                }
+                const uploads = await this.processFiles(pageId, [block.image]);
+                if (uploads.length) {
+                    const newBlock = {
+                        ...block,
+                        image: {
+                            type: 'file_upload',
+                            file_upload: {
+                                id: uploads[0].file_upload.id
+                            }
+                        }
+                    };
+                    transformed.push(newBlock);
+                }
+            } else if (block.type === 'file' && (block.file?.type === 'external' || block.file?.type === 'file')) {
+                const url = block.file.external?.url || block.file.file?.url;
+                if (!url || url.startsWith('data:')) {
+                    continue;
+                }
+                const uploads = await this.processFiles(pageId, [block.file]);
+                if (uploads.length) {
+                    const newBlock = {
+                        ...block,
+                        file: {
+                            type: 'file_upload',
+                            file_upload: {
+                                id: uploads[0].file_upload.id
+                            }
+                        }
+                    };
+                    transformed.push(newBlock);
+                }
+            } else {
+                transformed.push(block);
+            }
+        }
+        return transformed;
+    }
 }
 
 module.exports = { MediaMigrator };
