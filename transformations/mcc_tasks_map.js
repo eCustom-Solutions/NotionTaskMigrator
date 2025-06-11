@@ -6,6 +6,8 @@ const { UserStore } = require('../services/user_store');
 const linkStore = require('../services/link_store');
 const path = require('path');
 const { MediaMigrator } = require('../services/media_migrator');
+const { handleFileProperty } = require('../services/file_handler');
+
 // Instantiate media migrator and initialize
 const mediaMigrator = new MediaMigrator({
   notion,
@@ -169,120 +171,26 @@ module.exports = {
             };
         },
 
-        // Migrate and re-upload video content files to Notion file_upload objects
+        // Migrate and re-upload video content files to Notion file_upload objects using handleFileProperty
         'Final Video Content': async (sourceValue) => {
             const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
-
-            // Optional debugging skip for pages wich have no files in Final Video Content property
-            // if (files.length === 0) {
-            //     logger.warn('⛔ Skipping page: no Final Video Content files provided.');
-            //     throw new Error('SkipPage: Final Video Content is empty.');
-            // }
-
-            const notionFiles = files.filter(f => f.type === 'file');
-            const externalFiles = files
-                .filter(f => f.type === 'external')
-                .map(f => {
-                    const { id, ...rest } = f;
-                    return rest;
-                });
-
-            logger.info(`➡️ Processing Final Video Content: ${files.length} file(s)`);
-            logger.info(`📤 Notion-hosted files: ${notionFiles.length}`);
-            logger.info(`🔗 External-only links: ${externalFiles.length}`);
-
-            const uploaded = await mediaMigrator.processFiles(null, notionFiles);
-            logger.info(`✅ Final Video Content migrated: ${uploaded.length} file_upload(s)`);
-
-            return { files: [...uploaded, ...externalFiles] };
+            return await handleFileProperty(files, mediaMigrator, logger, 'Final Video Content');
         },
-
         'Review Link': async (sourceValue) => {
             const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
-
-            const notionFiles = files.filter(f => f.type === 'file');
-            const externalFiles = files
-                .filter(f => f.type === 'external')
-                .map(f => {
-                    const { id, ...rest } = f;
-                    return rest;
-                });
-
-            logger.info(`➡️ Processing Review Link: ${files.length} file(s)`);
-            logger.info(`📤 Notion-hosted files: ${notionFiles.length}`);
-            logger.info(`🔗 External-only links: ${externalFiles.length}`);
-
-            const uploaded = await mediaMigrator.processFiles(null, notionFiles);
-            logger.info(`✅ Review Link migrated: ${uploaded.length} file_upload(s)`);
-
-            return { files: [...uploaded, ...externalFiles] };
+            return await handleFileProperty(files, mediaMigrator, logger, 'Review Link');
         },
-
-        'Blog Link': async (sourceValue) => {
-            const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
-
-            const notionFiles = files.filter(f => f.type === 'file');
-            const externalFiles = files
-                .filter(f => f.type === 'external')
-                .map(f => {
-                    const { id, ...rest } = f;
-                    return rest;
-                });
-
-            logger.info(`➡️ Processing Blog Link: ${files.length} file(s)`);
-            logger.info(`📤 Notion-hosted files: ${notionFiles.length}`);
-            logger.info(`🔗 External-only links: ${externalFiles.length}`);
-
-            const uploaded = await mediaMigrator.processFiles(null, notionFiles);
-            logger.info(`✅ Blog Link migrated: ${uploaded.length} file_upload(s)`);
-
-            return { files: [...uploaded, ...externalFiles] };
-        },
-
-        'Final Design': async (sourceValue) => {
-            const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
-
-            const notionFiles = files.filter(f => f.type === 'file');
-            const externalFiles = files
-                .filter(f => f.type === 'external')
-                .map(f => {
-                    const { id, ...rest } = f;
-                    return rest;
-                });
-
-            logger.info(`➡️ Processing Final Design: ${files.length} file(s)`);
-            logger.info(`📤 Notion-hosted files: ${notionFiles.length}`);
-            logger.info(`🔗 External-only links: ${externalFiles.length}`);
-
-            const uploaded = await mediaMigrator.processFiles(null, notionFiles);
-            logger.info(`✅ Final Design migrated: ${uploaded.length} file_upload(s)`);
-
-            return { files: [...uploaded, ...externalFiles] };
-        },
-
         'Canva Link': async (sourceValue) => {
             const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
-
-            const notionFiles = files.filter(f => f.type === 'file');
-            const externalFiles = files
-              .filter(f => f.type === 'external')
-              .map(f => {
-                const cleanedUrl = f.external?.url?.split('?')[0] || '';
-                return {
-                  type: 'external',
-                  name: cleanedUrl,
-                  external: { url: cleanedUrl }
-                };
-              });
-
-            logger.info(`➡️ Processing Canva Link: ${files.length} file(s)`);
-            logger.info(`📤 Notion-hosted files: ${notionFiles.length}`);
-            logger.info(`🔗 External-only links: ${externalFiles.length}`);
-
-            const uploaded = await mediaMigrator.processFiles(null, notionFiles);
-            logger.info(`✅ Canva Link migrated: ${uploaded.length} file_upload(s)`);
-
-            return { files: [...uploaded, ...externalFiles] };
+            return await handleFileProperty(files, mediaMigrator, logger, 'Canva Link');
+        },
+        'Blog Link': async (sourceValue) => {
+            const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
+            return await handleFileProperty(files, mediaMigrator, logger, 'Blog Link');
+        },
+        'Final Design': async (sourceValue) => {
+            const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
+            return await handleFileProperty(files, mediaMigrator, logger, 'Final Design');
         }
     },
 
