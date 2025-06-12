@@ -107,20 +107,38 @@ module.exports = {
             return { people: [ { object: 'user', id: userId } ] };
         },
 
-        // Convert Brand multi-select names to relations via LinkStore
         Brands: async (sourceValue) => {
-            const names = Array.isArray(sourceValue.multi_select)
-                ? sourceValue.multi_select.map(opt => opt.name)
-                : [];
+            logger.info('sourceValue', sourceValue);
+
+            let names = [];
+
+            if (Array.isArray(sourceValue.multi_select)) {
+                names = sourceValue.multi_select.map(opt => opt.name);
+            } else if (sourceValue.select && sourceValue.select.name) {
+                names = [sourceValue.select.name];  // Normalize to array
+            } else {
+                logger.warn('⚠️ Brands field has unexpected format:', JSON.stringify(sourceValue));
+            }
+
+            // Brand alias normalization
+            const aliasMap = {
+                'Settled': 'SettledUSA',
+                'Taxvine': 'Tax Vine',
+                'HarperKnowsHR': 'HarperknowsHR'
+            };
+            names = names.map(name => aliasMap[name] || name);
+
             const relations = [];
             for (const name of names) {
-                const link = linkStore.findBySourcePageName(name, 'tags');
-                if (link && link.targetPageId) {
-                    relations.push({ id: link.targetPageId });
+                const link = await linkStore.findBySourcePageName(name, 'tags');
+                logger.info('link', link);
+                if (link && link.targetId) {
+                    relations.push({ id: link.targetId });
                 } else {
                     logger.warn(`Brand "${name}" not found in LinkStore, skipping relation`);
                 }
             }
+
             return { relation: relations };
         },
 

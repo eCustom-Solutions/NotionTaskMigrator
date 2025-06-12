@@ -69,6 +69,7 @@ module.exports = async function transform(page, map) {
     // Optional: skip copying blocks if map opts in
     const skipBlocks = map?.options?.skipBlocks === true;
     let blocks;
+
     if (!skipBlocks) {
         // Fetch and attach blocks (page contents)
         blocks = [];
@@ -84,6 +85,7 @@ module.exports = async function transform(page, map) {
             blocks.push(...response.results);
             cursor = response.has_more ? response.next_cursor : undefined;
         } while (cursor);
+
     }
     if (!skipBlocks && blocks?.length > 0) {
         const sanitizedBlocks = sanitizeBlocks(blocks);

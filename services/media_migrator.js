@@ -34,20 +34,17 @@ class MediaMigrator {
     async init() {
         if (!fs.existsSync(this.tmpDir)) {
             fs.mkdirSync(this.tmpDir, { recursive: true });
-            this.logger.info(`Created temp directory: ${this.tmpDir}`);
         }
         if (fs.existsSync(this.manifestPath)) {
             this.manifest = JSON.parse(fs.readFileSync(this.manifestPath, 'utf8'));
             Object.assign(this.downloadCache, this.manifest.downloads);
             Object.assign(this.uploadCache, this.manifest.uploads);
-            this.logger.info(`Loaded media manifest with ${Object.keys(this.manifest.downloads).length} downloads, `
-                + `${Object.keys(this.manifest.uploads).length} uploads`);
+                + `${Object.keys(this.manifest.uploads).length} uploads`
         }
     }
 
     /** Main entrypoint: for a given pageId and its files array, returns Notion file_upload references */
     async processFiles(pageId, filesArray) {
-        this.logger.info(`📄 Starting media processing for page ${pageId} (${filesArray.length} file(s))`);
         const results = [];
         for (const fileObj of filesArray) {
             try {
@@ -65,7 +62,6 @@ class MediaMigrator {
                 this.logger.error(`❌ MediaMigrator failed on page ${pageId}, file ${fileObj.external?.url || fileObj.file?.url}:`, err);
             }
         }
-        this.logger.info(`✅ Finished processing media for page ${pageId}`);
         return results;
     }
 
@@ -75,7 +71,6 @@ class MediaMigrator {
             downloads: Object.fromEntries(this.downloadCache),
             uploads:   Object.fromEntries(this.uploadCache),
         }, null, 2));
-        this.logger.info(`🗂 Persisted media manifest: ${Object.keys(this.downloadCache).length} downloads, ${Object.keys(this.uploadCache).length} uploads`);
     }
 
     /** Return simple stats */
@@ -98,7 +93,6 @@ class MediaMigrator {
             return null;
         }
         if (this.downloadCache.has(sourceUrl)) {
-            this.logger.info(`🔄 Cache hit for URL: ${sourceUrl}`);
             return this.downloadCache.get(sourceUrl);
         }
 
@@ -106,7 +100,6 @@ class MediaMigrator {
         const filename = path.basename(new URL(sourceUrl).pathname);
         const localPath = path.join(this.tmpDir, `${Date.now()}_${filename}`);
 
-        this.logger.info(`⬇️  Downloading → ${localPath}`);
         let res;
         try {
             res = await fetch(sourceUrl);
@@ -126,7 +119,6 @@ class MediaMigrator {
         };
         this.downloadCache.set(sourceUrl, info);
         this.manifest.downloads[sourceUrl] = info;
-        this.logger.info(`✅ Downloaded & hashed (sha256=${sha256}, ${buffer.length} bytes)`);
         return info;
     }
 
@@ -134,7 +126,6 @@ class MediaMigrator {
     async _uploadFile(localInfo) {
         const { sha256, size, path: filePath } = localInfo;
         if (this.uploadCache.has(sha256)) {
-            this.logger.info(`🔄 Upload cache hit for file ${filePath}`);
             return this.uploadCache.get(sha256);
         }
 
@@ -151,7 +142,6 @@ class MediaMigrator {
 
         this.uploadCache.set(sha256, uploadResult);
         this.manifest.uploads[sha256] = uploadResult;
-        this.logger.info(`✅ Uploaded file_upload.id=${uploadResult.id}`);
         return uploadResult;
     }
 
@@ -186,7 +176,6 @@ class MediaMigrator {
         });
 
         const uploadText = await uploadRes.text();
-        // this.logger.info(`📬 Upload response for ${uploadId}: status=${uploadRes.status}, body=${uploadText}`);
 
         await this._waitUntilUploaded(uploadId);
 
@@ -205,7 +194,6 @@ class MediaMigrator {
             // console.log("statusCheck", statusCheck);
             const status = statusCheck.status;
             if (status === 'uploaded') {
-                this.logger.info(`📤 Upload ${uploadId} confirmed as uploaded`);
                 return;
             }
             if (status === 'expired' || status === 'failed') {
@@ -214,7 +202,6 @@ class MediaMigrator {
             if (attempt % 10 === 0) {
                 this.logger.warn(`⏳ Still waiting for upload ${uploadId} (elapsed: ${(attempt * delayMs / 1000)}s)`);
             }
-            this.logger.info(`⏳ Waiting for upload ${uploadId} (attempt ${attempt}, status: ${status})`);
             await new Promise(resolve => setTimeout(resolve, delayMs));
         }
         throw new Error(`Upload ${uploadId} did not complete within expected time`);
@@ -225,7 +212,6 @@ class MediaMigrator {
         // 1. Compute part size and total parts
         const partSize = this.chunkSizeBytes;
         const totalParts = Math.ceil(size / partSize);
-        this.logger.info(`📦 Preparing multi-part upload: size=${size}, partSize=${partSize}, totalParts=${totalParts}`);
         const filename = path.basename(filePath);
         const mimeType = mime.lookup(filePath) || 'application/octet-stream';
 
@@ -241,13 +227,11 @@ class MediaMigrator {
         });
         const uploadId = create.id;
         const upload_url = create.upload_url;
-        this.logger.info(`🆕 Created multi-part upload object: id=${uploadId}, upload_url=${upload_url}`);
 
         // 3. Upload each part in batches of up to this.maxParallel
         const partNumbers = Array.from({ length: totalParts }, (_, i) => i + 1);
         for (let i = 0; i < partNumbers.length; i += this.maxParallel) {
             const batch = partNumbers.slice(i, i + this.maxParallel);
-            this.logger.info(`📤 Uploading part batch: [${batch.join(', ')}]`);
             // Run uploads in parallel
             await Promise.all(batch.map(async (partNumber) => {
                 const start = (partNumber - 1) * partSize;
@@ -274,11 +258,9 @@ class MediaMigrator {
                     const text = await res.text();
                     throw new Error(`Failed to upload part ${partNumber} of ${filename}: ${res.status} ${text}`);
                 }
-                this.logger.info(`✅ Uploaded part ${partNumber} of ${filename}`);
             }));
         }
 
-        this.logger.info(`🧩 All parts uploaded. Sending complete request for uploadId=${uploadId}`);
 
         // 4. Complete the upload
         await this.notion.request({
@@ -287,12 +269,10 @@ class MediaMigrator {
             body: {}
         });
 
-        this.logger.info(`📬 Complete request sent. Verifying final status for uploadId=${uploadId}`);
 
         // 5. Wait until uploaded
         await this._waitUntilUploaded(uploadId);
 
-        this.logger.info(`🎉 Multi-part upload complete for ${filename} with id=${uploadId}`);
 
         // 6. Return upload info (sha256 is set to uploadId for timeline)
         return { id: uploadId, size, sha256: uploadId };
@@ -307,12 +287,10 @@ class MediaMigrator {
      * @returns {Promise<Array<Object>>} – resolved block array
      */
     async transformMediaBlocks(pageId, blocks) {
-        this.logger.info(`🔍 Starting transformMediaBlocks for page ${pageId}`);
         const transformed = [];
         for (const block of blocks) {
             let transformedBlock = { ...block };
 
-            this.logger.info(`🔧 Processing block:`, JSON.stringify(block, null, 2));
 
             // Recursively transform children if present
             if (block.has_children && Array.isArray(block.children)) {
@@ -329,7 +307,6 @@ class MediaMigrator {
                 }
                 const uploads = await this.processFiles(pageId, [block.image]);
                 if (uploads.length) {
-                    this.logger.info(`📤 Media replaced with upload:`, JSON.stringify(uploads[0], null, 2));
                     transformedBlock.image = {
                         type: 'file_upload',
                         file_upload: {
@@ -344,7 +321,6 @@ class MediaMigrator {
                 }
                 const uploads = await this.processFiles(pageId, [block.file]);
                 if (uploads.length) {
-                    this.logger.info(`📤 Media replaced with upload:`, JSON.stringify(uploads[0], null, 2));
                     transformedBlock.file = {
                         type: 'file_upload',
                         file_upload: {
@@ -362,7 +338,6 @@ class MediaMigrator {
                 }
                 const uploads = await this.processFiles(pageId, [block[block.type]]);
                 if (uploads.length) {
-                    this.logger.info(`📤 Media replaced with upload:`, JSON.stringify(uploads[0], null, 2));
                     transformedBlock[block.type] = {
                         type: 'file_upload',
                         file_upload: {
@@ -372,7 +347,6 @@ class MediaMigrator {
                 }
             }
 
-            this.logger.info(`✅ Transformed block:`, JSON.stringify(transformedBlock, null, 2));
             transformed.push(transformedBlock);
         }
         return transformed;

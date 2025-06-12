@@ -106,6 +106,7 @@ class LinkStore {
      */
     async findBySourcePageName(sourcePageName, migrationType = DEFAULT_MIGRATION_TYPE) {
         const dir = this._dirForType(migrationType);
+        console.info(`[LinkStore] Searching for "${sourcePageName}" in "${dir}"`);
         let files;
         try {
             files = await fs.readdir(dir);
@@ -129,6 +130,7 @@ class LinkStore {
             } catch {
                 continue;
             }
+            console.info(`[LinkStore] Checking file "${fileName}" with sourcePageName="${data.sourcePageName}" and status="${data.status}"`);
             // If sourcePageName field matches exactly, instantiate and return
             if (data.sourcePageName === sourcePageName && data.status === 'success') {
                 return new Link({
@@ -149,7 +151,7 @@ class LinkStore {
                 });
             }
         }
-
+        console.warn(`[LinkStore] No match found for "${sourcePageName}" in "${dir}"`);
         return null;
     }
 }
