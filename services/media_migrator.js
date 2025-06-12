@@ -307,25 +307,35 @@ class MediaMigrator {
      * @returns {Promise<Array<Object>>} – resolved block array
      */
     async transformMediaBlocks(pageId, blocks) {
+        this.logger.info(`🔍 Starting transformMediaBlocks for page ${pageId}`);
         const transformed = [];
         for (const block of blocks) {
-            if (block.type === 'image' && block.image?.type === 'external') {
-                const url = block.image.external.url;
+            let transformedBlock = { ...block };
+
+            this.logger.info(`🔧 Processing block:`, JSON.stringify(block, null, 2));
+
+            // Recursively transform children if present
+            if (block.has_children && Array.isArray(block.children)) {
+                transformedBlock.children = await this.transformMediaBlocks(pageId, block.children);
+            }
+
+            if (
+                block.type === 'image' &&
+                ['external', 'file'].includes(block.image?.type)
+            ) {
+                const url = block.image.external?.url || block.image.file?.url;
                 if (!url || url.startsWith('data:')) {
                     continue; // Skip invalid or embedded data URIs
                 }
                 const uploads = await this.processFiles(pageId, [block.image]);
                 if (uploads.length) {
-                    const newBlock = {
-                        ...block,
-                        image: {
-                            type: 'file_upload',
-                            file_upload: {
-                                id: uploads[0].file_upload.id
-                            }
+                    this.logger.info(`📤 Media replaced with upload:`, JSON.stringify(uploads[0], null, 2));
+                    transformedBlock.image = {
+                        type: 'file_upload',
+                        file_upload: {
+                            id: uploads[0].file_upload.id
                         }
                     };
-                    transformed.push(newBlock);
                 }
             } else if (block.type === 'file' && (block.file?.type === 'external' || block.file?.type === 'file')) {
                 const url = block.file.external?.url || block.file.file?.url;
@@ -334,20 +344,36 @@ class MediaMigrator {
                 }
                 const uploads = await this.processFiles(pageId, [block.file]);
                 if (uploads.length) {
-                    const newBlock = {
-                        ...block,
-                        file: {
-                            type: 'file_upload',
-                            file_upload: {
-                                id: uploads[0].file_upload.id
-                            }
+                    this.logger.info(`📤 Media replaced with upload:`, JSON.stringify(uploads[0], null, 2));
+                    transformedBlock.file = {
+                        type: 'file_upload',
+                        file_upload: {
+                            id: uploads[0].file_upload.id
                         }
                     };
-                    transformed.push(newBlock);
                 }
-            } else {
-                transformed.push(block);
+            } else if (
+                ['pdf', 'video'].includes(block.type) &&
+                (block[block.type]?.type === 'external' || block[block.type]?.type === 'file')
+            ) {
+                const url = block[block.type].external?.url || block[block.type].file?.url;
+                if (!url || url.startsWith('data:')) {
+                    continue;
+                }
+                const uploads = await this.processFiles(pageId, [block[block.type]]);
+                if (uploads.length) {
+                    this.logger.info(`📤 Media replaced with upload:`, JSON.stringify(uploads[0], null, 2));
+                    transformedBlock[block.type] = {
+                        type: 'file_upload',
+                        file_upload: {
+                            id: uploads[0].file_upload.id
+                        }
+                    };
+                }
             }
+
+            this.logger.info(`✅ Transformed block:`, JSON.stringify(transformedBlock, null, 2));
+            transformed.push(transformedBlock);
         }
         return transformed;
     }

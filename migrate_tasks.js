@@ -38,6 +38,10 @@ async function main() {
             continue;
         }
 
+        // // Source page visibility
+        // logger.info(`🔍 Source page for ${sourceId}:`);
+        // logger.info(JSON.stringify(page, null, 2));
+
         try {
             logger.info(`🛠 Transforming page ${sourceId}`);
             let payload = await transform(page, TASK_MAP);

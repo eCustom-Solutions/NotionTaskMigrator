@@ -11,7 +11,7 @@ const { handleFileProperty } = require('../services/file_handler');
 // Instantiate media migrator and initialize
 const mediaMigrator = new MediaMigrator({
   notion,
-  tmpDir: path.join(__dirname, '../tmp/property_media'),
+  tmpDir: path.join(__dirname, '../tmp/page_media'),
   logger,
   maxParallel: 20,
   chunkSizeMB: 19

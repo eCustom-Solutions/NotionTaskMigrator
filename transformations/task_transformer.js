@@ -9,9 +9,11 @@ const notion = require('../services/notion_client');
 const logger = require('../logging/logger');
 const sanitizeBlocks = require('../services/block_sanitizer');
 const { MediaMigrator } = require('../services/media_migrator');
+const tmpDir = path.resolve(process.cwd(), 'tmp', 'page_media');
+logger.info('tmpDir', tmpDir);
 const mediaMigrator = new MediaMigrator({
     notion,
-    tmpDir: path.join(__dirname, '../tmp/page_media'),
+    tmpDir: tmpDir,
     logger,
     maxParallel: 10,
     chunkSizeMB: 19
@@ -84,9 +86,10 @@ module.exports = async function transform(page, map) {
         } while (cursor);
     }
     if (!skipBlocks && blocks?.length > 0) {
-        const mediaResolvedBlocks = await mediaMigrator.transformMediaBlocks(null, blocks);
-        const sanitizedBlocks = sanitizeBlocks(mediaResolvedBlocks);
-        result.children = sanitizedBlocks;
+        const sanitizedBlocks = sanitizeBlocks(blocks);
+        const mediaResolvedBlocks = await mediaMigrator.transformMediaBlocks(null, sanitizedBlocks);
+
+        result.children = mediaResolvedBlocks;
     }
 
     return result;

@@ -1,9 +1,9 @@
-
-
-/**
+/****
  * block_sanitizer.js
  * Utilities to clean up and sanitize Notion blocks before writing
  */
+
+const { sanitizeFileObject } = require('../services/file_handler');
 
 function sanitizeBlocks(blocks) {
   return blocks
@@ -11,7 +11,27 @@ function sanitizeBlocks(blocks) {
     .filter(removeUnsupported)
     .map(fixCalloutIcon)
     .map(stripDataUrlImages)
+    .map(sanitizeRichTextMentions)
+    .map(normalizeFileObjects) // <- new
+    .map(stripInvalidFileBlocks)
     .filter(Boolean);
+}
+function normalizeFileObjects(block) {
+  const fileTypes = ['image', 'file', 'pdf', 'video'];
+
+  if (fileTypes.includes(block.type)) {
+    const fileContainer = block[block.type];
+    if (fileContainer?.external || fileContainer?.file_upload) {
+      block[block.type] = sanitizeFileObject({
+        type: fileContainer.external ? 'external' : 'file',
+        name: block.name || '',
+        external: fileContainer.external,
+        file_upload: fileContainer.file_upload
+      });
+    }
+  }
+
+  return block;
 }
 
 // Removes blocks with type === "unsupported"
@@ -38,6 +58,56 @@ function stripDataUrlImages(block) {
     if (url && url.startsWith('data:')) {
       return null; // drop the block entirely
     }
+  }
+  return block;
+}
+
+function sanitizeRichTextMentions(block) {
+  const validMentionTypes = new Set([
+    'user', 'date', 'page', 'database', 'template_mention', 'custom_emoji'
+  ]);
+
+  const container = block[block.type];
+  if (container?.rich_text?.length) {
+    container.rich_text = container.rich_text.map(item => {
+      if (item.type === 'mention' && !validMentionTypes.has(item.mention?.type)) {
+        return {
+          type: 'text',
+          text: {
+            content: item.plain_text || '[unsupported mention]',
+            link: item.href ? { url: item.href } : null
+          },
+          annotations: item.annotations || {},
+          plain_text: item.plain_text || '',
+          href: item.href || null
+        };
+      }
+      return item;
+    });
+  }
+  return block;
+}
+
+// Removes image or file blocks missing both external and file_upload sources
+function stripInvalidFileBlocks(block) {
+  if (
+    block.type === 'image' &&
+    !(
+      block.image?.external?.url ||
+      block.image?.file?.url ||
+      block.image?.file_upload?.id
+    )
+  ) {
+    return null;
+  }
+  if (
+    block.type === 'file' &&
+    !(
+      block.file?.external?.url ||
+      block.file?.file_upload?.id
+    )
+  ) {
+    return null;
   }
   return block;
 }
