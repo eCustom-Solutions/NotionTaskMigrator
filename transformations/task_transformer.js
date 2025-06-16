@@ -10,7 +10,6 @@ const logger = require('../logging/logger');
 const sanitizeBlocks = require('../services/block_sanitizer');
 const { MediaMigrator } = require('../services/media_migrator');
 const tmpDir = path.resolve(process.cwd(), 'tmp', 'page_media');
-logger.info('tmpDir', tmpDir);
 const mediaMigrator = new MediaMigrator({
     notion,
     tmpDir: tmpDir,
@@ -19,8 +18,38 @@ const mediaMigrator = new MediaMigrator({
     chunkSizeMB: 19
 });
 
+async function fetchBlockTree(blockId) {
+    let blocks = [];
+    let cursor;
+
+    do {
+        const response = await notion.blocks.children.list({
+            block_id: blockId,
+            page_size: 100,
+            start_cursor: cursor
+        });
+
+        const childBlocks = await Promise.all(
+            response.results.map(async block => {
+                if (block.has_children) {
+                    const nestedChildren = await fetchBlockTree(block.id);
+                    return { ...block, children: nestedChildren };
+                }
+                return block;
+            })
+        );
+
+        blocks.push(...childBlocks);
+        cursor = response.has_more ? response.next_cursor : undefined;
+    } while (cursor);
+
+    return blocks;
+}
+
 module.exports = async function transform(page, map) {
     const result = {properties: {}};
+
+
 
     for (const [sourceKey, targetKey] of Object.entries(map.mappings)) {
         const sourceValue = page.properties[sourceKey];
@@ -68,31 +97,53 @@ module.exports = async function transform(page, map) {
 
     // Optional: skip copying blocks if map opts in
     const skipBlocks = map?.options?.skipBlocks === true;
-    let blocks;
 
     if (!skipBlocks) {
-        // Fetch and attach blocks (page contents)
-        blocks = [];
-        let cursor = undefined;
-
-        do {
-            const response = await notion.blocks.children.list({
-                block_id: page.id,
-                page_size: 100,
-                start_cursor: cursor
-            });
-
-            blocks.push(...response.results);
-            cursor = response.has_more ? response.next_cursor : undefined;
-        } while (cursor);
-
-    }
-    if (!skipBlocks && blocks?.length > 0) {
-        const sanitizedBlocks = sanitizeBlocks(blocks);
+        const recursiveBlocks = await fetchBlockTree(page.id);
+        const sanitizedBlocks = sanitizeBlocks(recursiveBlocks);
         const mediaResolvedBlocks = await mediaMigrator.transformMediaBlocks(null, sanitizedBlocks);
-
         result.children = mediaResolvedBlocks;
     }
 
     return result;
 };
+
+// Recursively appends blocks to a page using Notion's API, preserving hierarchy.
+async function writePageWithBlocks(pageId, children) {
+    const queue = children.map(block => ({ parentId: pageId, block }));
+
+    while (queue.length > 0) {
+        const { parentId, batch } = dequeueBatch(queue, 100);
+
+        const response = await notion.blocks.children.append({
+            block_id: parentId,
+            children: batch.map(stripNestedChildren)
+        });
+
+        response.results.forEach((createdBlock, i) => {
+            const original = batch[i];
+            if (original.children?.length) {
+                original.children.forEach(child => {
+                    queue.push({ parentId: createdBlock.id, block: child });
+                });
+            }
+        });
+    }
+}
+
+function stripNestedChildren({ children, ...rest }) {
+    return rest;
+}
+
+function dequeueBatch(queue, limit) {
+    const { parentId } = queue[0];
+    const batch = [];
+
+    while (batch.length < limit && queue[0]?.parentId === parentId) {
+        batch.push(queue.shift().block);
+    }
+
+    return { parentId, batch };
+}
+
+module.exports.writePageWithBlocks = writePageWithBlocks;

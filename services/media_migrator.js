@@ -48,11 +48,19 @@ class MediaMigrator {
         const results = [];
         for (const fileObj of filesArray) {
             try {
+                // Logging before download
+                this.logger.info(`➡️ Starting download for file on page ${pageId}: ${fileObj.external?.url || fileObj.file?.url}`);
                 const localInfo = await this._downloadFile(pageId, fileObj);
+                // Logging after download
+                this.logger.info(`✅ Download complete for ${fileObj.external?.url || fileObj.file?.url}`);
                 if (!localInfo) {
                     continue;
                 }
+                // Logging before upload
+                this.logger.info(`⬆️ Starting upload for file: ${localInfo.originalFilename} (${localInfo.size} bytes)`);
                 const uploadInfo = await this._uploadFile(localInfo);
+                // Logging after upload
+                this.logger.info(`✅ Upload complete. Notion file_upload ID: ${uploadInfo.id}`);
                 results.push({
                     type: 'file_upload',
                     file_upload: { id: uploadInfo.id },
@@ -98,7 +106,8 @@ class MediaMigrator {
 
         // sanitize filename
         const filename = path.basename(new URL(sourceUrl).pathname);
-        const localPath = path.join(this.tmpDir, `${Date.now()}_${filename}`);
+        const originalFilename = filename;
+        const localPath = path.join(this.tmpDir, `${Date.now()}_${originalFilename}`);
 
         let res;
         try {
@@ -115,7 +124,8 @@ class MediaMigrator {
         const info = {
             path: localPath,
             size: buffer.length,
-            sha256
+            sha256,
+            originalFilename
         };
         this.downloadCache.set(sourceUrl, info);
         this.manifest.downloads[sourceUrl] = info;
@@ -124,7 +134,7 @@ class MediaMigrator {
 
     /** Upload a local file via Notion direct or multi-part upload */
     async _uploadFile(localInfo) {
-        const { sha256, size, path: filePath } = localInfo;
+        const { sha256, size, path: filePath, originalFilename } = localInfo;
         if (this.uploadCache.has(sha256)) {
             return this.uploadCache.get(sha256);
         }
@@ -135,9 +145,9 @@ class MediaMigrator {
 
         let uploadResult;
         if (size <= this.chunkSizeBytes) {
-            uploadResult = await this._directUpload(filePath);
+            uploadResult = await this._directUpload(filePath, originalFilename);
         } else {
-            uploadResult = await this._multiPartUpload(filePath, size);
+            uploadResult = await this._multiPartUpload(filePath, size, originalFilename);
         }
 
         this.uploadCache.set(sha256, uploadResult);
@@ -146,7 +156,7 @@ class MediaMigrator {
     }
 
     /** Direct single-request upload (≤20MB) */
-    async _directUpload(filePath) {
+    async _directUpload(filePath, originalFilename) {
         // 1) create upload object
         const create = await this.notion.request({
             path: 'file_uploads',
@@ -158,7 +168,7 @@ class MediaMigrator {
         // 2) send file bytes with explicit filename and content type
         const form = new FormData();
         const stream = fs.createReadStream(filePath);
-        const filename = path.basename(filePath);
+        const filename = originalFilename || path.basename(filePath);
         const mimeType = mime.lookup(filePath) || 'application/octet-stream';
 
         form.append('file', stream, {
@@ -208,11 +218,11 @@ class MediaMigrator {
     }
 
     /** Multi-part upload for large files */
-    async _multiPartUpload(filePath, size) {
+    async _multiPartUpload(filePath, size, originalFilename) {
         // 1. Compute part size and total parts
         const partSize = this.chunkSizeBytes;
         const totalParts = Math.ceil(size / partSize);
-        const filename = path.basename(filePath);
+        const filename = originalFilename || path.basename(filePath);
         const mimeType = mime.lookup(filePath) || 'application/octet-stream';
 
         // 2. Create upload object with multi_part mode

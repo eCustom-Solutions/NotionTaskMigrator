@@ -6,14 +6,28 @@
 const { sanitizeFileObject } = require('../services/file_handler');
 
 function sanitizeBlocks(blocks) {
+  function sanitizeBlock(block) {
+    // Deep clone to avoid mutating original
+    const b = { ...block };
+
+    // Recursively sanitize any nested children first
+    if (Array.isArray(b.children)) {
+      b.children = sanitizeBlocks(b.children);
+    }
+
+    // Apply block-level sanitizers
+    if (!removeUnsupported(b)) return null;
+    fixCalloutIcon(b);
+    const afterDataUrl = stripDataUrlImages(b);
+    const afterMentions = sanitizeRichTextMentions(afterDataUrl);
+    const afterFiles = normalizeFileObjects(afterMentions);
+    const finalBlock = stripInvalidFileBlocks(afterFiles);
+
+    return finalBlock;
+  }
+
   return blocks
-    .map(block => ({ ...block }))
-    .filter(removeUnsupported)
-    .map(fixCalloutIcon)
-    .map(stripDataUrlImages)
-    .map(sanitizeRichTextMentions)
-    .map(normalizeFileObjects) // <- new
-    .map(stripInvalidFileBlocks)
+    .map(sanitizeBlock)
     .filter(Boolean);
 }
 function normalizeFileObjects(block) {

@@ -23,7 +23,7 @@ const userStore = new UserStore(notion);
 (async () => { await userStore.init(); })();
 
 // Cache source DB select option map for Priority
-const PRIORITY_SOURCE_DB_ID = process.env.DUMMY_NOTION_MCC_TASKS_DB_ID;
+const PRIORITY_SOURCE_DB_ID = process.env.NOTION_MCC_TASKS_DB_ID;
 const priorityIdToNameMap = {};
 
 (async () => {
@@ -45,11 +45,11 @@ module.exports = {
     mappings: {
         'Name': 'Name',
         'Status': 'Status (MCC)',
-        'Assignee': 'Assignee',
+        // 'Assignee': 'Assignee',
         'Brand': 'Brands',
         'Content Type': 'Content Type',
         'Priority': 'Priority (MCC)',
-        'Task Owner': 'Task Owner',
+        // 'Task Owner': 'Task Owner',
         'Platform': 'Platform',
         'Series': 'Series',
         'Posting Date': 'Posting Date',
@@ -86,29 +86,29 @@ module.exports = {
           }
           return { status: { name: sourceValue.status.name } };
         },
-        // Map Assignee → Derious Vaughn by name lookup
-        Assignee: async (sourceValue) => {
-            // sourceValue may be a people or text field; override with fixed user
-            const userId = userStore.getUserIdByName('Derious Vaughn');
-            if (!userId) {
-                logger.warning('Assignee "Derious Vaughn" not found in user store');
-                return { people: [] };
-            }
-            return { people: [ { object: 'user', id: userId } ] };
-        },
+        // // Map Assignee dynamically from sourceValue.people, no fallback
+        // Assignee: async (sourceValue) => {
+        //     const people = Array.isArray(sourceValue.people) ? sourceValue.people : [];
+        //     return {
+        //         people: people.map(p => ({
+        //             object: 'user',
+        //             id: p.id
+        //         }))
+        //     };
+        // },
 
-        // Map Task Owner → Derious Vaughn as well
-        'Task Owner': async (sourceValue) => {
-            const userId = userStore.getUserIdByName('Derious Vaughn');
-            if (!userId) {
-                logger.warn('Task Owner "Derious Vaughn" not found in user store');
-                return { people: [] };
-            }
-            return { people: [ { object: 'user', id: userId } ] };
-        },
+        // // Map Task Owner from sourceValue.people, no fallback
+        // 'Task Owner': async (sourceValue) => {
+        //     const people = Array.isArray(sourceValue.people) ? sourceValue.people : [];
+        //     return {
+        //         people: people.map(p => ({
+        //             object: 'user',
+        //             id: p.id
+        //         }))
+        //     };
+        // },
 
         Brands: async (sourceValue) => {
-            logger.info('sourceValue', sourceValue);
 
             let names = [];
 
@@ -131,7 +131,6 @@ module.exports = {
             const relations = [];
             for (const name of names) {
                 const link = await linkStore.findBySourcePageName(name, 'tags');
-                logger.info('link', link);
                 if (link && link.targetId) {
                     relations.push({ id: link.targetId });
                 } else {
@@ -144,7 +143,6 @@ module.exports = {
 
         'Priority (MCC)': async (sourceValue) => {
             const id = sourceValue?.select?.id;
-            logger.info('Source id ', id)
 
             if (!id) {
                 logger.info('🟡 No Priority selected on source page; field is null or undefined');
@@ -209,6 +207,12 @@ module.exports = {
         'Final Design': async (sourceValue) => {
             const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
             return await handleFileProperty(files, mediaMigrator, logger, 'Final Design');
+        },
+
+        // Inspect Google Drive file property during migration
+        'Google Drive File': async (sourceValue) => {
+            logger.info('📂 Google Drive File sourceValue:', JSON.stringify(sourceValue, null, 2));
+            return sourceValue;  // pass through untouched for now
         }
     },
 
