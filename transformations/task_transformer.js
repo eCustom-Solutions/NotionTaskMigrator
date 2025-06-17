@@ -108,42 +108,45 @@ module.exports = async function transform(page, map) {
     return result;
 };
 
-// Recursively appends blocks to a page using Notion's API, preserving hierarchy.
+// Retries Notion block appends on conflict_error
+async function safeAppendBlocks(parentId, children, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await notion.blocks.children.append({
+                block_id: parentId,
+                children
+            });
+        } catch (err) {
+            if (err.code === 'conflict_error' && i < retries - 1) {
+                logger.warn(`🔁 Conflict on ${parentId}, retrying (${i + 1})`);
+                await new Promise(resolve => setTimeout(resolve, 500 * (i + 1)));
+                continue;
+            }
+            throw err;
+        }
+    }
+}
+
+// Recursively appends blocks to a page using Notion's API, preserving hierarchy, in serialized order.
 async function writePageWithBlocks(pageId, children) {
     const queue = children.map(block => ({ parentId: pageId, block }));
 
     while (queue.length > 0) {
-        const { parentId, batch } = dequeueBatch(queue, 100);
+        const { parentId, block } = queue.shift();
 
-        const response = await notion.blocks.children.append({
-            block_id: parentId,
-            children: batch.map(stripNestedChildren)
-        });
+        const response = await safeAppendBlocks(parentId, [stripNestedChildren(block)]);
 
-        response.results.forEach((createdBlock, i) => {
-            const original = batch[i];
-            if (original.children?.length) {
-                original.children.forEach(child => {
-                    queue.push({ parentId: createdBlock.id, block: child });
-                });
-            }
-        });
+        const createdBlock = response.results[0];
+        if (block.children?.length) {
+            block.children.forEach(child => {
+                queue.push({ parentId: createdBlock.id, block: child });
+            });
+        }
     }
 }
 
 function stripNestedChildren({ children, ...rest }) {
     return rest;
-}
-
-function dequeueBatch(queue, limit) {
-    const { parentId } = queue[0];
-    const batch = [];
-
-    while (batch.length < limit && queue[0]?.parentId === parentId) {
-        batch.push(queue.shift().block);
-    }
-
-    return { parentId, batch };
 }
 
 module.exports.writePageWithBlocks = writePageWithBlocks;

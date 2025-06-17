@@ -19,7 +19,7 @@ const { sanitizeBlocks } = require('./services/block_sanitizer');
 const SOURCE_DB_ID = process.env.NOTION_MCC_TASKS_DB_ID;
 const TARGET_DB_ID = process.env.NOTION_CENT_DB_ID;
 const TASK_MAP = require('./transformations/mcc_tasks_map');
-const LINKSTORE_TYPE = 'tasks_MCC_v2';
+const LINKSTORE_TYPE = 'tasks_MCC_v3';
 
 
 async function main() {
@@ -37,8 +37,8 @@ async function main() {
         // Idempotency: skip if already migrated
         const existing = await linkStore.load(sourceId, LINKSTORE_TYPE).catch(() => null);
         if (existing && existing.status === 'success') {
-            // logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
-            // logger.info(`ℹ️ Link already exists in store:`, existing);
+            logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
+            logger.info(`ℹ️ Link already exists in store:`, existing);
             continue;
         }
 
@@ -78,7 +78,7 @@ async function main() {
                 // Record the link
                 await linkStore.save({
                     sourceId,
-                    targetId: result.id,
+                    targetId: pageResult.id,
                     status: 'success',
                     syncedAt: new Date().toISOString(),
                     sourceDbId: SOURCE_DB_ID,
