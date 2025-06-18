@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-8060-93b1-f59ff71122e5",
+  "targetId": "2076824d-5503-81d4-9064-c9b1f5aa3b89",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:03.821Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1de6824d550380749f3cc165609345b3",
+  "targetDbName": "Departments",
+  "type": "Team",
+  "sourcePageName": "SEO",
+  "sourcePageIcon": "🌐",
+  "targetPageName": "SEO",
+  "targetPageIcon": "🌐",
+  "notes": ""
+}

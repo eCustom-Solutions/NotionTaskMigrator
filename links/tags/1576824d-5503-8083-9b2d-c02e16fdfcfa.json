@@ -1,0 +1,16 @@
+{
+  "sourceId": "1576824d-5503-8083-9b2d-c02e16fdfcfa",
+  "targetId": "2076824d-5503-81b1-a76d-e1a3977db4e3",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:31:10.308Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Defensa Legal Automotriz",
+  "sourcePageIcon": "🔰",
+  "targetPageName": "Defensa Legal Automotriz",
+  "targetPageIcon": "🔰",
+  "notes": ""
+}

@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-8003-8fb0-c302396f4c9c",
+  "targetId": "2076824d-5503-813b-adf3-e0e2e56f0fbf",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:07.877Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1de6824d550380749f3cc165609345b3",
+  "targetDbName": "Departments",
+  "type": "Team",
+  "sourcePageName": "iMagnify",
+  "sourcePageIcon": "🔍",
+  "targetPageName": "iMagnify",
+  "targetPageIcon": "🔍",
+  "notes": ""
+}

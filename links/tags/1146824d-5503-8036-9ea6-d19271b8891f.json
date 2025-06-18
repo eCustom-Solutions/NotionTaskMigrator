@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-8036-9ea6-d19271b8891f",
+  "targetId": "2076824d-5503-814a-b5fe-f5a8daa90ba7",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:06.480Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1de6824d550380749f3cc165609345b3",
+  "targetDbName": "Departments",
+  "type": "Team",
+  "sourcePageName": "Web Dev",
+  "sourcePageIcon": "💻",
+  "targetPageName": "Web Dev",
+  "targetPageIcon": "💻",
+  "notes": ""
+}

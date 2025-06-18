@@ -1,0 +1,16 @@
+{
+  "sourceId": "18b6824d-5503-8079-a78a-d3d09e32361f",
+  "targetId": "20a6824d-5503-8186-bcb4-ee51e4284a80",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:05:18.303Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Valentines Party Ideas",
+  "sourcePageIcon": "",
+  "targetPageName": "Valentines Party Ideas",
+  "targetPageIcon": "",
+  "notes": ""
+}

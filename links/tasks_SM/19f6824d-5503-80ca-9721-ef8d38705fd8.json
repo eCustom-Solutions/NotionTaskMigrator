@@ -1,0 +1,16 @@
+{
+  "sourceId": "19f6824d-5503-80ca-9721-ef8d38705fd8",
+  "targetId": "20a6824d-5503-81e8-847f-ec2ed8fa6bcb",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:04:16.426Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "post WPU on LI",
+  "sourcePageIcon": "",
+  "targetPageName": "post WPU on LI",
+  "targetPageIcon": "",
+  "notes": ""
+}

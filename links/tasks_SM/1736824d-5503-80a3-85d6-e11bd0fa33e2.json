@@ -1,0 +1,16 @@
+{
+  "sourceId": "1736824d-5503-80a3-85d6-e11bd0fa33e2",
+  "targetId": "20a6824d-5503-812c-958f-db1f97264483",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:06:08.672Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Scripts for Kelli’s shoot",
+  "sourcePageIcon": "",
+  "targetPageName": "Scripts for Kelli’s shoot",
+  "targetPageIcon": "",
+  "notes": ""
+}

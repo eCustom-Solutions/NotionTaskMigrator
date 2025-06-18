@@ -16,12 +16,13 @@ function formatTimestamp(date) {
     const pad = n => n < 10 ? '0' + n : n;
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
     const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
     const month = monthNames[date.getMonth()];
     const day = date.getDate();
     const suffix = getDaySuffix(day);
     const year = date.getFullYear();
-    return `${hours}:${minutes}, ${month} ${day}${suffix} ${year}`;
+    return `${hours}:${minutes}:${seconds}, ${month} ${day}${suffix} ${year}`;
 }
 
 const logDir = path.join(__dirname, 'logs');
@@ -62,19 +63,19 @@ function logToFile(level, ...args) {
 
 module.exports = {
     info: (...args) => {
-        console.log(...args);
+        console.log(`[${formatTimestamp(new Date())}]`, ...args);
         logToFile('INFO', ...args);
     },
     error: (...args) => {
-        console.error(...args);
+        console.error(`[${formatTimestamp(new Date())}]`, ...args);
         logToFile('ERROR', ...args);
     },
     warn: (...args) => {
-        console.warn(...args);
+        console.warn(`[${formatTimestamp(new Date())}]`, ...args);
         logToFile('WARN', ...args);
     },
     warning: (...args) => {
-        console.warn(...args);
+        console.warn(`[${formatTimestamp(new Date())}]`, ...args);
         logToFile('WARN', ...args);
     }
 };

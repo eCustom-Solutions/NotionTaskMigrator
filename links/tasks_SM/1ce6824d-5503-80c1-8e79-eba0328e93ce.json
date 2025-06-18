@@ -1,0 +1,16 @@
+{
+  "sourceId": "1ce6824d-5503-80c1-8e79-eba0328e93ce",
+  "targetId": "20a6824d-5503-81d3-8a0e-f468d5a254a9",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:02:18.282Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "ELC ads",
+  "sourcePageIcon": "",
+  "targetPageName": "ELC ads",
+  "targetPageIcon": "",
+  "notes": ""
+}

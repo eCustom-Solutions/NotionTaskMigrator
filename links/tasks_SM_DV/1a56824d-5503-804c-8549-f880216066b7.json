@@ -1,0 +1,16 @@
+{
+  "sourceId": "1a56824d-5503-804c-8549-f880216066b7",
+  "targetId": "20a6824d-5503-81d7-8b9f-d71a47f7205c",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:32:54.680Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Thumbnails",
+  "sourcePageIcon": "",
+  "targetPageName": "Thumbnails",
+  "targetPageIcon": "",
+  "notes": ""
+}

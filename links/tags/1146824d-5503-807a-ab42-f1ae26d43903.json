@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-807a-ab42-f1ae26d43903",
+  "targetId": "2076824d-5503-811a-aabc-e6c81b561ae8",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:29:51.548Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1de6824d550380749f3cc165609345b3",
+  "targetDbName": "Departments",
+  "type": "Team",
+  "sourcePageName": "Content Creation",
+  "sourcePageIcon": "🎦",
+  "targetPageName": "Content Creation",
+  "targetPageIcon": "🎦",
+  "notes": ""
+}

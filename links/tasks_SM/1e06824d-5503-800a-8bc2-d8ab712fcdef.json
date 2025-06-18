@@ -1,0 +1,16 @@
+{
+  "sourceId": "1e06824d-5503-800a-8bc2-d8ab712fcdef",
+  "targetId": "20a6824d-5503-81d1-97b0-d40f82307293",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:01:37.905Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "brainstorm content",
+  "sourcePageIcon": "",
+  "targetPageName": "brainstorm content",
+  "targetPageIcon": "",
+  "notes": ""
+}

@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-8078-a2ba-f18ca28e05df",
+  "targetId": "2076824d-5503-8130-a795-ddf447eb2a54",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:27.323Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Tax Vine",
+  "sourcePageIcon": "💸",
+  "targetPageName": "Tax Vine",
+  "targetPageIcon": "💸",
+  "notes": ""
+}

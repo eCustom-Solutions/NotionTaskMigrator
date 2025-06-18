@@ -1,0 +1,16 @@
+{
+  "sourceId": "1a66824d-5503-80ba-80ca-f4c6099bf6c4",
+  "targetId": "20a6824d-5503-8155-82d0-fe5954c530fe",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:03:50.437Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Kelli feedback for Val",
+  "sourcePageIcon": "",
+  "targetPageName": "Kelli feedback for Val",
+  "targetPageIcon": "",
+  "notes": ""
+}

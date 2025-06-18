@@ -1,0 +1,16 @@
+{
+  "sourceId": "14a6824d-5503-804e-aaa3-d442491d6923",
+  "targetId": "2076824d-5503-81c5-bb4f-c1875283e371",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:55.825Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Rapid Biz Funding",
+  "sourcePageIcon": "💰",
+  "targetPageName": "Rapid Biz Funding",
+  "targetPageIcon": "💰",
+  "notes": ""
+}

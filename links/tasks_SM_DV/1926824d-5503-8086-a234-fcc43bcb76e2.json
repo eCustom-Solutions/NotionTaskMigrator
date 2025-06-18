@@ -1,0 +1,16 @@
+{
+  "sourceId": "1926824d-5503-8086-a234-fcc43bcb76e2",
+  "targetId": "20a6824d-5503-8155-8c9e-d08b0a489472",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:34:14.880Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "assign kelli #2 to design with notes",
+  "sourcePageIcon": "",
+  "targetPageName": "assign kelli #2 to design with notes",
+  "targetPageIcon": "",
+  "notes": ""
+}

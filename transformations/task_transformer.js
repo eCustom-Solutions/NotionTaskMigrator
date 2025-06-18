@@ -129,20 +129,28 @@ async function safeAppendBlocks(parentId, children, retries = 3) {
 
 // Recursively appends blocks to a page using Notion's API, preserving hierarchy, in serialized order.
 async function writePageWithBlocks(pageId, children) {
+    // logger.info(`📝 Starting block write for page ${pageId} with ${children.length} top-level blocks`);
+
     const queue = children.map(block => ({ parentId: pageId, block }));
 
     while (queue.length > 0) {
         const { parentId, block } = queue.shift();
+        // logger.info(`📦 Appending block of type "${block.type}" to parent ${parentId}`);
 
         const response = await safeAppendBlocks(parentId, [stripNestedChildren(block)]);
 
         const createdBlock = response.results[0];
+        // logger.info(`✅ Block created with ID ${createdBlock.id}`);
+
         if (block.children?.length) {
+            // logger.info(`🔗 Queuing ${block.children.length} child blocks for parent ${createdBlock.id}`);
             block.children.forEach(child => {
                 queue.push({ parentId: createdBlock.id, block: child });
             });
         }
     }
+
+    logger.info(`🎉 Finished writing all blocks to page ${pageId}`);
 }
 
 function stripNestedChildren({ children, ...rest }) {

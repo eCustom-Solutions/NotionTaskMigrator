@@ -1,0 +1,16 @@
+{
+  "sourceId": "19e6824d-5503-80f7-a380-fbdff9089b23",
+  "targetId": "20a6824d-5503-810b-8311-c3cbf85d6bff",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:33:26.087Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Script Social Scoop",
+  "sourcePageIcon": "",
+  "targetPageName": "Script Social Scoop",
+  "targetPageIcon": "",
+  "notes": ""
+}

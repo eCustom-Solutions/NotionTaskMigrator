@@ -1,0 +1,16 @@
+{
+  "sourceId": "1196824d-5503-8062-a1bc-d97d160f6295",
+  "targetId": "2076824d-5503-8101-a590-db703af89b24",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:44.728Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Lemon Lawyers",
+  "sourcePageIcon": null,
+  "targetPageName": "Lemon Lawyers",
+  "targetPageIcon": null,
+  "notes": ""
+}

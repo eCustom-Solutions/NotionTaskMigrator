@@ -1,0 +1,16 @@
+{
+  "sourceId": "1ed6824d-5503-80df-8660-f31d49f05019",
+  "targetId": "2086824d-5503-81b3-9d93-f72198c66fac",
+  "status": "success",
+  "syncedAt": "2025-06-04T18:06:03.175Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Fresh Ford Feeling",
+  "sourcePageIcon": null,
+  "targetPageName": "Fresh Ford Feeling",
+  "targetPageIcon": null,
+  "notes": ""
+}

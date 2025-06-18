@@ -1,0 +1,16 @@
+{
+  "sourceId": "1a76824d-5503-8059-9e71-f9b93a42f221",
+  "targetId": "20a6824d-5503-81c7-8a1f-d9ad43abe792",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:03:47.107Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Edit Social Scoop",
+  "sourcePageIcon": "",
+  "targetPageName": "Edit Social Scoop",
+  "targetPageIcon": "",
+  "notes": ""
+}

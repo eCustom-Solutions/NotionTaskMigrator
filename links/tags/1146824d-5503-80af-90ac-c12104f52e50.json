@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-80af-90ac-c12104f52e50",
+  "targetId": "2076824d-5503-81f6-82c6-c78bb7d6369e",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:00.390Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1de6824d550380749f3cc165609345b3",
+  "targetDbName": "Departments",
+  "type": "Team",
+  "sourcePageName": "Social Media",
+  "sourcePageIcon": "🤳",
+  "targetPageName": "Social Media",
+  "targetPageIcon": "🤳",
+  "notes": ""
+}

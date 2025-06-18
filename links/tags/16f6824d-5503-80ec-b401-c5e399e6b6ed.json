@@ -1,0 +1,16 @@
+{
+  "sourceId": "16f6824d-5503-80ec-b401-c5e399e6b6ed",
+  "targetId": "2086824d-5503-818d-8693-fb7ff3c6fdce",
+  "status": "success",
+  "syncedAt": "2025-06-04T18:05:56.140Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Watchaléman",
+  "sourcePageIcon": "⌚",
+  "targetPageName": "Watchaléman",
+  "targetPageIcon": "⌚",
+  "notes": ""
+}

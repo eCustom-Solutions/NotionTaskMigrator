@@ -1,0 +1,16 @@
+{
+  "sourceId": "1986824d-5503-8075-8bcc-c8de79053aed",
+  "targetId": "20a6824d-5503-814b-8297-ea2174961256",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:04:38.886Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Employment Law Connect new brand accounts",
+  "sourcePageIcon": "",
+  "targetPageName": "Employment Law Connect new brand accounts",
+  "targetPageIcon": "",
+  "notes": ""
+}

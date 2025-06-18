@@ -1,0 +1,16 @@
+{
+  "sourceId": "1ba6824d-5503-80c0-88d3-d74981eb30eb",
+  "targetId": "20a6824d-5503-8130-a7b5-f043625a2435",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:32:09.558Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "TikTok Moderations in NC",
+  "sourcePageIcon": "",
+  "targetPageName": "TikTok Moderations in NC",
+  "targetPageIcon": "",
+  "notes": ""
+}

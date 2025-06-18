@@ -1,0 +1,16 @@
+{
+  "sourceId": "1e66824d-5503-809e-8403-f1df21488b78",
+  "targetId": "20a6824d-5503-8117-8708-c27d48f9b2e9",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:01:16.822Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Crystal Quill Gmail Acc",
+  "sourcePageIcon": "",
+  "targetPageName": "Crystal Quill Gmail Acc",
+  "targetPageIcon": "",
+  "notes": ""
+}

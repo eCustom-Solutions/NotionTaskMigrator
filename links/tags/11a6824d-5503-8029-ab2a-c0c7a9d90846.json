@@ -1,0 +1,16 @@
+{
+  "sourceId": "11a6824d-5503-8029-ab2a-c0c7a9d90846",
+  "targetId": "2076824d-5503-8162-8cfa-c144521048f1",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:35.842Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "SettledUSA",
+  "sourcePageIcon": "🏆",
+  "targetPageName": "SettledUSA",
+  "targetPageIcon": "🏆",
+  "notes": ""
+}

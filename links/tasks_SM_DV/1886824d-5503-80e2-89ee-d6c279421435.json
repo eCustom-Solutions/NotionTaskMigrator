@@ -1,0 +1,16 @@
+{
+  "sourceId": "1886824d-5503-80e2-89ee-d6c279421435",
+  "targetId": "20a6824d-5503-81f5-89e6-c5f96999b7bc",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:34:49.785Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Organic Reporting",
+  "sourcePageIcon": "",
+  "targetPageName": "Organic Reporting",
+  "targetPageIcon": "",
+  "notes": ""
+}

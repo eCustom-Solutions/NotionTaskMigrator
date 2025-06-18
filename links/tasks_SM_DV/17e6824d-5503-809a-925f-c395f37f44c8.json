@@ -1,0 +1,16 @@
+{
+  "sourceId": "17e6824d-5503-809a-925f-c395f37f44c8",
+  "targetId": "20a6824d-5503-815e-9f0e-f0e369f55d4b",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:35:25.347Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Fill out 1:1 form",
+  "sourcePageIcon": "",
+  "targetPageName": "Fill out 1:1 form",
+  "targetPageIcon": "",
+  "notes": ""
+}

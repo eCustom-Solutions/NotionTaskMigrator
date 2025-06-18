@@ -1,0 +1,16 @@
+{
+  "sourceId": "1536824d-5503-8061-bda2-da7d18c18498",
+  "targetId": "2076824d-5503-815d-b945-cdf208a974ec",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:31:03.657Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Fastlane Transporters",
+  "sourcePageIcon": "💨",
+  "targetPageName": "Fastlane Transporters",
+  "targetPageIcon": "💨",
+  "notes": ""
+}

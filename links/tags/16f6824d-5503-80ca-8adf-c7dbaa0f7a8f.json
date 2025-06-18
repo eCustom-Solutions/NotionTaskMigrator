@@ -1,0 +1,16 @@
+{
+  "sourceId": "16f6824d-5503-80ca-8adf-c7dbaa0f7a8f",
+  "targetId": "2086824d-5503-818b-a588-c6b50e2bd0ea",
+  "status": "success",
+  "syncedAt": "2025-06-04T18:05:54.931Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Essential Health Alliance",
+  "sourcePageIcon": "❤️‍🩹",
+  "targetPageName": "Essential Health Alliance",
+  "targetPageIcon": "❤️‍🩹",
+  "notes": ""
+}

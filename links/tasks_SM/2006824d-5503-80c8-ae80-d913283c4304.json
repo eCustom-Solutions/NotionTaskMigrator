@@ -1,0 +1,16 @@
+{
+  "sourceId": "2006824d-5503-80c8-ae80-d913283c4304",
+  "targetId": "20a6824d-5503-815c-9c64-dfd9ed9b9862",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:00:45.179Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Quill spark ad",
+  "sourcePageIcon": "",
+  "targetPageName": "Quill spark ad",
+  "targetPageIcon": "",
+  "notes": ""
+}

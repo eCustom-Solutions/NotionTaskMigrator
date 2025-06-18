@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-80c0-be2e-e663e9baf12b",
+  "targetId": "2076824d-5503-81e9-9a39-ce089e590313",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:24.098Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Tenant Expert",
+  "sourcePageIcon": "🛖",
+  "targetPageName": "Tenant Expert",
+  "targetPageIcon": "🛖",
+  "notes": ""
+}

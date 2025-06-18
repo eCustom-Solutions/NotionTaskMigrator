@@ -1,0 +1,16 @@
+{
+  "sourceId": "1b96824d-5503-80b8-9584-fc6065474af3",
+  "targetId": "20a6824d-5503-81ec-a065-dd49ee26d03c",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:03:10.931Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "NC TT Automoderations",
+  "sourcePageIcon": "",
+  "targetPageName": "NC TT Automoderations",
+  "targetPageIcon": "",
+  "notes": ""
+}

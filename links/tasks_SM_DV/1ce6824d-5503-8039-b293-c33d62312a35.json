@@ -1,0 +1,16 @@
+{
+  "sourceId": "1ce6824d-5503-8039-b293-c33d62312a35",
+  "targetId": "20a6824d-5503-8107-99e5-d97052790f59",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:31:05.385Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "schedule settled posts",
+  "sourcePageIcon": "",
+  "targetPageName": "schedule settled posts",
+  "targetPageIcon": "",
+  "notes": ""
+}

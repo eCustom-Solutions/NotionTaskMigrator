@@ -10,9 +10,10 @@ CONFIG = {
     "exclude_paths": ["node_modules", "__pycache__", ".git", "ignore_this_file.txt", "tmp", "models", "scripts", "logging",
     ".DS_Store", ".idea", "data", "_archive", "links", "links/tags", "objects", '.git'],
     "exclude_extensions": [".pyc", ".log", ".DS_Store", ".env", ".example", ".json"],
-    "exclude_files": ["secrets.txt", "draft.md", "index.js", ".env", ".gitignore", ".git", "migrate_tags.js", "tag_transformer.js"],
+    "exclude_files": ["mcc_tasks_map.js", "sm_tasks_map.js", "secrets.txt", "draft.md", "index.js", ".env", ".gitignore", ".git", "migrate_tags.js", "tag_transformer.js"],
     "output_file": "file_contents_report.txt"
 }
+
 
 def should_exclude(file_path: Path, script_path: Path, parent_dir: Path) -> bool:
     """

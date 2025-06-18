@@ -1,0 +1,16 @@
+{
+  "sourceId": "2036824d-5503-8079-ac54-e2c02cc6a1a5",
+  "targetId": "20a6824d-5503-811d-92e5-d415b6815416",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:27:54.051Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "MG Scripting",
+  "sourcePageIcon": "",
+  "targetPageName": "MG Scripting",
+  "targetPageIcon": "",
+  "notes": ""
+}

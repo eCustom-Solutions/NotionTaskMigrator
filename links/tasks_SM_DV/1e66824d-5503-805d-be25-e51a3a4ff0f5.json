@@ -1,0 +1,16 @@
+{
+  "sourceId": "1e66824d-5503-805d-be25-e51a3a4ff0f5",
+  "targetId": "20a6824d-5503-8135-9835-d579985d3396",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:29:50.742Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Nav Access to FB Page",
+  "sourcePageIcon": "",
+  "targetPageName": "Nav Access to FB Page",
+  "targetPageIcon": "",
+  "notes": ""
+}

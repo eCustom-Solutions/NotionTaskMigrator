@@ -1,0 +1,16 @@
+{
+  "sourceId": "1f56824d-5503-80d0-8034-d7244ec6542c",
+  "targetId": "20a6824d-5503-8133-bbf0-fba4e4f2859b",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:00:58.398Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Reread Nav Scripts",
+  "sourcePageIcon": "",
+  "targetPageName": "Reread Nav Scripts",
+  "targetPageIcon": "",
+  "notes": ""
+}

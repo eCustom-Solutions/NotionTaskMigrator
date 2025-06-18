@@ -1,0 +1,16 @@
+{
+  "sourceId": "1a46824d-5503-80f5-84ca-e45533ac7679",
+  "targetId": "20a6824d-5503-8108-9e67-e51ce9c866cc",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:33:07.196Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Show Ed MIC video",
+  "sourcePageIcon": "",
+  "targetPageName": "Show Ed MIC video",
+  "targetPageIcon": "",
+  "notes": ""
+}

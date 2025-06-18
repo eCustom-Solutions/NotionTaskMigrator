@@ -1,0 +1,16 @@
+{
+  "sourceId": "1e76824d-5503-8018-8d53-db0e89c6fc10",
+  "targetId": "20a6824d-5503-8186-b9b4-c81b4cc0e63c",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:29:49.959Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "EML Posts",
+  "sourcePageIcon": "",
+  "targetPageName": "EML Posts",
+  "targetPageIcon": "",
+  "notes": ""
+}

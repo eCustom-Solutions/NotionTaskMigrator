@@ -1,0 +1,16 @@
+{
+  "sourceId": "1e36824d-5503-80ad-8ac0-d5071e77580e",
+  "targetId": "20a6824d-5503-81a6-bc20-ffef10fa33a2",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:01:24.254Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "EOM Reporting",
+  "sourcePageIcon": "",
+  "targetPageName": "EOM Reporting",
+  "targetPageIcon": "",
+  "notes": ""
+}

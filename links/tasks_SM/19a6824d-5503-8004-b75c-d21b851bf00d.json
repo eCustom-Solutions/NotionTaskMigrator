@@ -1,0 +1,16 @@
+{
+  "sourceId": "19a6824d-5503-8004-b75c-d21b851bf00d",
+  "targetId": "20a6824d-5503-8174-9f14-e08be80dd6a3",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:04:34.638Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "add assigned date to all CC",
+  "sourcePageIcon": "",
+  "targetPageName": "add assigned date to all CC",
+  "targetPageIcon": "",
+  "notes": ""
+}

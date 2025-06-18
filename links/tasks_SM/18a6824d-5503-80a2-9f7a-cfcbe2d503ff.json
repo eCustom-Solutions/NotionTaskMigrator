@@ -1,0 +1,16 @@
+{
+  "sourceId": "18a6824d-5503-80a2-9f7a-cfcbe2d503ff",
+  "targetId": "20a6824d-5503-81f5-a0cd-ca0ae8ce0c8c",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:05:24.375Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "boost nav’s post",
+  "sourcePageIcon": "",
+  "targetPageName": "boost nav’s post",
+  "targetPageIcon": "",
+  "notes": ""
+}

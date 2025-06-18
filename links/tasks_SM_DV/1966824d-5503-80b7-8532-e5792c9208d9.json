@@ -1,0 +1,16 @@
+{
+  "sourceId": "1966824d-5503-80b7-8532-e5792c9208d9",
+  "targetId": "20a6824d-5503-819a-8b9a-f28a7e3fa9d1",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:34:11.699Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "make new EML tiktok",
+  "sourcePageIcon": "",
+  "targetPageName": "make new EML tiktok",
+  "targetPageIcon": "",
+  "notes": ""
+}

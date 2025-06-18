@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-8094-a4e4-df86c55881dd",
+  "targetId": "2076824d-5503-81e0-bd96-c08449f6ac8b",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:29:56.130Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1de6824d550380749f3cc165609345b3",
+  "targetDbName": "Departments",
+  "type": "Team",
+  "sourcePageName": "Design",
+  "sourcePageIcon": "🎨",
+  "targetPageName": "Design",
+  "targetPageIcon": "🎨",
+  "notes": ""
+}

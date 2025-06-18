@@ -1,0 +1,16 @@
+{
+  "sourceId": "1136824d-5503-8058-a8f9-daff1aa3c3fe",
+  "targetId": "2076824d-5503-8168-be70-cb72fa4687d1",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:31:23.585Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d550380d58e07d5c453ddd332",
+  "targetDbName": "Verticals",
+  "type": "Vertical",
+  "sourcePageName": "Accounting",
+  "sourcePageIcon": "💰",
+  "targetPageName": "Accounting",
+  "targetPageIcon": "💰",
+  "notes": ""
+}

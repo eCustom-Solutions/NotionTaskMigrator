@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-80a6-b1fe-d6bd2eaabc5f",
+  "targetId": "2076824d-5503-8103-8eee-f0fc2412dfea",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:19.853Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "The Accident Expert",
+  "sourcePageIcon": "🚑",
+  "targetPageName": "The Accident Expert",
+  "targetPageIcon": "🚑",
+  "notes": ""
+}

@@ -1,0 +1,16 @@
+{
+  "sourceId": "19e6824d-5503-80e1-b0c8-ecfc02c7ba6f",
+  "targetId": "20a6824d-5503-8185-af1e-f1e7ed4e2074",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:33:18.591Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Edit and schedule Harper videos",
+  "sourcePageIcon": "",
+  "targetPageName": "Edit and schedule Harper videos",
+  "targetPageIcon": "",
+  "notes": ""
+}

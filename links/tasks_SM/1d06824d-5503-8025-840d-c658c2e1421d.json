@@ -1,0 +1,16 @@
+{
+  "sourceId": "1d06824d-5503-8025-840d-c658c2e1421d",
+  "targetId": "20a6824d-5503-816e-9695-fe0849117989",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:02:03.736Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Ad automations",
+  "sourcePageIcon": "",
+  "targetPageName": "Ad automations",
+  "targetPageIcon": "",
+  "notes": ""
+}

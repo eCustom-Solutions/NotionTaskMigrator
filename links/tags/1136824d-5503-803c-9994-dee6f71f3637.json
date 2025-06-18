@@ -1,0 +1,16 @@
+{
+  "sourceId": "1136824d-5503-803c-9994-dee6f71f3637",
+  "targetId": "2076824d-5503-8104-b8f2-f9422c1984f4",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:31:12.942Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d550380d58e07d5c453ddd332",
+  "targetDbName": "Verticals",
+  "type": "Vertical",
+  "sourcePageName": "Lemon Law",
+  "sourcePageIcon": "🍋",
+  "targetPageName": "Lemon Law",
+  "targetPageIcon": "🍋",
+  "notes": ""
+}

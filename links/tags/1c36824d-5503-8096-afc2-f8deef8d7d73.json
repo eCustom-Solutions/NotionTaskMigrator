@@ -1,0 +1,16 @@
+{
+  "sourceId": "1c36824d-5503-8096-afc2-f8deef8d7d73",
+  "targetId": "2076824d-5503-81d3-a7e2-c0dc34f91a71",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:09.431Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1de6824d550380749f3cc165609345b3",
+  "targetDbName": "Departments",
+  "type": "Team",
+  "sourcePageName": "Production",
+  "sourcePageIcon": "🎬",
+  "targetPageName": "Production",
+  "targetPageIcon": "🎬",
+  "notes": ""
+}

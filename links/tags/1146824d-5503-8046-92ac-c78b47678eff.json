@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-8046-92ac-c78b47678eff",
+  "targetId": "2076824d-5503-818a-9a26-e78f142b3923",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:16.654Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Employee Expert",
+  "sourcePageIcon": "🏬",
+  "targetPageName": "Employee Expert",
+  "targetPageIcon": "🏬",
+  "notes": ""
+}

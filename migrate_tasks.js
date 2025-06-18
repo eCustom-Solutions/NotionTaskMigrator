@@ -16,10 +16,10 @@ const { sanitizeBlocks } = require('./services/block_sanitizer');
 
 
 // ── CONFIG ────────────────────────────────────────
-const SOURCE_DB_ID = process.env.NOTION_MCC_TASKS_DB_ID;
+const SOURCE_DB_ID = process.env.APT_DB_ID;
 const TARGET_DB_ID = process.env.NOTION_CENT_DB_ID;
-const TASK_MAP = require('./transformations/mcc_tasks_map');
-const LINKSTORE_TYPE = 'tasks_MCC_v3';
+const TASK_MAP = require('./transformations/apt_tasks_map');
+const LINKSTORE_TYPE = 'tasks_APT_test1';
 
 
 async function main() {
@@ -37,8 +37,8 @@ async function main() {
         // Idempotency: skip if already migrated
         const existing = await linkStore.load(sourceId, LINKSTORE_TYPE).catch(() => null);
         if (existing && existing.status === 'success') {
-            logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
-            logger.info(`ℹ️ Link already exists in store:`, existing);
+            // logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
+            // logger.info(`ℹ️ Link already exists in store:`, existing);
             continue;
         }
 
@@ -46,16 +46,14 @@ async function main() {
         // logger.info(`🔍 Source page for ${sourceId}:`);
         // logger.info(JSON.stringify(page, null, 2));
 
-        logger.info("page", page);
-
 
         try {
             logger.info(`🛠 Transforming page ${sourceId}`);
             let payload = await transform(page, TASK_MAP);
 
             // Payload visibility
-            logger.info(`🔍 Final payload for ${sourceId}:`);
-            logger.info(JSON.stringify(payload, null, 2));
+            // logger.info(`🔍 Final payload for ${sourceId}:`);
+            // logger.info(JSON.stringify(payload, null, 2));
 
             // Write to CENT DB
             try {
@@ -72,7 +70,6 @@ async function main() {
                 }
 
                 logger.info(`✅ Migrated ${sourceId} → ${pageResult.id}`);
-                logger.info(`\n-----------------------------------------------------------------------------------------\n\n`);
 
 
                 // Record the link
@@ -93,6 +90,9 @@ async function main() {
                     notes: ''
                 }, LINKSTORE_TYPE);
                 logger.info(`💾 Link saved for ${sourceId}`);
+
+                logger.info(`\n-----------------------------------------------------------------------------------------\n\n`);
+
 
             } catch (err) {
                 // More context on failure:

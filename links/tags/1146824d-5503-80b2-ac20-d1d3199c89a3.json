@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-80b2-ac20-d1d3199c89a3",
+  "targetId": "2076824d-5503-8169-ade1-cc3d2f6a8143",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:29.104Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "ECS Lemon",
+  "sourcePageIcon": "🛣️",
+  "targetPageName": "ECS Lemon",
+  "targetPageIcon": "🛣️",
+  "notes": ""
+}

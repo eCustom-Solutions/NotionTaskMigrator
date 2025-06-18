@@ -1,0 +1,16 @@
+{
+  "sourceId": "1846824d-5503-8083-9342-ff0f38cedc56",
+  "targetId": "20a6824d-5503-8167-9fc7-dc5bef85f91e",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:05:37.004Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "collaboration posts and sponsorships with YT influencers",
+  "sourcePageIcon": "",
+  "targetPageName": "collaboration posts and sponsorships with YT influencers",
+  "targetPageIcon": "",
+  "notes": ""
+}

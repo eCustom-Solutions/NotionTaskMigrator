@@ -1,0 +1,16 @@
+{
+  "sourceId": "1826824d-5503-80ac-8b99-ee80fa1be3fc",
+  "targetId": "20a6824d-5503-813e-9ce5-d4daf41703cd",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:35:06.893Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Banner redos to Maria",
+  "sourcePageIcon": "",
+  "targetPageName": "Banner redos to Maria",
+  "targetPageIcon": "",
+  "notes": ""
+}

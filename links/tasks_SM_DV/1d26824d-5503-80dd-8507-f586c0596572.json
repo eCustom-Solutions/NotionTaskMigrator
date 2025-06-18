@@ -1,0 +1,16 @@
+{
+  "sourceId": "1d26824d-5503-80dd-8507-f586c0596572",
+  "targetId": "20a6824d-5503-8100-a2c6-ea9be361a802",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:30:31.736Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Assign/Schedule Nav Content",
+  "sourcePageIcon": "",
+  "targetPageName": "Assign/Schedule Nav Content",
+  "targetPageIcon": "",
+  "notes": ""
+}

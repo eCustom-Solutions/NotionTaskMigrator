@@ -1,0 +1,16 @@
+{
+  "sourceId": "1a76824d-5503-8023-b174-f79a45241faa",
+  "targetId": "20a6824d-5503-8103-9d61-e81140aec36f",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:03:47.512Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "send johnny scripts",
+  "sourcePageIcon": "",
+  "targetPageName": "send johnny scripts",
+  "targetPageIcon": "",
+  "notes": ""
+}

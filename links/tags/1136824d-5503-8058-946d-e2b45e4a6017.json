@@ -1,0 +1,16 @@
+{
+  "sourceId": "1136824d-5503-8058-946d-e2b45e4a6017",
+  "targetId": "2076824d-5503-8154-bd00-f34ad2bdd292",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:31:24.602Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d550380d58e07d5c453ddd332",
+  "targetDbName": "Verticals",
+  "type": "Vertical",
+  "sourcePageName": "Personal Injury",
+  "sourcePageIcon": "🩼",
+  "targetPageName": "Personal Injury",
+  "targetPageIcon": "🩼",
+  "notes": ""
+}

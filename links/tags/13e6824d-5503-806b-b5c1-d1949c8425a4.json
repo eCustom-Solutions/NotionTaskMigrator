@@ -1,0 +1,16 @@
+{
+  "sourceId": "13e6824d-5503-806b-b5c1-d1949c8425a4",
+  "targetId": "2076824d-5503-81d8-a20d-d917cb8a06a7",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:54.374Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Electric Vehicle Defect Solutions",
+  "sourcePageIcon": "⚡",
+  "targetPageName": "Electric Vehicle Defect Solutions",
+  "targetPageIcon": "⚡",
+  "notes": ""
+}

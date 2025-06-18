@@ -1,0 +1,16 @@
+{
+  "sourceId": "17e6824d-5503-8074-8c0f-cc26ae1277a7",
+  "targetId": "20a6824d-5503-81c7-a934-e06a95d026ea",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:35:32.083Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "make EHA IG account",
+  "sourcePageIcon": "",
+  "targetPageName": "make EHA IG account",
+  "targetPageIcon": "",
+  "notes": ""
+}

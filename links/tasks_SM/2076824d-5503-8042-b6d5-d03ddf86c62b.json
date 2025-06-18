@@ -1,0 +1,16 @@
+{
+  "sourceId": "2076824d-5503-8042-b6d5-d03ddf86c62b",
+  "targetId": "20a6824d-5503-813d-aa10-c7cdf1a11b4d",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:00:28.732Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "SMA Onboarding",
+  "sourcePageIcon": "",
+  "targetPageName": "SMA Onboarding",
+  "targetPageIcon": "",
+  "notes": ""
+}

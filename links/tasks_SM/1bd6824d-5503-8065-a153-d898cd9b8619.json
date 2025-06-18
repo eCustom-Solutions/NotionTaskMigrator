@@ -1,0 +1,16 @@
+{
+  "sourceId": "1bd6824d-5503-8065-a153-d898cd9b8619",
+  "targetId": "20a6824d-5503-81e9-ac5c-eb75f50cf291",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:03:00.689Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Master content calendar",
+  "sourcePageIcon": "",
+  "targetPageName": "Master content calendar",
+  "targetPageIcon": "",
+  "notes": ""
+}

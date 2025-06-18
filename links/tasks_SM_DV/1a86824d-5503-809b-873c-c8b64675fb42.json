@@ -1,0 +1,16 @@
+{
+  "sourceId": "1a86824d-5503-809b-873c-c8b64675fb42",
+  "targetId": "20a6824d-5503-8109-8599-d716e26ad7a0",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:32:43.026Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "quill scripts",
+  "sourcePageIcon": "",
+  "targetPageName": "quill scripts",
+  "targetPageIcon": "",
+  "notes": ""
+}

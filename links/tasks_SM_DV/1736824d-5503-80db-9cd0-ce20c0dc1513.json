@@ -1,0 +1,16 @@
+{
+  "sourceId": "1736824d-5503-80db-9cd0-ce20c0dc1513",
+  "targetId": "20a6824d-5503-8169-bbf0-c205001546e1",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:36:19.500Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Add GMB account to NC ",
+  "sourcePageIcon": "",
+  "targetPageName": "Add GMB account to NC ",
+  "targetPageIcon": "",
+  "notes": ""
+}

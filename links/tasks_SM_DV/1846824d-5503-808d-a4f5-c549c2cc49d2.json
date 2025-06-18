@@ -1,0 +1,16 @@
+{
+  "sourceId": "1846824d-5503-808d-a4f5-c549c2cc49d2",
+  "targetId": "20a6824d-5503-81e5-befc-e06a3bcaf07d",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:34:57.338Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Watchaléman longform content",
+  "sourcePageIcon": "",
+  "targetPageName": "Watchaléman longform content",
+  "targetPageIcon": "",
+  "notes": ""
+}

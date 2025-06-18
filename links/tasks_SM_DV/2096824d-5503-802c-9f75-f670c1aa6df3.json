@@ -1,0 +1,16 @@
+{
+  "sourceId": "2096824d-5503-802c-9f75-f670c1aa6df3",
+  "targetId": "20a6824d-5503-8160-9fd2-c7ac701adb8c",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:26:50.898Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "World Elder Abuse Day Post",
+  "sourcePageIcon": "",
+  "targetPageName": "World Elder Abuse Day Post",
+  "targetPageIcon": "",
+  "notes": ""
+}

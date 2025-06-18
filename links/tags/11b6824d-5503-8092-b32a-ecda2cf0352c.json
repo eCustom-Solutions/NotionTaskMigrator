@@ -1,0 +1,16 @@
+{
+  "sourceId": "11b6824d-5503-8092-b32a-ecda2cf0352c",
+  "targetId": "2076824d-5503-816e-977f-e750be9187d0",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:37.879Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "eCustom Solutions",
+  "sourcePageIcon": null,
+  "targetPageName": "eCustom Solutions",
+  "targetPageIcon": null,
+  "notes": ""
+}

@@ -1,0 +1,16 @@
+{
+  "sourceId": "1a46824d-5503-8053-b0b0-e5728b2c3f5f",
+  "targetId": "20a6824d-5503-811f-9397-fe0c18e15196",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:33:12.335Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Assign MG to design",
+  "sourcePageIcon": "",
+  "targetPageName": "Assign MG to design",
+  "targetPageIcon": "",
+  "notes": ""
+}

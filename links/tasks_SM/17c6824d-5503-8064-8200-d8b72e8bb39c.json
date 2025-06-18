@@ -1,0 +1,16 @@
+{
+  "sourceId": "17c6824d-5503-8064-8200-d8b72e8bb39c",
+  "targetId": "20a6824d-5503-81c6-8498-d312fa3bb915",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:06:04.449Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "schedule 9 grid eml posts",
+  "sourcePageIcon": "",
+  "targetPageName": "schedule 9 grid eml posts",
+  "targetPageIcon": "",
+  "notes": ""
+}

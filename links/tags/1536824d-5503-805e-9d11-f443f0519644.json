@@ -1,0 +1,16 @@
+{
+  "sourceId": "1536824d-5503-805e-9d11-f443f0519644",
+  "targetId": "2076824d-5503-81fa-99cf-f3945e6b5e97",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:31:06.474Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Calme Transport",
+  "sourcePageIcon": "🚚",
+  "targetPageName": "Calme Transport",
+  "targetPageIcon": "🚚",
+  "notes": ""
+}

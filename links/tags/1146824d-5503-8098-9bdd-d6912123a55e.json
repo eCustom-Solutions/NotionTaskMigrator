@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-8098-9bdd-d6912123a55e",
+  "targetId": "2076824d-5503-81b5-bd65-df7d8600f1d1",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:29.991Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "EML Training",
+  "sourcePageIcon": "🖥️",
+  "targetPageName": "EML Training",
+  "targetPageIcon": "🖥️",
+  "notes": ""
+}

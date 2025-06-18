@@ -1,0 +1,16 @@
+{
+  "sourceId": "1c96824d-5503-80a8-8188-fbeb38a04744",
+  "targetId": "2086824d-5503-81fa-ba48-f94ed3b02e7a",
+  "status": "success",
+  "syncedAt": "2025-06-04T18:06:02.225Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Golden Years Neglect",
+  "sourcePageIcon": "👵🏼",
+  "targetPageName": "Golden Years Neglect",
+  "targetPageIcon": "👵🏼",
+  "notes": ""
+}

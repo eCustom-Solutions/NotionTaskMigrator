@@ -1,0 +1,16 @@
+{
+  "sourceId": "1266824d-5503-80fe-9a6b-d798c9cab629",
+  "targetId": "2076824d-5503-81ef-bbb6-de8d11d59609",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:49.510Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Worldwide Recruiting",
+  "sourcePageIcon": "🌐",
+  "targetPageName": "Worldwide Recruiting",
+  "targetPageIcon": "🌐",
+  "notes": ""
+}

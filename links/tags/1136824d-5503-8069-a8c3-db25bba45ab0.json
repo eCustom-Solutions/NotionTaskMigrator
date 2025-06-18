@@ -1,0 +1,16 @@
+{
+  "sourceId": "1136824d-5503-8069-a8c3-db25bba45ab0",
+  "targetId": "2076824d-5503-8124-a70a-c19a9b05a4ce",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:31:22.489Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d550380d58e07d5c453ddd332",
+  "targetDbName": "Verticals",
+  "type": "Vertical",
+  "sourcePageName": "Tenant Law",
+  "sourcePageIcon": "🏡",
+  "targetPageName": "Tenant Law",
+  "targetPageIcon": "🏡",
+  "notes": ""
+}

@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-8049-a865-e9dd61b1a115",
+  "targetId": "2076824d-5503-81a3-8417-d1dd1db4808c",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:31.581Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Attorney Launch",
+  "sourcePageIcon": "🚀",
+  "targetPageName": "Attorney Launch",
+  "targetPageIcon": "🚀",
+  "notes": ""
+}

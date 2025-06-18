@@ -1,0 +1,16 @@
+{
+  "sourceId": "1536824d-5503-8008-b42b-c4cdcf702feb",
+  "targetId": "2076824d-5503-81a0-9d3a-dd6f8d069c7e",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:58.385Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Vade",
+  "sourcePageIcon": "💲",
+  "targetPageName": "Vade",
+  "targetPageIcon": "💲",
+  "notes": ""
+}

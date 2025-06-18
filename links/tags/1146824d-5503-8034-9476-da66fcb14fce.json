@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-8034-9476-da66fcb14fce",
+  "targetId": "2076824d-5503-81a1-9c9d-c9a3523b1a3f",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:29:48.929Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1de6824d550380749f3cc165609345b3",
+  "targetDbName": "Departments",
+  "type": "Team",
+  "sourcePageName": "Marketing",
+  "sourcePageIcon": "📣",
+  "targetPageName": "Marketing",
+  "targetPageIcon": "📣",
+  "notes": ""
+}

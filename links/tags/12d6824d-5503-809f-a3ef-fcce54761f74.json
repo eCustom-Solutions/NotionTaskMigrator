@@ -1,0 +1,16 @@
+{
+  "sourceId": "12d6824d-5503-809f-a3ef-fcce54761f74",
+  "targetId": "2076824d-5503-818e-8cd0-edafe2b1d3d1",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:52.581Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Auto Rights Advocates",
+  "sourcePageIcon": "🛡️",
+  "targetPageName": "Auto Rights Advocates",
+  "targetPageIcon": "🛡️",
+  "notes": ""
+}

@@ -1,0 +1,16 @@
+{
+  "sourceId": "1936824d-5503-80d3-b370-c1e5eb9aeb6b",
+  "targetId": "20a6824d-5503-81e3-93c5-e4a806f102ca",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:34:12.367Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Update CIC",
+  "sourcePageIcon": "",
+  "targetPageName": "Update CIC",
+  "targetPageIcon": "",
+  "notes": ""
+}

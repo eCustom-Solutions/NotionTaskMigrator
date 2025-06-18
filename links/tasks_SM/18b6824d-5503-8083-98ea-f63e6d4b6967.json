@@ -1,0 +1,16 @@
+{
+  "sourceId": "18b6824d-5503-8083-98ea-f63e6d4b6967",
+  "targetId": "20a6824d-5503-8107-8340-f81f81bfe0ee",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:05:20.308Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Send & schedule new EML posts",
+  "sourcePageIcon": "",
+  "targetPageName": "Send & schedule new EML posts",
+  "targetPageIcon": "",
+  "notes": ""
+}

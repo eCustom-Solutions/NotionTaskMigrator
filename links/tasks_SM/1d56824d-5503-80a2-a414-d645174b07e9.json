@@ -1,0 +1,16 @@
+{
+  "sourceId": "1d56824d-5503-80a2-a414-d645174b07e9",
+  "targetId": "20a6824d-5503-816a-8644-df0633eef2e1",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:01:48.602Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "ELC grid posts",
+  "sourcePageIcon": "",
+  "targetPageName": "ELC grid posts",
+  "targetPageIcon": "",
+  "notes": ""
+}

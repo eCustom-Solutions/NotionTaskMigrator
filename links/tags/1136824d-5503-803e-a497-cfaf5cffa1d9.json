@@ -1,0 +1,16 @@
+{
+  "sourceId": "1136824d-5503-803e-a497-cfaf5cffa1d9",
+  "targetId": "2076824d-5503-812c-a72c-e37f66008b7e",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:31:15.189Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d550380d58e07d5c453ddd332",
+  "targetDbName": "Verticals",
+  "type": "Vertical",
+  "sourcePageName": "Employment Law",
+  "sourcePageIcon": "💼",
+  "targetPageName": "Employment Law",
+  "targetPageIcon": "💼",
+  "notes": ""
+}

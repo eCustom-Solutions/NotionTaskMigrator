@@ -1,0 +1,16 @@
+{
+  "sourceId": "1c96824d-5503-80c6-8278-faffd9ee97bd",
+  "targetId": "20a6824d-5503-8162-aadd-ec4fbace131b",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:02:37.267Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "IG account",
+  "sourcePageIcon": "",
+  "targetPageName": "IG account",
+  "targetPageIcon": "",
+  "notes": ""
+}

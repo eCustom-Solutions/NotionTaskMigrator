@@ -1,0 +1,16 @@
+{
+  "sourceId": "2006824d-5503-8025-8306-fa3685787ab8",
+  "targetId": "20a6824d-5503-8150-a57a-f0ce3b41e38d",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:28:55.811Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "Schedule K2D & Assign Video",
+  "sourcePageIcon": "",
+  "targetPageName": "Schedule K2D & Assign Video",
+  "targetPageIcon": "",
+  "notes": ""
+}

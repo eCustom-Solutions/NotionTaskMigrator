@@ -1,0 +1,16 @@
+{
+  "sourceId": "1c76824d-5503-805e-a7ec-f7105cb080e2",
+  "targetId": "20a6824d-5503-8127-b2a5-feef6abaa94d",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:31:32.358Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM_DV",
+  "sourcePageName": "CC organic videos",
+  "sourcePageIcon": "",
+  "targetPageName": "CC organic videos",
+  "targetPageIcon": "",
+  "notes": ""
+}

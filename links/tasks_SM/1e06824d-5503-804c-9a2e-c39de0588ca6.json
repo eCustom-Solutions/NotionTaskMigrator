@@ -1,0 +1,16 @@
+{
+  "sourceId": "1e06824d-5503-804c-9a2e-c39de0588ca6",
+  "targetId": "20a6824d-5503-81dc-b268-f1fd4e541cc0",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:01:29.924Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "grid posts",
+  "sourcePageIcon": "",
+  "targetPageName": "grid posts",
+  "targetPageIcon": "",
+  "notes": ""
+}

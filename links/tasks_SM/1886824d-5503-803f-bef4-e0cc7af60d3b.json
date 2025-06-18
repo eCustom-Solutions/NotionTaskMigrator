@@ -1,0 +1,16 @@
+{
+  "sourceId": "1886824d-5503-803f-bef4-e0cc7af60d3b",
+  "targetId": "20a6824d-5503-8149-8dea-ee593b10bb66",
+  "status": "success",
+  "syncedAt": "2025-06-06T17:05:35.053Z",
+  "sourceDbId": "1136824d550380f9a578cec5e8a871d0",
+  "sourceDbName": "SM Tasks",
+  "targetDbId": "1906824d5503817f868afa7f961a6f8f",
+  "targetDbName": "CENT Tasks",
+  "type": "tasks_SM",
+  "sourcePageName": "Settled Posts for Val",
+  "sourcePageIcon": "",
+  "targetPageName": "Settled Posts for Val",
+  "targetPageIcon": "",
+  "notes": ""
+}

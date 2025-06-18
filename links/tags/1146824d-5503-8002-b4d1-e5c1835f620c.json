@@ -1,0 +1,16 @@
+{
+  "sourceId": "1146824d-5503-8002-b4d1-e5c1835f620c",
+  "targetId": "2076824d-5503-81c3-9470-dbeccb41694a",
+  "status": "success",
+  "syncedAt": "2025-06-03T22:30:13.924Z",
+  "sourceDbId": "1136824d5503809c901afcc3ba0a4b71",
+  "sourceDbName": "Global Tags DB",
+  "targetDbId": "1c96824d5503804eb71ff00158d886a8",
+  "targetDbName": "Brands",
+  "type": "Brand",
+  "sourcePageName": "Lemonade Lawyers",
+  "sourcePageIcon": "🧃",
+  "targetPageName": "Lemonade Lawyers",
+  "targetPageIcon": "🧃",
+  "notes": ""
+}
