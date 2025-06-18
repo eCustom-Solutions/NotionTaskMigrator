@@ -10,9 +10,7 @@ const writeToDBB               = require('./services/write_task').writeToDBB;
 const linkStore                = require('./services/link_store');
 const transformModule = require('./transformations/task_transformer');
 const transform = transformModule.default || transformModule;
-const writePageWithBlocks = transformModule.writePageWithBlocks;
 const logger = require('./logging/logger');
-const { sanitizeBlocks } = require('./services/block_sanitizer');
 
 
 // ── CONFIG ────────────────────────────────────────
@@ -58,16 +56,9 @@ async function main() {
             // Write to CENT DB
             try {
                 logger.info(`🚀 Writing page ${sourceId} to CENT DB`);
-                // Create page with properties only
-                const pageResult = await writeToDBB({ properties: payload.properties }, TARGET_DB_ID);
+                // Create page with full payload (properties and children handled internally)
+                const pageResult = await writeToDBB(payload, TARGET_DB_ID);
                 logger.info(`✅ Page created ${pageResult.id} for source ${sourceId}`);
-
-                // Append children blocks, if any
-                if (payload.children?.length) {
-                    logger.info(`🧩 Appending ${payload.children.length} top‑level blocks to ${pageResult.id}`);
-                    await writePageWithBlocks(pageResult.id, payload.children);
-                    logger.info(`✅ Blocks appended to ${pageResult.id}`);
-                }
 
                 logger.info(`✅ Migrated ${sourceId} → ${pageResult.id}`);
 

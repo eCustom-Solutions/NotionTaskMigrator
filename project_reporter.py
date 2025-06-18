@@ -7,7 +7,7 @@ from pathlib import Path
 # - File extensions to exclude
 # - Output file name or relative path within the parent directory
 CONFIG = {
-    "exclude_paths": ["node_modules", "__pycache__", ".git", "ignore_this_file.txt", "tmp", "models", "scripts", "logging",
+    "exclude_paths": ["node_modules", "__pycache__", ".git", "ignore_this_file.txt", "tmp", "scripts", "logging",
     ".DS_Store", ".idea", "data", "_archive", "links", "links/tags", "objects", '.git'],
     "exclude_extensions": [".pyc", ".log", ".DS_Store", ".env", ".example", ".json"],
     "exclude_files": ["mcc_tasks_map.js", "sm_tasks_map.js", "secrets.txt", "draft.md", "index.js", ".env", ".gitignore", ".git", "migrate_tags.js", "tag_transformer.js"],

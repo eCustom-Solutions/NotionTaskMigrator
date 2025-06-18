@@ -1,160 +1,73 @@
 // transformations/task_transformer.js
-// --------------------------------------
-// A generic transformer that, given a Notion page and a mapping spec,
-// builds the `properties` payload for creating/updating a page in the target DB.
+// -----------------------------------
+// Builds a task payload (properties, icon, cover, raw block tree).
+// **No writing or media work happens here anymore.**
 
-const path = require('path');
-const os = require('os');
-const notion = require('../services/notion_client');
-const logger = require('../logging/logger');
-const sanitizeBlocks = require('../services/block_sanitizer');
-const { MediaMigrator } = require('../services/media_migrator');
-const tmpDir = path.resolve(process.cwd(), 'tmp', 'page_media');
-const mediaMigrator = new MediaMigrator({
-    notion,
-    tmpDir: tmpDir,
-    logger,
-    maxParallel: 10,
-    chunkSizeMB: 19
-});
+const notion  = require('../services/notion_client');
+const logger  = require('../logging/logger');
 
+/* ── internal helper ──────────────────────────────────────────────── */
 async function fetchBlockTree(blockId) {
-    let blocks = [];
-    let cursor;
-
+    let cursor, out = [];
     do {
-        const response = await notion.blocks.children.list({
-            block_id: blockId,
-            page_size: 100,
-            start_cursor: cursor
-        });
-
-        const childBlocks = await Promise.all(
-            response.results.map(async block => {
-                if (block.has_children) {
-                    const nestedChildren = await fetchBlockTree(block.id);
-                    return { ...block, children: nestedChildren };
-                }
-                return block;
-            })
+        const res = await notion.blocks.children.list({ block_id: blockId, page_size: 100, start_cursor: cursor });
+        const expanded = await Promise.all(
+            res.results.map(async blk => blk.has_children
+                ? { ...blk, children: await fetchBlockTree(blk.id) }
+                : blk)
         );
-
-        blocks.push(...childBlocks);
-        cursor = response.has_more ? response.next_cursor : undefined;
+        out.push(...expanded);
+        cursor = res.has_more ? res.next_cursor : undefined;
     } while (cursor);
-
-    return blocks;
+    return out;
 }
 
+/* ── main transform function ─────────────────────────────────────── */
 module.exports = async function transform(page, map) {
-    const result = {properties: {}};
+    const result = { properties: {} };
 
+    // ── 1. DIRECT & HOOKED FIELD MAPPINGS ────────────────────────────
+    for (const [srcKey, tgtKey] of Object.entries(map.mappings)) {
+        const srcVal = page.properties[srcKey];
+        if (srcVal == null) continue;
 
-
-    for (const [sourceKey, targetKey] of Object.entries(map.mappings)) {
-        const sourceValue = page.properties[sourceKey];
-        if (sourceValue == null) {
-            // no such property on source page
+        if (map.hooks?.[tgtKey]) {
+            result.properties[tgtKey] = await map.hooks[tgtKey](srcVal);
             continue;
         }
 
-        if (map.hooks && typeof map.hooks[targetKey] === 'function') {
-            const hookResult = await map.hooks[targetKey](sourceValue);
-            result.properties[targetKey] = hookResult;
-        } else {
-            const type = sourceValue.type;
-
-            if (type === 'title') {
-                result.properties[targetKey] = {
-                    title: sourceValue.title
-                };
-            } else if (!type) {
-                logger.error(`❗ sourceValue.type is undefined for property "${sourceKey}"`);
-                logger.error(`→ sourceValue was:`, sourceValue);
-                throw new Error(`Cannot infer type for property "${sourceKey}"`);
-            } else {
-                result.properties[targetKey] = { [type]: sourceValue[type] };
-            }
+        const t = srcVal.type;
+        if (!t) {
+            logger.error(`❗ Unknown type for "${srcKey}" →`, srcVal);
+            throw new Error(`Cannot infer type for property "${srcKey}"`);
         }
+        result.properties[tgtKey] = t === 'title' ? { title: srcVal.title } : { [t]: srcVal[t] };
     }
 
-// --- virtual fields ---
+    // ── 2. VIRTUAL FIELDS ────────────────────────────────────────────
     if (Array.isArray(map.virtualMappings)) {
-        for (const targetKey of map.virtualMappings) {
-            if (map.hooks && typeof map.hooks[targetKey] === 'function') {
-                const hookResult = await map.hooks[targetKey](/* undefined or null */);
-                result.properties[targetKey] = hookResult;
+        for (const vKey of map.virtualMappings) {
+            if (map.hooks?.[vKey]) {
+                result.properties[vKey] = await map.hooks[vKey]();
             } else {
-                logger.warn(`⚠️ No hook defined for virtualMapping "${targetKey}" — skipping`);
+                logger.warn(`⚠️ No hook for virtual field "${vKey}" – skipping`);
             }
         }
     }
 
-    // Optional post-processing hook
+    // ── 3. OPTIONAL POST-PROCESS ─────────────────────────────────────
     if (typeof map.postProcess === 'function') {
         await map.postProcess(result, page);
     }
 
-    // Optional: skip copying blocks if map opts in
-    const skipBlocks = map?.options?.skipBlocks === true;
+    // ── 4. ICON / COVER COPY ─────────────────────────────────────────
+    if (page.icon)  result.icon  = page.icon;
+    if (page.cover) result.cover = page.cover;
 
-    if (!skipBlocks) {
-        const recursiveBlocks = await fetchBlockTree(page.id);
-        const sanitizedBlocks = sanitizeBlocks(recursiveBlocks);
-        const mediaResolvedBlocks = await mediaMigrator.transformMediaBlocks(null, sanitizedBlocks);
-        result.children = mediaResolvedBlocks;
+    // ── 5. BLOCK TREE (raw) ──────────────────────────────────────────
+    if (!map?.options?.skipBlocks) {
+        result.children = await fetchBlockTree(page.id); // leave sanitizing/media to write_task.js
     }
 
     return result;
 };
-
-// Retries Notion block appends on conflict_error
-async function safeAppendBlocks(parentId, children, retries = 3) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            return await notion.blocks.children.append({
-                block_id: parentId,
-                children
-            });
-        } catch (err) {
-            if (err.code === 'conflict_error' && i < retries - 1) {
-                logger.warn(`🔁 Conflict on ${parentId}, retrying (${i + 1})`);
-                await new Promise(resolve => setTimeout(resolve, 500 * (i + 1)));
-                continue;
-            }
-            throw err;
-        }
-    }
-}
-
-// Recursively appends blocks to a page using Notion's API, preserving hierarchy, in serialized order.
-async function writePageWithBlocks(pageId, children) {
-    // logger.info(`📝 Starting block write for page ${pageId} with ${children.length} top-level blocks`);
-
-    const queue = children.map(block => ({ parentId: pageId, block }));
-
-    while (queue.length > 0) {
-        const { parentId, block } = queue.shift();
-        // logger.info(`📦 Appending block of type "${block.type}" to parent ${parentId}`);
-
-        const response = await safeAppendBlocks(parentId, [stripNestedChildren(block)]);
-
-        const createdBlock = response.results[0];
-        // logger.info(`✅ Block created with ID ${createdBlock.id}`);
-
-        if (block.children?.length) {
-            // logger.info(`🔗 Queuing ${block.children.length} child blocks for parent ${createdBlock.id}`);
-            block.children.forEach(child => {
-                queue.push({ parentId: createdBlock.id, block: child });
-            });
-        }
-    }
-
-    logger.info(`🎉 Finished writing all blocks to page ${pageId}`);
-}
-
-function stripNestedChildren({ children, ...rest }) {
-    return rest;
-}
-
-module.exports.writePageWithBlocks = writePageWithBlocks;
