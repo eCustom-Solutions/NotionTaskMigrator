@@ -5,6 +5,7 @@
 const fs = require('fs').promises;
 const path = require('path');
 const Link = require('../models/Link');
+const logger = require('../logging/logger');
 
 const LINKS_DIR = path.resolve(__dirname, '../links');
 const DEFAULT_MIGRATION_TYPE = 'tasks';
@@ -14,12 +15,14 @@ class LinkStore {
         this.dir = dir;
         // ensure links directory exists
         fs.mkdir(this.dir, { recursive: true }).catch(() => {});
+        logger.trace(`Initialized LinkStore with directory: ${this.dir}`);
     }
 
     // todo: figure out why this function isn't async
     _dirForType(migrationType = DEFAULT_MIGRATION_TYPE) {
         const dir = path.join(this.dir, migrationType);
         fs.mkdir(dir, { recursive: true }).catch(() => {});
+        logger.trace(`Resolved directory for migrationType "${migrationType}": ${dir}`);
         return dir;
     }
 
@@ -32,10 +35,12 @@ class LinkStore {
     async hasSourceId(sourceId, migrationType = DEFAULT_MIGRATION_TYPE) {
         const dir = this._dirForType(migrationType);
         const file = path.join(dir, `${sourceId}.json`);
+        logger.debug(`Checking existence of sourceId file: ${file}`);
         try {
             await fs.access(file);
             return true;
         } catch {
+            logger.debug(`SourceId file does not exist: ${file}`);
             return false;
         }
     }
@@ -54,9 +59,11 @@ class LinkStore {
         let prevHistory = [];
         try {
             const prevContent = await fs.readFile(file, 'utf-8');
+            logger.debug(`Read existing link file for save: ${file}`);
             const prevData = JSON.parse(prevContent);
             prevHistory = prevData.history || [];
-        } catch (_) {
+        } catch (err) {
+            logger.warn(`Failed to read or parse existing link file during save (may be first save): ${file} - ${err.message}`);
             // file didn't exist — first‑time save
         }
 
@@ -66,6 +73,7 @@ class LinkStore {
         };
 
         await fs.writeFile(file, JSON.stringify(merged, null, 2), 'utf-8');
+        logger.debug(`Saved link file: ${file}`);
     }
 
     /**
@@ -77,8 +85,15 @@ class LinkStore {
     async load(sourceId, migrationType = DEFAULT_MIGRATION_TYPE) {
         const dir = this._dirForType(migrationType);
         const file = path.join(dir, `${sourceId}.json`);
+        logger.debug(`Loading link file: ${file}`);
         const content = await fs.readFile(file, 'utf-8');
-        const data = JSON.parse(content);
+        let data;
+        try {
+            data = JSON.parse(content);
+        } catch (err) {
+            logger.warn(`Failed to parse link JSON file: ${file} - ${err.message}`);
+            throw err;
+        }
         // Instantiate Link with full metadata
         return new Link({
             sourceId: data.sourceId,
@@ -108,8 +123,16 @@ class LinkStore {
     async loadRaw(sourceId, migrationType = DEFAULT_MIGRATION_TYPE) {
         const dir = this._dirForType(migrationType);
         const file = path.join(dir, `${sourceId}.json`);
+        logger.debug(`Loading raw link file: ${file}`);
         const content = await fs.readFile(file, 'utf-8');
-        return JSON.parse(content);
+        let data;
+        try {
+            data = JSON.parse(content);
+        } catch (err) {
+            logger.warn(`Failed to parse raw link JSON file: ${file} - ${err.message}`);
+            throw err;
+        }
+        return data;
     }
 
     /**
@@ -125,7 +148,9 @@ class LinkStore {
         let files;
         try {
             files = await fs.readdir(dir);
+            logger.debug(`Read directory for findBySourcePageName: ${dir}`);
         } catch {
+            logger.warn(`Failed to read directory for migrationType: ${migrationType}`);
             return null;
         }
 
@@ -136,13 +161,16 @@ class LinkStore {
             let raw;
             try {
                 raw = await fs.readFile(fullPath, 'utf-8');
+                logger.debug(`Read file during findBySourcePageName: ${fullPath}`);
             } catch {
+                logger.warn(`Failed to read file during findBySourcePageName: ${fullPath}`);
                 continue;
             }
             let data;
             try {
                 data = JSON.parse(raw);
             } catch {
+                logger.warn(`Failed to parse JSON during findBySourcePageName: ${fullPath}`);
                 continue;
             }
             // If sourcePageName field matches exactly, instantiate and return

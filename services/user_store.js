@@ -1,5 +1,7 @@
 // services/user_store.js
 
+const logger = require('../logging/logger');
+
 /**
  * A simple in-memory cache of Notion workspace users.
  * Polls the Notion API once upon init and caches results.
@@ -22,6 +24,7 @@ class UserStore {
     if (this.users !== null) {
       return this;
     }
+    logger.debug('UserStore initialization started.');
     this.users = [];
     let cursor = undefined;
 
@@ -35,6 +38,7 @@ class UserStore {
       cursor = response.next_cursor;
     } while (cursor);
 
+    logger.debug(`UserStore initialization completed. Fetched ${this.users.length} users.`);
     return this;
   }
 
@@ -50,6 +54,9 @@ class UserStore {
     const match = this.users.find(
       u => u.name && u.name.toLowerCase() === name.toLowerCase()
     );
+    if (!match) {
+      logger.debug(`UserStore: No user found with name "${name}".`);
+    }
     return match ? match.id : null;
   }
 
@@ -65,6 +72,9 @@ class UserStore {
     const match = this.users.find(
       u => u.person && u.person.email && u.person.email.toLowerCase() === email.toLowerCase()
     );
+    if (!match) {
+      logger.debug(`UserStore: No user found with email "${email}".`);
+    }
     return match ? match.id : null;
   }
 

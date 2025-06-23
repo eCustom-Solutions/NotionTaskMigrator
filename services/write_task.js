@@ -81,24 +81,39 @@ async function appendBlocksRecursively(parentId, blocks) {
  * @returns {Promise<object>}      – Notion page object
  */
 async function writeToDBB(transformedTask, dbId) {
+    logger.info(`Starting writeToDBB for dbId ${dbId}`);
     const payload = {
         parent: { database_id: dbId },
         properties: transformedTask.properties,
     };
-    if (transformedTask.icon)  payload.icon  = transformedTask.icon;
-    if (transformedTask.cover) payload.cover = transformedTask.cover;
-
-    const page = await notion.pages.create(payload);
-
-    if (transformedTask.children?.length) {
-        // 1) clean up unsupported blocks
-        const sanitized   = sanitizeBlocks(transformedTask.children);
-        // 2) resolve media → file_upload blocks
-        const mediaReady  = await mediaMigrator.transformMediaBlocks(page.id, sanitized);
-        // 3) write everything, including nested pages/blocks
-        await appendBlocksRecursively(page.id, mediaReady);
+    if (transformedTask.icon) {
+        logger.debug('Assigning icon to page payload');
+        payload.icon = transformedTask.icon;
+    }
+    if (transformedTask.cover) {
+        logger.debug('Assigning cover to page payload');
+        payload.cover = transformedTask.cover;
     }
 
+    logger.debug('Creating Notion page with payload');
+    const page = await notion.pages.create(payload);
+    logger.debug(`Created Notion page with id ${page.id}`);
+
+    if (transformedTask.children?.length) {
+        logger.debug('Sanitizing children blocks');
+        // 1) clean up unsupported blocks
+        const sanitized = sanitizeBlocks(transformedTask.children);
+        logger.debug('Transforming media blocks');
+        // 2) resolve media → file_upload blocks
+        const mediaReady = await mediaMigrator.transformMediaBlocks(page.id, sanitized);
+        logger.debug('Appending blocks recursively (including nested pages/blocks)');
+        // 3) write everything, including nested pages/blocks
+        await appendBlocksRecursively(page.id, mediaReady);
+    } else {
+        logger.warn('No children blocks to write after page creation');
+    }
+
+    logger.info(`Finished writeToDBB for dbId ${dbId}, pageId ${page.id}`);
     return page;
 }
 

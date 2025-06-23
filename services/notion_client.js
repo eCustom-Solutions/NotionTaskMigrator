@@ -6,6 +6,7 @@
 
 const { Client } = require('@notionhq/client');
 const Bottleneck = require('bottleneck');
+const logger = require('../logging/logger');
 require('dotenv').config();
 
 // Configure Bottleneck limiter to 3 requests/sec, one at a time
@@ -28,7 +29,19 @@ function createThrottledProxy(target) {
     get(obj, prop) {
       const value = obj[prop];
       if (typeof value === 'function') {
-        return (...args) => limiter.schedule(() => value.apply(obj, args));
+        return async (...args) => {
+          logger.debug(`Calling Notion method: ${String(prop)}`);
+          const start = Date.now();
+          try {
+            const result = await limiter.schedule(() => value.apply(obj, args));
+            const duration = Date.now() - start;
+            logger.trace(`Notion method ${String(prop)} succeeded in ${duration}ms`);
+            return result;
+          } catch (error) {
+            logger.warn(`Notion method ${String(prop)} failed: ${error.message}`);
+            throw error;
+          }
+        };
       }
       if (value !== null && typeof value === 'object') {
         return createThrottledProxy(value);

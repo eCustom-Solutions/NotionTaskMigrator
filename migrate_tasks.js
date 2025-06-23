@@ -1,152 +1,154 @@
 // migrate_tasks.js
 // ------------
 // Orchestrates the streaming ETL from SM Tasks DB to CENT Tasks DB
-// Usage: node syncTasks.js
-// Ensure .env contains NOTION_SM_TASKS_DB_ID and NOTION_CENT_DB_ID
+// Usage: node migrate_tasks.js
+// Ensure .env contains APT_DB_ID (source) and NOTION_CENT_DB_ID (target)
 
 require('dotenv').config();
 const { getTasksFromDBA }      = require('./services/fetch_tasks');
 const writeToDBB               = require('./services/write_task').writeToDBB;
 const linkStore                = require('./services/link_store');
-const transformModule = require('./transformations/task_transformer');
-const transform = transformModule.default || transformModule;
-const logger = require('./logging/logger');
-
+const transformModule          = require('./transformations/task_transformer');
+const transform                = transformModule.default || transformModule;
+const logger                   = require('./logging/logger');
+const childProcess             = require('child_process');
 
 // ── CONFIG ────────────────────────────────────────
-const SOURCE_DB_ID = process.env.APT_DB_ID;
-const TARGET_DB_ID = process.env.NOTION_CENT_DB_ID;
-const TASK_MAP = require('./transformations/apt_tasks_map');
+const SOURCE_DB_ID  = process.env.APT_DB_ID;
+const TARGET_DB_ID  = process.env.NOTION_CENT_DB_ID;
+const TASK_MAP      = require('./transformations/apt_tasks_map');
 const LINKSTORE_TYPE = 'tasks_APT_live';
 
+async function main () {
+    /* ───────────────────────────────
+       Job-scoped logger (adds jobId on every line)
+    ─────────────────────────────── */
+    const jobId = new Date().toISOString();
+    const job   = logger.child({ jobId });
 
-async function main() {
-    logger.info(`▶️  Starting Task Migrator`);
-    require('child_process').exec('say "Process begin"');
-    logger.info(`   Source (SM): ${SOURCE_DB_ID}`);
-    logger.info(`   Target (CENT): ${TARGET_DB_ID}\n`);
+    const startedAt = Date.now();
+    job.info('▶️  Task migration started', {
+        sourceDb: SOURCE_DB_ID,
+        targetDb: TARGET_DB_ID,
+        map: TASK_MAP?.name || 'APT_MAP',
+        linkStoreType: LINKSTORE_TYPE
+    });
 
-    // Prefetch all pages so we know the total upfront
+    childProcess.exec('say "Migration job begin"');
+
+    // ── 1. Prefetch pages so we know total ───────────────────────────
     const pages = [];
-    for await (const p of getTasksFromDBA(SOURCE_DB_ID)) {
-        pages.push(p);
-    }
+    for await (const p of getTasksFromDBA(SOURCE_DB_ID)) pages.push(p);
     const total = pages.length;
-    logger.info(`   Total pages to process: ${total}\n`);
+    job.info({ total }, 'Total pages fetched from source');
 
+    /* Counters */
     let processed = 0;
-    let skipped = 0;
+    let skipped   = 0;
+    let failed    = 0;
+
+    // ── 2. Process each page ─────────────────────────────────────────
     for (const page of pages) {
         const sourceId = page.id;
 
-
-
-        // Idempotency: skip if already migrated
+        /* Idempotency: skip if already migrated */
         const existing = await linkStore.load(sourceId, LINKSTORE_TYPE).catch(() => null);
-        if (existing && existing.status === 'success') {
+        if (existing?.status === 'success') {
             skipped++;
             processed++;
-            logger.info(`⏭️  Skipped (already migrated) – Progress: ${processed}/${total}`);
+            job.debug({ processed, total, sourceId }, 'Skipped (already migrated)');
             continue;
         }
 
-        // // Source page visibility
-        // logger.info(`🔍 Source page for ${sourceId}:`);
-        // logger.info(JSON.stringify(page, null, 2));
-
-
         try {
-            logger.info(`🛠 Transforming page ${sourceId}`);
-            let payload = await transform(page, TASK_MAP);
+            // ── 2a. Transform
+            job.debug({ sourceId }, 'Transforming source page');
+            const payload = await transform(page, TASK_MAP);
 
-            // Payload visibility
-            // logger.info(`🔍 Final payload for ${sourceId}:`);
-            // logger.info(JSON.stringify(payload, null, 2));
-
-            // Write to CENT DB
+            // ── 2b. Write to target DB
             try {
-                logger.info(`🚀 Writing page ${sourceId} to CENT DB`);
-                // Create page with full payload (properties and children handled internally)
                 const pageResult = await writeToDBB(payload, TARGET_DB_ID);
-                logger.info(`✅ Page created ${pageResult.id} for source ${sourceId}`);
+                job.debug({ sourceId, targetId: pageResult.id }, 'Page written to target DB');
 
-                logger.info(`✅ Migrated ${sourceId} → ${pageResult.id}`);
-
-                // reload link to capture any concurrent writes (rare)
+                // Record link success
                 const existingLink = await linkStore.load(sourceId, LINKSTORE_TYPE).catch(() => null);
-
-                // Record the link
                 await linkStore.save({
                     sourceId,
-                    targetId: pageResult.id,
-                    status: 'success',
-                    syncedAt: new Date().toISOString(),
-                    sourceDbId: SOURCE_DB_ID,
-                    sourceDbName: 'SM Tasks',
-                    targetDbId: TARGET_DB_ID,
-                    targetDbName: 'CENT Tasks',
-                    type: LINKSTORE_TYPE,
+                    targetId:      pageResult.id,
+                    status:        'success',
+                    syncedAt:      new Date().toISOString(),
+                    sourceDbId:    SOURCE_DB_ID,
+                    sourceDbName:  'SM Tasks',
+                    targetDbId:    TARGET_DB_ID,
+                    targetDbName:  'CENT Tasks',
+                    type:          LINKSTORE_TYPE,
                     sourcePageName: page.properties?.Name?.title?.[0]?.plain_text || '',
                     sourcePageIcon: page.icon?.emoji || '',
                     targetPageName: payload.properties?.Name?.title?.[0]?.plain_text || '',
                     targetPageIcon: '',
-                    notes: '',
-                    history: existingLink?.history || []
+                    notes:          '',
+                    history:        existingLink?.history || []
                 }, LINKSTORE_TYPE);
-                logger.info(`💾 Link saved for ${sourceId}`);
-
-                logger.info(`\n-----------------------------------------------------------------------------------------\n\n`);
-
 
             } catch (err) {
-                // More context on failure:
-                logger.info(`❌ Failed to migrate ${sourceId}`);
-                const notionUrl = `https://www.notion.so/${sourceId.replace(/-/g, '')}`;
-                logger.error(`🔗 Review in Notion: ${notionUrl}`);
-                logger.info('• Notion error:', err);
+                failed++;
+                job.warn({ sourceId, err: err.message }, 'Write to target DB failed');
 
-                // still record failure to avoid infinite retry loops
+                /* Record failure to avoid infinite retries */
                 const existingLink = await linkStore.load(sourceId, LINKSTORE_TYPE).catch(() => null);
                 await linkStore.save({
                     sourceId,
                     targetId: null,
-                    status: 'fail',
+                    status:   'fail',
                     syncedAt: new Date().toISOString(),
-                    sourceDbId: SOURCE_DB_ID,
+                    sourceDbId:   SOURCE_DB_ID,
                     sourceDbName: 'SM Tasks',
-                    targetDbId: TARGET_DB_ID,
+                    targetDbId:   TARGET_DB_ID,
                     targetDbName: 'CENT Tasks',
-                    type: LINKSTORE_TYPE,
+                    type:         LINKSTORE_TYPE,
                     sourcePageName: page.properties?.Name?.title?.[0]?.plain_text || '',
                     sourcePageIcon: page.icon?.emoji || '',
                     targetPageName: payload.properties?.Name?.title?.[0]?.plain_text || '',
                     targetPageIcon: '',
-                    notes: '',
-                    history: existingLink?.history || []
+                    notes:         '',
+                    history:       existingLink?.history || []
                 }, LINKSTORE_TYPE);
-                logger.info(`💾 Link saved for ${sourceId}`);
-                logger.info(`\n-----------------------------------------------------------------------------------------\n\n`);
             }
 
             processed++;
-            logger.info(`📊 Progress: ${processed}/${total}`);
-            if (processed % 25 === 0) {
-                require('child_process').exec(`say "Processed ${processed} of ${total}"`);
+
+            /* Progress heartbeat every 50 items */
+            if (processed % 50 === 0 || processed === total) {
+                job.info({ processed, skipped, failed, total }, '📊 Progress update');
+                childProcess.exec(`say "Processed ${processed} of ${total}"`);
             }
+
         } catch (err) {
-            if (err.message && err.message.startsWith('SkipPage')) {
-                logger.warn(`⚠️ Skipping page ${sourceId} due to SkipPage error: ${err.message}`);
+            if (err.message?.startsWith('SkipPage')) {
+                skipped++;
+                job.warn({ sourceId, reason: err.message }, 'Page skipped by transformer');
                 continue;
             }
-            throw err;
+            failed++;
+            job.error({ sourceId, err }, 'Unhandled error, aborting job');
+            throw err; /* Bubble up to main catch */
         }
     }
 
-    require('child_process').exec('say "Process complete"');
-    logger.info(`\n🏁 Migration complete! ${processed}/${total} pages handled (including ${skipped} skipped).`);
+    // ── 3. Finish ────────────────────────────────────────────────────
+    const elapsedMs = Date.now() - startedAt;
+    childProcess.exec('say "Migration complete"');
+    job.info({
+        migrated: processed - skipped - failed,
+        skipped,
+        failed,
+        total,
+        elapsedMs
+    }, '🏁 Migration finished');
 }
 
-main().catch(err => {
-    logger.error('Fatal error in syncTasks:', err);
+/* eslint-disable no-void */
+void main().catch(err => {
+    logger.error({ err }, 'Fatal error in migrate_tasks');
     process.exit(1);
 });

@@ -49,25 +49,27 @@ class MediaMigrator {
         for (const fileObj of filesArray) {
             try {
                 // Logging before download
-                this.logger.info(`➡️ Starting download for file on page ${pageId}: ${fileObj.external?.url || fileObj.file?.url}`);
+                const url = fileObj.external?.url || fileObj.file?.url;
+                this.logger.debug(`➡️ Starting download for file`, { pageId, url });
                 const localInfo = await this._downloadFile(pageId, fileObj);
                 // Logging after download
-                this.logger.info(`✅ Download complete for ${fileObj.external?.url || fileObj.file?.url}`);
+                this.logger.debug(`✅ Download complete`, { pageId, url });
                 if (!localInfo) {
                     continue;
                 }
                 // Logging before upload
-                this.logger.info(`⬆️ Starting upload for file: ${localInfo.originalFilename} (${localInfo.size} bytes)`);
+                this.logger.debug(`⬆️ Starting upload for file`, { filePath: localInfo.path, filename: localInfo.originalFilename, size: localInfo.size });
                 const uploadInfo = await this._uploadFile(localInfo);
                 // Logging after upload
-                this.logger.info(`✅ Upload complete. Notion file_upload ID: ${uploadInfo.id}`);
+                this.logger.debug(`✅ Upload complete`, { id: uploadInfo.id });
                 results.push({
                     type: 'file_upload',
                     file_upload: { id: uploadInfo.id },
                     name: path.basename(localInfo.path)
                 });
             } catch (err) {
-                this.logger.error(`❌ MediaMigrator failed on page ${pageId}, file ${fileObj.external?.url || fileObj.file?.url}:`, err);
+                const url = fileObj.external?.url || fileObj.file?.url;
+                this.logger.error(`❌ MediaMigrator failed on page ${pageId}, file ${url}:`, err);
             }
         }
         return results;
@@ -114,7 +116,7 @@ class MediaMigrator {
             res = await fetch(sourceUrl);
             if (!res.ok) throw new Error(`Failed to download ${sourceUrl}: ${res.status}`);
         } catch (err) {
-            this.logger.error(`❌ Error fetching ${sourceUrl}: ${err.message}`);
+            this.logger.error(`❌ Error fetching ${sourceUrl}: ${err.message}`, { pageId, url: sourceUrl });
             throw err;
         }
         const buffer = await res.buffer();
@@ -140,7 +142,7 @@ class MediaMigrator {
         }
 
         if (size > this.chunkSizeBytes) {
-            this.logger.warn(`⚠️  File ${filePath} exceeds chunk size (${size} bytes). Attempting multi-part upload.`);
+            this.logger.warn(`⚠️  File ${filePath} exceeds chunk size (${size} bytes). Attempting multi-part upload.`, { filePath, size });
         }
 
         let uploadResult;
@@ -203,6 +205,7 @@ class MediaMigrator {
             });
             // console.log("statusCheck", statusCheck);
             const status = statusCheck.status;
+            this.logger.trace(`Polling upload status`, { uploadId, attempt, status });
             if (status === 'uploaded') {
                 return;
             }
