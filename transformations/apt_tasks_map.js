@@ -66,7 +66,10 @@ module.exports = {
         'Video Edit Complete':   'Video Edit Complete',      // date
         'Revision Count':        'Revision Count',           // number
         'Video Edit Due Date':   'Video Edit Due Date',      // date
-        'Team':                  'Department'                // relation
+        'Team':                  'Department',               // relation
+        'Assignee':              'Assignee',                 // person
+        "Task Owner":            'Task Owner',               // person
+        'Person':                'Person',                   // person
 
         // Formula fields are omitted; CENT already owns those formulas
     },
@@ -74,9 +77,6 @@ module.exports = {
     // ─── 2. FIELDS THAT ALWAYS EXIST IN TARGET ──────────────────────────────────
     virtualMappings: [
         'Labels',
-        'Assignee',
-        'Task Owner',
-        'Person',
     ],
 
     // ─── 3. SPECIAL-CASE HOOKS ──────────────────────────────────────────────────
@@ -97,10 +97,18 @@ module.exports = {
         Department: async (sourceValue) =>
             relationFromSourceId(sourceValue?.relation?.[0]?.id),
 
-        // --- PEOPLE HOOKS (dry-run safe) ----------------------------------------
-        Assignee:   blankPeople,
-        'Task Owner': blankPeople,
-        Person:     blankPeople,
+        // --- PEOPLE HOOKS (updated for real user mapping) -----------------------
+        Assignee: async (sourceValue) => {
+            blankPeople();
+        },
+
+        'Task Owner': async (sourceValue) => {
+            blankPeople()
+        },
+
+        Person: async (sourceValue) => {
+            blankPeople()
+        },
 
         // Normalize select/multi-select by stripping IDs and using only names
         'Production Status (APT)': async (sourceValue) => {

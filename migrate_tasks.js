@@ -17,7 +17,7 @@ const logger = require('./logging/logger');
 const SOURCE_DB_ID = process.env.APT_DB_ID;
 const TARGET_DB_ID = process.env.NOTION_CENT_DB_ID;
 const TASK_MAP = require('./transformations/apt_tasks_map');
-const LINKSTORE_TYPE = 'tasks_APT_test1';
+const LINKSTORE_TYPE = 'tasks_APT_live';
 
 
 async function main() {
@@ -26,8 +26,17 @@ async function main() {
     logger.info(`   Source (SM): ${SOURCE_DB_ID}`);
     logger.info(`   Target (CENT): ${TARGET_DB_ID}\n`);
 
+    // Prefetch all pages so we know the total upfront
+    const pages = [];
+    for await (const p of getTasksFromDBA(SOURCE_DB_ID)) {
+        pages.push(p);
+    }
+    const total = pages.length;
+    logger.info(`   Total pages to process: ${total}\n`);
+
     let processed = 0;
-    for await (const page of getTasksFromDBA(SOURCE_DB_ID)) {
+    let skipped = 0;
+    for (const page of pages) {
         const sourceId = page.id;
 
 
@@ -35,8 +44,9 @@ async function main() {
         // Idempotency: skip if already migrated
         const existing = await linkStore.load(sourceId, LINKSTORE_TYPE).catch(() => null);
         if (existing && existing.status === 'success') {
-            // logger.info(`↩️ Skipping ${sourceId} (already succeeded)`);
-            // logger.info(`ℹ️ Link already exists in store:`, existing);
+            skipped++;
+            processed++;
+            logger.info(`⏭️  Skipped (already migrated) – Progress: ${processed}/${total}`);
             continue;
         }
 
@@ -62,6 +72,8 @@ async function main() {
 
                 logger.info(`✅ Migrated ${sourceId} → ${pageResult.id}`);
 
+                // reload link to capture any concurrent writes (rare)
+                const existingLink = await linkStore.load(sourceId, LINKSTORE_TYPE).catch(() => null);
 
                 // Record the link
                 await linkStore.save({
@@ -78,7 +90,8 @@ async function main() {
                     sourcePageIcon: page.icon?.emoji || '',
                     targetPageName: payload.properties?.Name?.title?.[0]?.plain_text || '',
                     targetPageIcon: '',
-                    notes: ''
+                    notes: '',
+                    history: existingLink?.history || []
                 }, LINKSTORE_TYPE);
                 logger.info(`💾 Link saved for ${sourceId}`);
 
@@ -93,6 +106,7 @@ async function main() {
                 logger.info('• Notion error:', err);
 
                 // still record failure to avoid infinite retry loops
+                const existingLink = await linkStore.load(sourceId, LINKSTORE_TYPE).catch(() => null);
                 await linkStore.save({
                     sourceId,
                     targetId: null,
@@ -107,15 +121,16 @@ async function main() {
                     sourcePageIcon: page.icon?.emoji || '',
                     targetPageName: payload.properties?.Name?.title?.[0]?.plain_text || '',
                     targetPageIcon: '',
-                    notes: ''
+                    notes: '',
+                    history: existingLink?.history || []
                 }, LINKSTORE_TYPE);
                 logger.info(`💾 Link saved for ${sourceId}`);
                 logger.info(`\n-----------------------------------------------------------------------------------------\n\n`);
             }
 
             processed++;
+            logger.info(`📊 Progress: ${processed}/${total}`);
             if (processed % 25 === 0) {
-                const total = 'unknown'; // Optional: hardcode if known, or calculate beforehand
                 require('child_process').exec(`say "Processed ${processed} of ${total}"`);
             }
         } catch (err) {
@@ -128,7 +143,8 @@ async function main() {
     }
 
     require('child_process').exec('say "Process complete"');
-    logger.info(`\n🏁 Migration complete! ${processed} pages processed.`);}
+    logger.info(`\n🏁 Migration complete! ${processed}/${total} pages handled (including ${skipped} skipped).`);
+}
 
 main().catch(err => {
     logger.error('Fatal error in syncTasks:', err);

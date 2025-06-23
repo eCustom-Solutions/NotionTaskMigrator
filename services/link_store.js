@@ -49,8 +49,23 @@ class LinkStore {
     async save(link, migrationType = DEFAULT_MIGRATION_TYPE) {
         const dir = this._dirForType(migrationType);
         const file = path.join(dir, `${link.sourceId}.json`);
-        // Write full Link object as JSON
-        await fs.writeFile(file, JSON.stringify(link, null, 2), 'utf-8');
+
+        // Merge with existing history (if any) for backwards compatibility
+        let prevHistory = [];
+        try {
+            const prevContent = await fs.readFile(file, 'utf-8');
+            const prevData = JSON.parse(prevContent);
+            prevHistory = prevData.history || [];
+        } catch (_) {
+            // file didn't exist — first‑time save
+        }
+
+        const merged = {
+            ...link,
+            history: link.history ?? prevHistory
+        };
+
+        await fs.writeFile(file, JSON.stringify(merged, null, 2), 'utf-8');
     }
 
     /**
@@ -79,7 +94,8 @@ class LinkStore {
             sourcePageIcon: data.sourcePageIcon || null,
             targetPageName: data.targetPageName,
             targetPageIcon: data.targetPageIcon || null,
-            notes: data.notes || ''
+            notes: data.notes || '',
+            history: data.history || []
         });
     }
 
@@ -145,7 +161,8 @@ class LinkStore {
                     sourcePageIcon: data.sourcePageIcon || null,
                     targetPageName: data.targetPageName,
                     targetPageIcon: data.targetPageIcon || null,
-                    notes: data.notes || ''
+                    notes: data.notes || '',
+                    history: data.history || []
                 });
             }
         }

@@ -1,25 +1,25 @@
 // models/Link.js
 // --------------
-// Extended Link class for richer metadata
-// Represents a mapping from a source page to a target page, including context.
+// Extended Link class that preserves full sync history.
 
 class Link {
     /**
      * @param {object} params
-     * @param {string} params.sourceId           – Source page ID in Notion
-     * @param {string} params.targetId           – Target page ID in Notion
-     * @param {string} [params.status='success'] – 'success' or 'fail'
-     * @param {string} [params.syncedAt=now]     – ISO timestamp when synced
-     * @param {string} params.sourceDbId         – Source database ID (Notion)
-     * @param {string} params.sourceDbName       – Source database name (title)
-     * @param {string} params.targetDbId         – Target database ID (Notion)
-     * @param {string} params.targetDbName       – Target database name (title)
-     * @param {string} params.type               – Migration type (e.g., 'Brand', 'Task', etc.)
-     * @param {string} params.sourcePageName     – Title of the source page at migration time
-     * @param {object|null} [params.sourcePageIcon=null] – Full icon object from source page, if any
-     * @param {string} params.targetPageName     – Title of the target page at migration time
-     * @param {object|null} [params.targetPageIcon=null] – Full icon object from target page, if any
-     * @param {string} [params.notes='']         – Optional free-text notes
+     * @param {string} params.sourceId
+     * @param {string} params.targetId
+     * @param {string} [params.status='success']
+     * @param {string} [params.syncedAt=now]
+     * @param {string} params.sourceDbId
+     * @param {string} params.sourceDbName
+     * @param {string} params.targetDbId
+     * @param {string} params.targetDbName
+     * @param {string} params.type
+     * @param {string} params.sourcePageName
+     * @param {object|null} [params.sourcePageIcon=null]
+     * @param {string} params.targetPageName
+     * @param {object|null} [params.targetPageIcon=null]
+     * @param {string} [params.notes='']
+     * @param {Array<object>} [params.history=[]] – Previous syncs {targetId,syncedAt,deletedAt,notes}
      */
     constructor({
                     sourceId,
@@ -35,33 +35,28 @@ class Link {
                     sourcePageIcon = null,
                     targetPageName,
                     targetPageIcon = null,
-                    notes = ''
+                    notes = '',
+                    history = [],
                 }) {
-        // Required IDs
         this.sourceId = sourceId;
         this.targetId = targetId;
-
-        // Status and timestamp
-        this.status = status;
+        this.status   = status;
         this.syncedAt = syncedAt;
 
-        // Database context
-        this.sourceDbId = sourceDbId;
+        this.sourceDbId   = sourceDbId;
         this.sourceDbName = sourceDbName;
-        this.targetDbId = targetDbId;
+        this.targetDbId   = targetDbId;
         this.targetDbName = targetDbName;
 
-        // Semantic migration type
         this.type = type;
 
-        // Page metadata for human legibility
         this.sourcePageName = sourcePageName;
-        this.sourcePageIcon = sourcePageIcon;   // ⬅ now holds full icon object or null
+        this.sourcePageIcon = sourcePageIcon;
         this.targetPageName = targetPageName;
-        this.targetPageIcon = targetPageIcon;   // ⬅ now holds full icon object or null
+        this.targetPageIcon = targetPageIcon;
 
-        // Optional notes
-        this.notes = notes;
+        this.notes   = notes;
+        this.history = history;          // 🆕 lineage of prior target pages
     }
 }
 
