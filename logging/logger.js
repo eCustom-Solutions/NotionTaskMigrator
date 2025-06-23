@@ -1,81 +1,81 @@
-// logger.js
-const fs = require('fs');
+// logger.js  – pino‑based structured logger with multi‑stream routing
+const fs   = require('fs');
 const path = require('path');
+const pino = require('pino');
 
-const startTime = new Date();
-function getDaySuffix(day) {
-    if (day >= 11 && day <= 13) return 'th';
-    switch (day % 10) {
-        case 1: return 'st';
-        case 2: return 'nd';
-        case 3: return 'rd';
-        default: return 'th';
-    }
-}
-function formatTimestamp(date) {
-    const pad = n => n < 10 ? '0' + n : n;
-    const hours = pad(date.getHours());
-    const minutes = pad(date.getMinutes());
-    const seconds = pad(date.getSeconds());
-    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    const month = monthNames[date.getMonth()];
-    const day = date.getDate();
-    const suffix = getDaySuffix(day);
-    const year = date.getFullYear();
-    return `${hours}:${minutes}:${seconds}, ${month} ${day}${suffix} ${year}`;
+// ---------- directory & filename helpers ----------
+const rootDir   = path.join(__dirname, 'logs');
+const levelsDir = ['full', 'trace', 'debug', 'info', 'warn', 'error'];
+levelsDir.forEach(dir => {
+  const p = path.join(rootDir, dir);
+  if (!fs.existsSync(p)) fs.mkdirSync(p, { recursive: true });
+});
+
+function ts() {
+  // e.g. 2025-06-24_13-00-00
+  return new Date().toISOString().replace(/T/, '_').replace(/:/g, '-').replace(/\..+/, '');
 }
 
-const logDir = path.join(__dirname, 'logs');
-if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
-const formattedStart = [
-    startTime.getFullYear(),
-    String(startTime.getMonth() + 1).padStart(2, '0'),
-    String(startTime.getDate()).padStart(2, '0')
-].join('-') + '_' + [
-    String(startTime.getHours()).padStart(2, '0'),
-    String(startTime.getMinutes()).padStart(2, '0'),
-    String(startTime.getSeconds()).padStart(2, '0')
-].join('-');
-const logFile = path.join(logDir, `${formattedStart}.log`);
-const latestLogFile = path.join(logDir, '0_latest.log');
-fs.writeFileSync(latestLogFile, '');
-const logStream = fs.createWriteStream(logFile, { flags: 'a' });
-// Ensure _latest.log is also appended
-
-function logToFile(level, ...args) {
-    const now = new Date();
-    const timestamp = formatTimestamp(now);
-    const message = args.map(arg => {
-        if (typeof arg === 'object') {
-            try {
-                return JSON.stringify(arg);
-            } catch {
-                return '[Unserializable object]';
-            }
-        }
-        return String(arg);
-    }).join(' ');
-
-    logStream.write(`[${timestamp}] [${level}] ${message}\n`);
-    // Mirror to _latest.log
-    fs.appendFileSync(latestLogFile, `[${timestamp}] [${level}] ${message}\n`);
-}
-
-module.exports = {
-    info: (...args) => {
-        console.log(`[${formatTimestamp(new Date())}]`, ...args);
-        logToFile('INFO', ...args);
-    },
-    error: (...args) => {
-        console.error(`[${formatTimestamp(new Date())}]`, ...args);
-        logToFile('ERROR', ...args);
-    },
-    warn: (...args) => {
-        console.warn(`[${formatTimestamp(new Date())}]`, ...args);
-        logToFile('WARN', ...args);
-    },
-    warning: (...args) => {
-        console.warn(`[${formatTimestamp(new Date())}]`, ...args);
-        logToFile('WARN', ...args);
-    }
+// ---------- file destinations ----------
+const filenameBase = `${ts()}`;
+const destinations = {
+  full:  path.join(rootDir, 'full',  `${filenameBase}.jsonl`),
+  trace: path.join(rootDir, 'trace', `${filenameBase}.log`),
+  debug: path.join(rootDir, 'debug', `${filenameBase}.log`),
+  info:  path.join(rootDir, 'info',  `${filenameBase}.log`),
+  warn:  path.join(rootDir, 'warn',  `${filenameBase}.log`),
+  error: path.join(rootDir, 'error', `${filenameBase}.log`)
 };
+
+// ---------- transport configuration ----------
+const transport = pino.transport({
+  targets: [
+    // canonical JSON stream (all levels)
+    {
+      level: 'trace',
+      target: 'pino/file',
+      options: { destination: destinations.full, mkdir: true }
+    },
+    // pretty streams per level
+    ...['trace', 'debug', 'info', 'warn', 'error'].map(level => ({
+      level,
+      target: 'pino-pretty',
+      options: {
+        destination: destinations[level],
+        mkdir: true,
+        colorize: false,
+        translateTime: 'SYS:HH:MM:ss, mmmm dd yyyy',
+        ignore: 'pid,hostname'
+      }
+    })),
+    // pretty console stream (only info level)
+    {
+      level: 'info',
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'SYS:HH:MM:ss, mmmm dd yyyy',
+        ignore: 'pid,hostname'
+      }
+    }
+  ]
+});
+
+// ---------- base logger ----------
+const logger = pino({ level: 'trace' }, transport);
+
+// helper – human‑readable seconds + stack trace
+function secs(ms) {
+  return (ms / 1000).toFixed(3) + 's';
+}
+
+logger.withTrace = function (msg, data = {}) {
+  const err = new Error();
+  this.trace({ ...data, trace: err.stack }, msg);
+};
+
+logger.duration = function (msg, ms, data = {}) {
+  this.info({ ...data, durationMs: ms, duration: secs(ms) }, msg);
+};
+
+module.exports = logger;
