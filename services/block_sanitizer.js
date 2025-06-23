@@ -4,6 +4,7 @@
  */
 
 const { sanitizeFileObject } = require('../services/file_handler');
+const logger = require('../logging/logger');
 
 function sanitizeBlocks(blocks) {
   function sanitizeBlock(block) {
@@ -50,7 +51,10 @@ function normalizeFileObjects(block) {
 
 // Removes blocks with type === "unsupported"
 function removeUnsupported(block) {
-  if (block.type === 'unsupported') return false;
+  if (block.type === 'unsupported') {
+    logger.warn(`Dropping unsupported block with id: ${block.id || '[no id]'}`);
+    return false;
+  }
   return true;
 }
 
@@ -70,6 +74,7 @@ function stripDataUrlImages(block) {
   if (block.type === 'image' && block.image?.type === 'external') {
     const url = block.image.external.url;
     if (url && url.startsWith('data:')) {
+      logger.warn(`Dropping image block with data URI: ${block.id || '[no id]'}`);
       return null; // drop the block entirely
     }
   }
@@ -85,6 +90,7 @@ function sanitizeRichTextMentions(block) {
   if (container?.rich_text?.length) {
     container.rich_text = container.rich_text.map(item => {
       if (item.type === 'mention' && !validMentionTypes.has(item.mention?.type)) {
+        logger.debug(`Sanitizing unsupported mention type: ${item.mention?.type || 'unknown'}`);
         return {
           type: 'text',
           text: {
@@ -112,6 +118,7 @@ function stripInvalidFileBlocks(block) {
       block.image?.file_upload?.id
     )
   ) {
+    logger.warn(`Dropping invalid image block missing sources: ${block.id || '[no id]'}`);
     return null;
   }
   if (
@@ -121,6 +128,7 @@ function stripInvalidFileBlocks(block) {
       block.file?.file_upload?.id
     )
   ) {
+    logger.warn(`Dropping invalid file block missing sources: ${block.id || '[no id]'}`);
     return null;
   }
   return block;
