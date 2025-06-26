@@ -25,7 +25,7 @@ const config = {
     dryRun: argv.dryRun || false,
     force: argv.force || false,
     onlyId: argv.onlyId || null,
-    strictMode: argv.strict || true
+    strictMode: argv.strict === undefined ? true : argv.strict
 };
 
 const SOURCE_DB_ID = process.env.APT_DB_ID;
