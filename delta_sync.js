@@ -22,12 +22,11 @@ const log   = logger.child({ jobId });
 
 // ---------- config -------------------------------------------------
 const config = {
-    dryRun: false,
-    force: false,
-    onlyId: null,
-    strictMode: true
+    dryRun: argv.dryRun || false,
+    force: argv.force || false,
+    onlyId: argv.onlyId || null,
+    strictMode: argv.strict || true
 };
-
 
 const SOURCE_DB_ID = process.env.DUMMY_NOTION_MCC_TASKS_DB_ID;
 const TARGET_DB_ID = process.env.DUMMY_NOTION_CENT_DB_ID;
