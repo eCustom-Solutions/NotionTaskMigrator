@@ -28,8 +28,8 @@ const config = {
     strictMode: argv.strict || true
 };
 
-const SOURCE_DB_ID = process.env.NOTION_MCC_TASKS_DB_ID;
-const TARGET_DB_ID = process.env.APT_DB_ID;
+const SOURCE_DB_ID = process.env.APT_DB_ID;
+const TARGET_DB_ID = process.env.NOTION_CENT_DB_ID;
 const TASK_MAP     = require('./transformations/apt_tasks_map');
 const LINK_TYPE    = 'apt_tasks_live';
 
