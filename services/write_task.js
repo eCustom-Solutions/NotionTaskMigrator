@@ -5,7 +5,7 @@
 
 const path = require('path');
 const notion = require('./notion_client');
-const logger = require('../logging/logger');
+const logger = require('../logging/logger').child({ module: 'write_task' });
 
 const sanitizeBlocks   = require('./block_sanitizer');
 const { MediaMigrator } = require('./media_migrator');
@@ -14,25 +14,35 @@ const { MediaMigrator } = require('./media_migrator');
 const mediaMigrator = new MediaMigrator({
     notion,
     tmpDir: path.resolve(process.cwd(), 'tmp', 'page_media'),
-    logger,
+    logger: logger,
     maxParallel: 10,
     chunkSizeMB: 19,
 });
 (async () => {
-    try { await mediaMigrator.init(); } catch (e) { logger.warn('MediaMigrator init failed', e); }
+    try {
+        logger.trace('Initializing MediaMigrator');
+        await mediaMigrator.init();
+        logger.trace('MediaMigrator initialized');
+    } catch (e) {
+        logger.warn({ err: e }, 'MediaMigrator init failed');
+    }
 })();
 
 // ── UTILITIES ────────────────────────────────────────────────────────
 function stripNestedChildren({ children, ...block }) {
     // Remove the read-only `children` array before writing
+    logger.trace('Stripping nested children from block');
     return block;
 }
 
 // Retry wrapper for occasional Notion conflict errors
-async function safeAppendBlocks(parentId, blocks, retries = 3) {
+async function safeAppendBlocks(parentId, blocks, retries = 3, logger) {
     for (let i = 0; i < retries; i++) {
         try {
-            return await notion.blocks.children.append({ block_id: parentId, children: blocks });
+            logger.trace({ parentId, attempt: i + 1 }, 'Attempting to append blocks');
+            const res = await notion.blocks.children.append({ block_id: parentId, children: blocks });
+            logger.trace({ parentId }, 'Successfully appended blocks');
+            return res;
         } catch (err) {
             if (err.code === 'conflict_error' && i < retries - 1) {
                 logger.warn(`🔁 Conflict on ${parentId}, retrying (${i + 1})…`);
@@ -46,6 +56,7 @@ async function safeAppendBlocks(parentId, blocks, retries = 3) {
 
 // Recursively writes block trees (handles child_page blocks natively)
 async function appendBlocksRecursively(parentId, blocks) {
+    logger.trace({ parentId }, 'Entering appendBlocksRecursively');
     const q = blocks.map(b => ({ parentId, block: b }));
 
     while (q.length) {
@@ -53,11 +64,13 @@ async function appendBlocksRecursively(parentId, blocks) {
 
         // Handle nested pages
         if (block.type === 'child_page') {
+            logger.trace({ title: block.child_page.title }, 'Creating child page');
             const pagePayload = {
                 parent: { page_id: pid },
                 properties: { title: [{ type: 'text', text: { content: block.child_page.title } }] },
             };
             const childPage = await notion.pages.create(pagePayload);
+            logger.trace({ childPageId: childPage.id }, 'Child page created');
             if (block.children?.length) {
                 q.push(...block.children.map(c => ({ parentId: childPage.id, block: c })));
             }
@@ -65,7 +78,12 @@ async function appendBlocksRecursively(parentId, blocks) {
         }
 
         // Normal block path
-        const res = await safeAppendBlocks(pid, [stripNestedChildren(block)]);
+        const res = await safeAppendBlocks(
+            pid,
+            [stripNestedChildren(block)],
+            3,
+            logger
+        );
         const createdBlockId = res.results?.[0]?.id;
 
         if (block.children?.length && createdBlockId) {
@@ -80,12 +98,14 @@ async function appendBlocksRecursively(parentId, blocks) {
  * @param {string} dbId            – target Notion DB ID
  * @returns {Promise<object>}      – Notion page object
  */
-async function writeToDBB(transformedTask, dbId) {
+async function writeToDBB(transformedTask, dbId, logger) {
     logger.info(`Starting writeToDBB for dbId ${dbId}`);
+    logger.trace('Preparing page payload');
     const payload = {
         parent: { database_id: dbId },
         properties: transformedTask.properties,
     };
+    logger.trace('Payload constructed');
     if (transformedTask.icon) {
         logger.debug('Assigning icon to page payload');
         payload.icon = transformedTask.icon;
@@ -100,15 +120,18 @@ async function writeToDBB(transformedTask, dbId) {
     logger.debug(`Created Notion page with id ${page.id}`);
 
     if (transformedTask.children?.length) {
+        logger.trace('Calling sanitizeBlocks on children');
         logger.debug('Sanitizing children blocks');
         // 1) clean up unsupported blocks
         const sanitized = sanitizeBlocks(transformedTask.children);
+        logger.trace('Calling transformMediaBlocks');
         logger.debug('Transforming media blocks');
         // 2) resolve media → file_upload blocks
         const mediaReady = await mediaMigrator.transformMediaBlocks(page.id, sanitized);
         logger.debug('Appending blocks recursively (including nested pages/blocks)');
         // 3) write everything, including nested pages/blocks
         await appendBlocksRecursively(page.id, mediaReady);
+        logger.trace('Completed recursive block append');
     } else {
         logger.warn('No children blocks to write after page creation');
     }

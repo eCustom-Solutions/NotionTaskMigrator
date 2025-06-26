@@ -5,24 +5,23 @@
 const fs = require('fs').promises;
 const path = require('path');
 const Link = require('../models/Link');
-const logger = require('../logging/logger');
 
-const LINKS_DIR = path.resolve(__dirname, '../links');
 const DEFAULT_MIGRATION_TYPE = 'tasks';
 
 class LinkStore {
-    constructor(dir) {
+    constructor(dir, logger) {
         this.dir = dir;
+        this.logger = logger;
         // ensure links directory exists
         fs.mkdir(this.dir, { recursive: true }).catch(() => {});
-        logger.trace(`Initialized LinkStore with directory: ${this.dir}`);
+        this.logger.trace(`Initialized LinkStore with directory: ${this.dir}`);
     }
 
     // todo: figure out why this function isn't async
     _dirForType(migrationType = DEFAULT_MIGRATION_TYPE) {
         const dir = path.join(this.dir, migrationType);
         fs.mkdir(dir, { recursive: true }).catch(() => {});
-        logger.trace(`Resolved directory for migrationType "${migrationType}": ${dir}`);
+        this.logger.trace(`Resolved directory for migrationType "${migrationType}": ${dir}`);
         return dir;
     }
 
@@ -35,12 +34,12 @@ class LinkStore {
     async hasSourceId(sourceId, migrationType = DEFAULT_MIGRATION_TYPE) {
         const dir = this._dirForType(migrationType);
         const file = path.join(dir, `${sourceId}.json`);
-        logger.debug(`Checking existence of sourceId file: ${file}`);
+        this.logger.debug(`Checking existence of sourceId file: ${file}`);
         try {
             await fs.access(file);
             return true;
         } catch {
-            logger.debug(`SourceId file does not exist: ${file}`);
+            this.logger.debug(`SourceId file does not exist: ${file}`);
             return false;
         }
     }
@@ -52,6 +51,7 @@ class LinkStore {
      * @returns {Promise<void>}
      */
     async save(link, migrationType = DEFAULT_MIGRATION_TYPE) {
+        this.logger.trace('Entered save method');
         const dir = this._dirForType(migrationType);
         const file = path.join(dir, `${link.sourceId}.json`);
 
@@ -59,11 +59,11 @@ class LinkStore {
         let prevHistory = [];
         try {
             const prevContent = await fs.readFile(file, 'utf-8');
-            logger.debug(`Read existing link file for save: ${file}`);
+            this.logger.debug(`Read existing link file for save: ${file}`);
             const prevData = JSON.parse(prevContent);
             prevHistory = prevData.history || [];
         } catch (err) {
-            logger.warn(`Failed to read or parse existing link file during save (may be first save): ${file} - ${err.message}`);
+            this.logger.warn(`Failed to read or parse existing link file during save (may be first save): ${file} - ${err.message}`);
             // file didn't exist — first‑time save
         }
 
@@ -73,7 +73,7 @@ class LinkStore {
         };
 
         await fs.writeFile(file, JSON.stringify(merged, null, 2), 'utf-8');
-        logger.debug(`Saved link file: ${file}`);
+        this.logger.debug(`Saved link file: ${file}`);
     }
 
     /**
@@ -83,15 +83,16 @@ class LinkStore {
      * @returns {Promise<Link>}
      */
     async load(sourceId, migrationType = DEFAULT_MIGRATION_TYPE) {
+        this.logger.trace('Entered load method');
         const dir = this._dirForType(migrationType);
         const file = path.join(dir, `${sourceId}.json`);
-        logger.debug(`Loading link file: ${file}`);
+        this.logger.debug(`Loading link file: ${file}`);
         const content = await fs.readFile(file, 'utf-8');
         let data;
         try {
             data = JSON.parse(content);
         } catch (err) {
-            logger.warn(`Failed to parse link JSON file: ${file} - ${err.message}`);
+            this.logger.warn(`Failed to parse link JSON file: ${file} - ${err.message}`);
             throw err;
         }
         // Instantiate Link with full metadata
@@ -121,15 +122,16 @@ class LinkStore {
      * @returns {Promise<object>}
      */
     async loadRaw(sourceId, migrationType = DEFAULT_MIGRATION_TYPE) {
+        this.logger.trace('Entered loadRaw method');
         const dir = this._dirForType(migrationType);
         const file = path.join(dir, `${sourceId}.json`);
-        logger.debug(`Loading raw link file: ${file}`);
+        this.logger.debug(`Loading raw link file: ${file}`);
         const content = await fs.readFile(file, 'utf-8');
         let data;
         try {
             data = JSON.parse(content);
         } catch (err) {
-            logger.warn(`Failed to parse raw link JSON file: ${file} - ${err.message}`);
+            this.logger.warn(`Failed to parse raw link JSON file: ${file} - ${err.message}`);
             throw err;
         }
         return data;
@@ -144,13 +146,14 @@ class LinkStore {
      * @returns {Promise<Link|null>}
      */
     async findBySourcePageName(sourcePageName, migrationType = DEFAULT_MIGRATION_TYPE) {
+        this.logger.trace('Entered findBySourcePageName method');
         const dir = this._dirForType(migrationType);
         let files;
         try {
             files = await fs.readdir(dir);
-            logger.debug(`Read directory for findBySourcePageName: ${dir}`);
+            this.logger.debug(`Read directory for findBySourcePageName: ${dir}`);
         } catch {
-            logger.warn(`Failed to read directory for migrationType: ${migrationType}`);
+            this.logger.warn(`Failed to read directory for migrationType: ${migrationType}`);
             return null;
         }
 
@@ -161,16 +164,16 @@ class LinkStore {
             let raw;
             try {
                 raw = await fs.readFile(fullPath, 'utf-8');
-                logger.debug(`Read file during findBySourcePageName: ${fullPath}`);
+                this.logger.debug(`Read file during findBySourcePageName: ${fullPath}`);
             } catch {
-                logger.warn(`Failed to read file during findBySourcePageName: ${fullPath}`);
+                this.logger.warn(`Failed to read file during findBySourcePageName: ${fullPath}`);
                 continue;
             }
             let data;
             try {
                 data = JSON.parse(raw);
             } catch {
-                logger.warn(`Failed to parse JSON during findBySourcePageName: ${fullPath}`);
+                this.logger.warn(`Failed to parse JSON during findBySourcePageName: ${fullPath}`);
                 continue;
             }
             // If sourcePageName field matches exactly, instantiate and return
@@ -196,6 +199,38 @@ class LinkStore {
         }
         return null;
     }
+
+    /**
+     * Load all Link entries for a given migration type.
+     * @param {string} migrationType
+     * @returns {Promise<Link[]>}
+     */
+    async loadAll(migrationType = DEFAULT_MIGRATION_TYPE) {
+        this.logger.trace('Entered loadAll method');
+        const dir = this._dirForType(migrationType);
+        let files;
+        try {
+            files = await fs.readdir(dir);
+            this.logger.debug(`Read directory for loadAll: ${dir}`);
+        } catch (err) {
+            this.logger.error(`Failed to read directory for migrationType "${migrationType}": ${err.message}`);
+            return [];
+        }
+
+        const links = [];
+        for (const fileName of files) {
+            if (!fileName.endsWith('.json')) continue;
+            const sourceId = path.basename(fileName, '.json');
+            try {
+                const link = await this.load(sourceId, migrationType);
+                links.push(link);
+            } catch (err) {
+                this.logger.warn(`Failed to load link for sourceId ${sourceId}: ${err.message}`);
+            }
+        }
+
+        return links;
+    }
 }
 
-module.exports = new LinkStore(LINKS_DIR);
+module.exports = LinkStore;

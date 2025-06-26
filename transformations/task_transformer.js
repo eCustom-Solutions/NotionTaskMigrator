@@ -4,7 +4,6 @@
 // **No writing or media work happens here anymore.**
 
 const notion  = require('../services/notion_client');
-const logger  = require('../logging/logger');
 
 /* ── internal helper ──────────────────────────────────────────────── */
 async function fetchBlockTree(blockId) {
@@ -23,9 +22,11 @@ async function fetchBlockTree(blockId) {
 }
 
 /* ── main transform function ─────────────────────────────────────── */
-module.exports = async function transform(page, map) {
+module.exports = async function transform(page, map, logger) {
     const result = { properties: {} };
+    logger?.trace({ pageId: page?.id }, 'Entering transform() in task_transformer.js');
 
+    logger?.trace('Running direct and hooked field mappings');
     // ── 1. DIRECT & HOOKED FIELD MAPPINGS ────────────────────────────
     for (const [srcKey, tgtKey] of Object.entries(map.mappings)) {
         const srcVal = page.properties[srcKey];
@@ -44,6 +45,7 @@ module.exports = async function transform(page, map) {
         result.properties[tgtKey] = t === 'title' ? { title: srcVal.title } : { [t]: srcVal[t] };
     }
 
+    logger?.trace('Running virtual field mappings');
     // ── 2. VIRTUAL FIELDS ────────────────────────────────────────────
     if (Array.isArray(map.virtualMappings)) {
         for (const vKey of map.virtualMappings) {
@@ -55,19 +57,23 @@ module.exports = async function transform(page, map) {
         }
     }
 
+    logger?.trace('Running optional post-process step');
     // ── 3. OPTIONAL POST-PROCESS ─────────────────────────────────────
     if (typeof map.postProcess === 'function') {
         await map.postProcess(result, page);
     }
 
+    logger?.trace('Copying icon and cover');
     // ── 4. ICON / COVER COPY ─────────────────────────────────────────
     if (page.icon)  result.icon  = page.icon;
     if (page.cover) result.cover = page.cover;
 
+    logger?.trace('Fetching block tree if not skipped');
     // ── 5. BLOCK TREE (raw) ──────────────────────────────────────────
     if (!map?.options?.skipBlocks) {
         result.children = await fetchBlockTree(page.id); // leave sanitizing/media to write_task.js
     }
 
+    logger?.trace({ pageId: page?.id }, 'Exiting transform() in task_transformer.js');
     return result;
 };

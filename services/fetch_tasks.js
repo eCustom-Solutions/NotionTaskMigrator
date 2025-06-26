@@ -4,8 +4,10 @@
 
 const notion = require('./notion_client');
 const logger = require('../logging/logger');
+logger.trace('Entering fetch_tasks.js');
 
 async function* getTasksFromDBA(dbId) {
+    logger.trace('Entered getTasksFromDBA()');
     logger.info(`Starting to fetch tasks from database ID: ${dbId}`);
     let cursor = undefined;
 
@@ -18,6 +20,7 @@ async function* getTasksFromDBA(dbId) {
 
         for (const page of response.results) {
             logger.debug(`Fetched page with ID: ${page.id}`);
+            logger.trace(`Yielding page with ID: ${page.id}`);
             yield page;
         }
 
@@ -25,6 +28,7 @@ async function* getTasksFromDBA(dbId) {
     } while (cursor);
 
     logger.info(`Finished streaming all pages from database ID: ${dbId}`);
+    logger.trace('Exiting getTasksFromDBA()');
 }
 
 module.exports = { getTasksFromDBA };

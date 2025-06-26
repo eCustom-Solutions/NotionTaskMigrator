@@ -32,6 +32,7 @@ class MediaMigrator {
 
     /** Prepare temp dir and load existing manifest if present */
     async init() {
+        this.logger.trace('MediaMigrator.init called');
         if (!fs.existsSync(this.tmpDir)) {
             fs.mkdirSync(this.tmpDir, { recursive: true });
         }
@@ -45,6 +46,7 @@ class MediaMigrator {
 
     /** Main entrypoint: for a given pageId and its files array, returns Notion file_upload references */
     async processFiles(pageId, filesArray) {
+        this.logger.trace('MediaMigrator.processFiles called', { pageId, fileCount: filesArray.length });
         const results = [];
         for (const fileObj of filesArray) {
             try {
@@ -70,6 +72,7 @@ class MediaMigrator {
             } catch (err) {
                 const url = fileObj.external?.url || fileObj.file?.url;
                 this.logger.error(`❌ MediaMigrator failed on page ${pageId}, file ${url}:`, err);
+                throw (err);
             }
         }
         return results;
@@ -77,6 +80,7 @@ class MediaMigrator {
 
     /** Persist manifest back to disk */
     async flush() {
+        this.logger.trace('MediaMigrator.flush called');
         fs.writeFileSync(this.manifestPath, JSON.stringify({
             downloads: Object.fromEntries(this.downloadCache),
             uploads:   Object.fromEntries(this.uploadCache),
@@ -85,6 +89,7 @@ class MediaMigrator {
 
     /** Return simple stats */
     stats() {
+        this.logger.trace('MediaMigrator.stats called');
         return {
             downloaded: this.downloadCache.size,
             uploaded:   this.uploadCache.size
@@ -300,6 +305,7 @@ class MediaMigrator {
      * @returns {Promise<Array<Object>>} – resolved block array
      */
     async transformMediaBlocks(pageId, blocks) {
+        this.logger.trace('MediaMigrator.transformMediaBlocks called', { pageId, blockCount: blocks.length });
         const transformed = [];
         for (const block of blocks) {
             let transformedBlock = { ...block };

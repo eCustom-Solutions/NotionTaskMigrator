@@ -22,7 +22,6 @@ CONFIG = {
         "links",
         "objects",
         ".git",
-        "daily_reporting"
     ],
     "exclude_extensions": [
         ".pyc",
@@ -43,9 +42,7 @@ CONFIG = {
         ".git",
         "migrate_tags.js",
         "tag_transformer.js",
-        "migrate_tasks.js",
-        "logging",
-
+        "migrate_tasks.js"
     ],
     "output_file": "file_contents_report.txt",
 }

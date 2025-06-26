@@ -1,6 +1,7 @@
 // transformations/mcc_tasks_map.js
 
 const logger = require('../logging/logger');
+const taskLog = logger.child({ module: 'MCC_TASKS_MAP' });
 const notion = require('../services/notion_client');
 const { UserStore } = require('../services/user_store');
 const linkStore = require('../services/link_store');
@@ -57,12 +58,12 @@ module.exports = {
         'Caption': 'Caption',
         'Instructions': 'Instructions',
         'Date Assigned': 'Date Assigned',
-        'Final Video Content': 'Final Video Content',
-        'Review Link': 'Review Link',
-        'Canva Link': 'Canva Link',
-        'Blog Link': 'Blog Link',
-        'Final Design': 'Final Design',
-        'Google Drive File': 'Google Drive File'
+        // 'Final Video Content': 'Final Video Content',
+        // 'Review Link': 'Review Link',
+        // 'Canva Link': 'Canva Link',
+        // 'Blog Link': 'Blog Link',
+        // 'Final Design': 'Final Design',
+        // 'Google Drive File': 'Google Drive File'
         // Created time and Finished time are intentionally skipped
     },
 
@@ -76,7 +77,7 @@ module.exports = {
         'Design Due Date': async (sourceValue) => {
             // Pass through the value as-is; mapping already renames the field
             // This hook is here for logging/traceability
-            logger.info('Renaming "Design Due Date" to "Design Due Date (MCC)"');
+            taskLog.debug('Renaming "Design Due Date" to "Design Due Date (MCC)"');
             return sourceValue;
         },
         // Normalize Status: drop source ID, keep only name
@@ -109,6 +110,7 @@ module.exports = {
         // },
 
         Brands: async (sourceValue) => {
+            taskLog.debug('🔍 Processing Brands field:', JSON.stringify(sourceValue));
 
             let names = [];
 
@@ -117,7 +119,7 @@ module.exports = {
             } else if (sourceValue.select && sourceValue.select.name) {
                 names = [sourceValue.select.name];  // Normalize to array
             } else {
-                logger.warn('⚠️ Brands field has unexpected format:', JSON.stringify(sourceValue));
+                taskLog.warn('⚠️ Brands field has unexpected format:', JSON.stringify(sourceValue));
             }
 
             // Brand alias normalization
@@ -134,7 +136,7 @@ module.exports = {
                 if (link && link.targetId) {
                     relations.push({ id: link.targetId });
                 } else {
-                    logger.warn(`Brand "${name}" not found in LinkStore, skipping relation`);
+                    taskLog.warn(`Brand "${name}" not found in LinkStore, skipping relation`);
                 }
             }
 
@@ -145,17 +147,17 @@ module.exports = {
             const id = sourceValue?.select?.id;
 
             if (!id) {
-                logger.info('🟡 No Priority selected on source page; field is null or undefined');
+                taskLog.debug('🟡 No Priority selected on source page; field is null or undefined');
                 return { select: null };
             }
 
             const name = priorityIdToNameMap[id];
             if (!name) {
-                logger.warn(`❓ Priority ID "${id}" not found in source schema. Full sourceValue: ${JSON.stringify(sourceValue)}`);
+                taskLog.warn(`❓ Priority ID "${id}" not found in source schema. Full sourceValue: ${JSON.stringify(sourceValue)}`);
                 return { select: null };
             }
 
-            logger.info(`✅ Priority ID "${id}" resolved to name "${name}"`);
+            taskLog.debug(`✅ Priority ID "${id}" resolved to name "${name}"`);
             return { select: { name } };
         },
 
@@ -190,28 +192,38 @@ module.exports = {
         // Migrate and re-upload video content files to Notion file_upload objects using handleFileProperty
         'Final Video Content': async (sourceValue) => {
             const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
-            return await handleFileProperty(files, mediaMigrator, logger, 'Final Video Content');
+            const result = await handleFileProperty(files, mediaMigrator, logger, 'Final Video Content');
+            taskLog.debug(`✅ Processed file upload for "Final Video Content" with ${files.length} files.`);
+            return result;
         },
         'Review Link': async (sourceValue) => {
             const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
-            return await handleFileProperty(files, mediaMigrator, logger, 'Review Link');
+            const result = await handleFileProperty(files, mediaMigrator, logger, 'Review Link');
+            taskLog.debug(`✅ Processed file upload for "Review Link" with ${files.length} files.`);
+            return result;
         },
         'Canva Link': async (sourceValue) => {
             const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
-            return await handleFileProperty(files, mediaMigrator, logger, 'Canva Link');
+            const result = await handleFileProperty(files, mediaMigrator, logger, 'Canva Link');
+            taskLog.debug(`✅ Processed file upload for "Canva Link" with ${files.length} files.`);
+            return result;
         },
         'Blog Link': async (sourceValue) => {
             const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
-            return await handleFileProperty(files, mediaMigrator, logger, 'Blog Link');
+            const result = await handleFileProperty(files, mediaMigrator, logger, 'Blog Link');
+            taskLog.debug(`✅ Processed file upload for "Blog Link" with ${files.length} files.`);
+            return result;
         },
         'Final Design': async (sourceValue) => {
             const files = Array.isArray(sourceValue.files) ? sourceValue.files : [];
-            return await handleFileProperty(files, mediaMigrator, logger, 'Final Design');
+            const result = await handleFileProperty(files, mediaMigrator, logger, 'Final Design');
+            taskLog.debug(`✅ Processed file upload for "Final Design" with ${files.length} files.`);
+            return result;
         },
 
         // Inspect Google Drive file property during migration
         'Google Drive File': async (sourceValue) => {
-            logger.info('📂 Google Drive File sourceValue:', JSON.stringify(sourceValue, null, 2));
+            taskLog.debug('📂 Google Drive File sourceValue:', JSON.stringify(sourceValue, null, 2));
             return sourceValue;  // pass through untouched for now
         }
     },
