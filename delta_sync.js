@@ -28,10 +28,10 @@ const config = {
     strictMode: argv.strict || true
 };
 
-const SOURCE_DB_ID = process.env.DUMMY_NOTION_MCC_TASKS_DB_ID;
-const TARGET_DB_ID = process.env.DUMMY_NOTION_CENT_DB_ID;
-const TASK_MAP     = require('./transformations/mcc_tasks_map');
-const LINK_TYPE    = 'dummy_mcc_sync_a';
+const SOURCE_DB_ID = process.env.NOTION_MCC_TASKS_DB_ID;
+const TARGET_DB_ID = process.env.APT_DB_ID;
+const TASK_MAP     = require('./transformations/apt_tasks_map');
+const LINK_TYPE    = 'apt_tasks_live';
 
 const linkStore = new LinkStore(LINKS_DIR, logger);
 
