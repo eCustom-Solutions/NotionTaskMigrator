@@ -33,6 +33,7 @@ const TARGET_DB_ID = process.env.NOTION_CENT_DB_ID;
 const TASK_MAP     = require('./transformations/apt_tasks_map');
 const LINK_TYPE    = 'apt_tasks_live';
 
+
 const linkStore = new LinkStore(LINKS_DIR, logger);
 
 
