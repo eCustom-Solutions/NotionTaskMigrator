@@ -1,0 +1,25 @@
+# Sensitive files
+.env
+*.pem
+*.key
+
+# Logs
+*.log
+logging/logs
+npm-debug.log*
+
+# Python junk
+__pycache__/
+*.pyc
+*.pyo
+
+# Node junk
+node_modules/
+
+# IDE/editor clutter
+.idea/
+.vscode/
+
+# OS stuff
+.DS_Store
+Thumbs.db
