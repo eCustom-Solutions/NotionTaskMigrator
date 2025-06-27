@@ -6,7 +6,6 @@ const path = require('path');
 
 require('dotenv').config();
 const minimist               = require('minimist');
-const argv = minimist(process.argv.slice(2));
 const { getTasksFromDBA }     = require('./services/fetch_tasks');
 const { writeToDBB }          = require('./services/write_task');
 const LINKS_DIR = path.resolve(__dirname, './links');
