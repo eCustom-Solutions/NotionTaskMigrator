@@ -21,11 +21,20 @@ const log   = logger.child({ jobId });
 
 
 // ---------- config -------------------------------------------------
+
+const argv = minimist(
+    process.argv.slice(2),
+    {
+    boolean: ['strict', 'dryRun', 'force'],   // ← coerce to real booleans
+    default: { strict: true, dryRun: false, force: false }
+    }
+);
+
 const config = {
-    dryRun: argv.dryRun || false,
-    force: argv.force || false,
-    onlyId: argv.onlyId || null,
-    strictMode: argv.strict === undefined ? true : argv.strict
+    dryRun:     argv.dryRun,      // already true/false
+    force:      argv.force,
+    onlyId:     argv.onlyId ?? null,
+    strictMode: argv.strict
 };
 
 const SOURCE_DB_ID = process.env.APT_DB_ID;
