@@ -64,10 +64,8 @@ async function archivePageIfExists(pageId) {
 void (async () => {
     const { dryRun, force, onlyId } = config;
     const runtimeStart = new Date();
-    console.log('runtimeStart a', runtimeStart);
     runtimeStart.setSeconds(0, 0); // floor to start of minute
     runtimeStart.setMinutes(runtimeStart.getMinutes() - 1); // subtract one minute as grace period
-    console.log('runtimeStart b', runtimeStart);
     log.trace('↪️ Entered main delta sync runtime');
 
     log.trace('Fetching tasks from source DB');
@@ -113,7 +111,6 @@ void (async () => {
     let processed = 0;
 
     for (const page of eligiblePages) {
-        processed++;
         log.info(`Processing page ${processed}/${totalPages}: ${page.id}`);
         const sourceId = page.id;
         log.trace({ sourceId }, 'Entered sync loop for page');
